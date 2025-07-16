@@ -26,12 +26,14 @@ public class HomePageProprietario extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private VisualizzaProgetti visualizza;
+	private CreaNotifica creanotifica;
+	private CreaProgetto creaprogetto;
 
 	
 	public HomePageProprietario() {
 		setTitle("HomePage");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    setBounds(100, 100, 963, 690);
+	    setBounds(100, 100, 843, 564);
 	    
 	    URL imageUrl = getClass().getResource("/img/sfondoschede.PNG");
 	    contentPane = new BackgroundPanel(imageUrl);
@@ -45,10 +47,12 @@ public class HomePageProprietario extends JFrame {
 	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 	  
 	    visualizza = new VisualizzaProgetti(this);
-	    
+	    creanotifica = new CreaNotifica(this);
+	    creaprogetto = new CreaProgetto(this);
 	    
 	    
 	    JLabel LabelBenvenuto = new JLabel("Benvenuto! Sei un Proprietario");
+	    LabelBenvenuto.setFont(new Font("Tahoma", Font.BOLD, 17));
 	    contentPane.add(LabelBenvenuto, "cell 0 0,alignx center");
 	    
 	    //inzio sezione notifiche
@@ -105,11 +109,11 @@ public class HomePageProprietario extends JFrame {
 	    TxtScelta.setFont(new Font("Monospaced", Font.BOLD, 13));
 	    TxtScelta.setEditable(false);
 	    TxtScelta.setText("Scegli se visualizzare\r\no creare un progetto");
-	    contentPane.add(TxtScelta, "cell 6 4,alignx center,aligny center");
+	    contentPane.add(TxtScelta, "cell 5 4,alignx center,aligny center");
 	    TxtScelta.setOpaque(false);
 	    
 	    JButton ButtonVisualizza = new JButton("Visualizza");
-	    contentPane.add(ButtonVisualizza, "cell 6 6,alignx center");
+	    contentPane.add(ButtonVisualizza, "cell 5 6,alignx center");
 	    ButtonVisualizza.setPreferredSize(new Dimension(150, 20));
 	    ButtonVisualizza.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -119,12 +123,24 @@ public class HomePageProprietario extends JFrame {
 		});
 	    
 	    JButton ButtonCreaP = new JButton("Crea Progetto");
-	    contentPane.add(ButtonCreaP, "cell 6 7,alignx center");
+	    contentPane.add(ButtonCreaP, "cell 5 7,alignx center");
 	    ButtonCreaP.setPreferredSize(new Dimension(150, 20));
+	    ButtonCreaP.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+				creaprogetto.setVisible(true);
+			}
+		});
 	    
 	    JButton ButtonCreaN = new JButton("Crea Notifica");
-	    contentPane.add(ButtonCreaN, "cell 6 8,alignx center");
+	    contentPane.add(ButtonCreaN, "cell 5 8,alignx center");
 	    ButtonCreaN.setPreferredSize(new Dimension(150, 20));
+	    ButtonCreaN.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+				creanotifica.setVisible(true);
+			}
+		});
 	    
 	}
 

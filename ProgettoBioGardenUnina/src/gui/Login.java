@@ -49,7 +49,7 @@ public class Login extends JFrame {
 	public Login() {
 		setTitle("Login Schede");
 		 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		    setBounds(100, 100, 1032, 703);
+		    setBounds(100, 100, 842, 577);
 		    
 		    URL imageUrl = getClass().getResource("/img/sfondo.PNG");
 		    contentPane = new BackgroundPanel(imageUrl);

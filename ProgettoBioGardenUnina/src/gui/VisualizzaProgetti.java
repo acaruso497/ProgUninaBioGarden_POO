@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
+import java.awt.Font;
 
 public class VisualizzaProgetti extends JFrame {
 
@@ -31,7 +32,7 @@ public class VisualizzaProgetti extends JFrame {
 		
 		setTitle("Visualizza Progetti");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    setBounds(100, 100, 963, 690);
+	    setBounds(100, 100, 884, 553);
 	    
 	    URL imageUrl = getClass().getResource("/img/sfondoschede.PNG");
 	    contentPane = new BackgroundPanel(imageUrl);
@@ -45,6 +46,7 @@ public class VisualizzaProgetti extends JFrame {
 	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    JLabel LabelVisualizza = new JLabel("Visualizza i tuoi progetti!");
+	    LabelVisualizza.setFont(new Font("Tahoma", Font.BOLD, 17));
 	    contentPane.add(LabelVisualizza, "cell 0 0");
 	    
 	    
