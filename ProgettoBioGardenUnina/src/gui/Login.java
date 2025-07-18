@@ -93,10 +93,13 @@ public class Login extends JFrame {
 		    ButtonLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				String username = FieldUsername.getText();
-				String psw = FieldPassword.getText();
+				//String username = FieldUsername.getText();
+				//String psw = FieldPassword.getText();
 				
-				try {
+				setVisible(false);
+				home.setVisible(true);
+				
+				/*try {
 					Connection conn = Connessione.getConnection();
 					String query = "SELECT * FROM proprietario WHERE username = ? AND psw = ?";
 					
@@ -118,7 +121,7 @@ public class Login extends JFrame {
 				} catch(SQLException ex) {
 				    ex.printStackTrace(); // ← mostra errore vero
 				    JOptionPane.showMessageDialog(null, "❌ Errore di connessione al DB", "Errore", JOptionPane.ERROR_MESSAGE);
-				}
+				}*/
 
 				}
 		    });
