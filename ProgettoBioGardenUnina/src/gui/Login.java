@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import controller.Controller;
 import database.Connessione;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
@@ -93,35 +94,18 @@ public class Login extends JFrame {
 		    ButtonLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				//String username = FieldUsername.getText();
-				//String psw = FieldPassword.getText();
+				String username = FieldUsername.getText();
+				String psw = FieldPassword.getText();
 				
-				setVisible(false);
-				home.setVisible(true);
+				boolean check = Controller.authP(username, psw);
 				
-				/*try {
-					Connection conn = Connessione.getConnection();
-					String query = "SELECT * FROM proprietario WHERE username = ? AND psw = ?";
-					
-					PreparedStatement stmt = conn.prepareStatement(query);
-					stmt.setString(1, username);
-					stmt.setString(2, psw);
-					
-					ResultSet rs = stmt.executeQuery();
-					
-					if(rs.next()) {
-						setVisible(false);
-						home.setVisible(true);
-					}
-					else	JOptionPane.showMessageDialog(null, "Username o password Errati");
-					
-					rs.close();
-					stmt.close();
-					conn.close();
-				} catch(SQLException ex) {
-				    ex.printStackTrace(); // ← mostra errore vero
-				    JOptionPane.showMessageDialog(null, "❌ Errore di connessione al DB", "Errore", JOptionPane.ERROR_MESSAGE);
-				}*/
+				if(check==true) {
+					setVisible(false);
+					home.setVisible(true);
+				}else {
+					JOptionPane.showMessageDialog(null, "Credenziali errate");
+				}
+				
 
 				}
 		    });
