@@ -23,6 +23,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.plaf.basic.BasicArrowButton;
 
+import controller.Controller;
 //checkData
 import utils.ControlloData;
 
@@ -120,6 +121,12 @@ public class CreaNotifica extends JFrame {
 		    ButtonInviaN.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 					String DataInserita = FieldData.getText();
+					String usernameC = FieldUsernameC.getText();
+					String titolo = FieldTitolo.getText();
+					String descrizione = TxtDescrizione.getText();
+					
+					boolean check = Controller.creaN(DataInserita, usernameC, titolo, descrizione);
+					
 					if(ControlloData.isDataValida(DataInserita)) {
 						JOptionPane.showMessageDialog(null, "Notifica inviata con successo!");
 						FieldData.setBackground(Color.WHITE);

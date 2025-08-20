@@ -31,4 +31,33 @@ public class Controller {
 		   }
 		
 	}
+	
+	public static boolean creaN(String data, String usernameC, String titolo, String descrizione) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet risultato = null;
+		try {
+				conn = Connessione.getConnection(); 
+				String sql = "INSERT INTO notifica () VALUES (?, ?, ?, ?)";
+				stmt = conn.prepareStatement(sql);
+				stmt.setString(1, data);
+				stmt.setString(2, usernameC);
+				stmt.setString(3, titolo);
+				stmt.setString(4, descrizione);
+				risultato = stmt.executeQuery();
+				if(risultato.next()) {
+					return true;
+				}else {
+					return false;
+				}
+		   } catch(SQLException ex) {
+			   ex.printStackTrace();
+			   return false;
+		   } finally {
+			   try { if (risultato != null) risultato.close(); } catch (Exception e) {}
+		        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+		        try { if (conn != null) conn.close(); } catch (Exception e) {}
+		   }
+		
+	}
 }
