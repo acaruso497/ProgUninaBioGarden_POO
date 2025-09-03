@@ -8,6 +8,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="com.miglayout.core_11.4.2.jar"/>
 	<classpathentry kind="lib" path="com.miglayout.swing_11.4.2.jar"/>
-	<classpathentry kind="lib" path="C:/EclipseVerse/ProgettoBioGardenUnina/postgresql-42.7.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/maste/git/ProgUninaBioGarden_POO/ProgettoBioGardenUnina/postgresql-42.7.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
