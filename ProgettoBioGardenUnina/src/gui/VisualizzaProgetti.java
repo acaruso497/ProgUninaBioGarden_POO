@@ -140,7 +140,7 @@ public class VisualizzaProgetti extends JFrame {
 	    
 	    
 	    
-	    JRadioButton RadioPianificata = new JRadioButton("Pianficata");
+	    JRadioButton RadioPianificata = new JRadioButton("Pianificata");
 	    contentPane.add(RadioPianificata, "cell 3 10");
 	    RadioPianificata.setOpaque(false);
 	    gruppoStato.add(RadioPianificata);

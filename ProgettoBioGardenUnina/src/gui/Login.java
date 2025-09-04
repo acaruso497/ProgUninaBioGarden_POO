@@ -31,7 +31,8 @@ public class Login extends JFrame {
 	private JPasswordField FieldPassword;
 	private JLabel Logo;
 	private JButton ButtonLogin;
-	HomePageProprietario home = new HomePageProprietario();
+	HomePageProprietario homeP = new HomePageProprietario();
+	HomePageColtivatore homeC = new HomePageColtivatore();
 
 	/**
 	 * Launch the application.
@@ -97,11 +98,15 @@ public class Login extends JFrame {
 				String username = FieldUsername.getText();
 				String psw = FieldPassword.getText();
 				
-				boolean check = Controller.authP(username, psw);
+				boolean checkP = Controller.authP(username, psw);
+				boolean checkC = Controller.authC(username, psw);
 				
-				if(check==true) {
+				if(checkP==true) {
 					setVisible(false);
-					home.setVisible(true);
+					homeP.setVisible(true); 
+				} else if(checkC==true) {
+					setVisible(false);
+					homeC.setVisible(true);
 				}else {
 					JOptionPane.showMessageDialog(null, "Credenziali errate");
 				}
