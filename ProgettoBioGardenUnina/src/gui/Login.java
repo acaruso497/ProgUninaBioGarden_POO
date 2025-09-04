@@ -98,17 +98,17 @@ public class Login extends JFrame {
 				String username = FieldUsername.getText();
 				String psw = FieldPassword.getText();
 				
-				boolean checkP = Controller.authP(username, psw);
-				boolean checkC = Controller.authC(username, psw);
+				boolean checkP = Controller.authP(username, psw); //controlla le credenziali del proprietario
+				boolean checkC = Controller.authC(username, psw); //controlla le credenziali del coltivatore
 				
-				if(checkP==true) {
+				if(checkP==true) { //se è un proprietario, allora porta all'home page proprietario
 					setVisible(false);
 					homeP.setVisible(true); 
-				} else if(checkC==true) {
+				} else if(checkC==true) { //se è un coltivatore, allora porta all'home page coltivatore
 					setVisible(false);
 					homeC.setVisible(true);
 				}else {
-					JOptionPane.showMessageDialog(null, "Credenziali errate");
+					JOptionPane.showMessageDialog(null, "Credenziali errate"); //se le credenziali sono errate, porta un messaggio di errore
 				}
 				
 
