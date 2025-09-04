@@ -5,6 +5,8 @@ import java.sql.*;
 public class Controller {
 
 	//METODI
+	
+	//Autenticazione proprietario
 	public static boolean authP(String username, String password) {
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -32,6 +34,7 @@ public class Controller {
 		
 	}
 	
+	//Autenticazione coltivatore
 	public static boolean authC(String username, String password) {
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -60,7 +63,11 @@ public class Controller {
 	}
 
 	
+	//Creazione notifica
 	
+	/* NB: mettere i controlli per quando si clicca tutti i coltivatori per taggarli tutti. Nel caso di singoli, fare come in SQL
+	 * Dinamico che andiamo ad estrapolare le stringhe separate da virgole.
+	  */
 	 public static boolean creaN(String data, String usernameC, String titolo, String descrizione) {
 		Connection conn = null;
 		PreparedStatement stmt = null;
