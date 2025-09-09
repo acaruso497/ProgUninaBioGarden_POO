@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 
-import controller.Controller;
+import dao.DAO;
 import database.Connessione;
 import net.miginfocom.swing.MigLayout;
 import utils.ControlloData;
@@ -185,7 +185,7 @@ public class CreaProgetto extends JFrame {
 	        String coltivatori = FieldColtivatori.getText();
 
 	        // Chiamo il metodo che salva il progetto
-	        boolean checkPr = Controller.creaP(titolo, descrizione, stimaRaccolto, dataIT, dataFT, tipoAttivita, dataIA, dataFA, coltivatori);
+	        boolean checkPr = DAO.creaP(titolo, descrizione, stimaRaccolto, dataIT, dataFT, tipoAttivita, dataIA, dataFA, coltivatori);
 			*/
 			
 		});

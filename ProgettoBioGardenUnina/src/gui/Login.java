@@ -14,7 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import controller.Controller;
+import dao.DAO;
 import database.Connessione;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
@@ -98,8 +98,8 @@ public class Login extends JFrame {
 				String username = FieldUsername.getText();
 				String psw = FieldPassword.getText();
 				
-				boolean checkP = Controller.authP(username, psw); //controlla le credenziali del proprietario
-				boolean checkC = Controller.authC(username, psw); //controlla le credenziali del coltivatore
+				boolean checkP = DAO.authP(username, psw); //controlla le credenziali del proprietario
+				boolean checkC = DAO.authC(username, psw); //controlla le credenziali del coltivatore
 				
 				if(checkP==true) { //se è un proprietario, allora porta all'home page proprietario
 					setVisible(false);

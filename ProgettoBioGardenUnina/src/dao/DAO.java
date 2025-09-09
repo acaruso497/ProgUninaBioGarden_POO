@@ -1,8 +1,8 @@
-package controller;
+package dao;
 import database.Connessione;
 import java.sql.*;
 
-public class Controller {
+public class DAO {
 
 	//METODI
 	
