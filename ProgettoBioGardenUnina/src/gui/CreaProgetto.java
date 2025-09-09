@@ -7,6 +7,9 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 
+import controller.Controller;
+import database.Connessione;
 import net.miginfocom.swing.MigLayout;
 import utils.ControlloData;
 import java.time.LocalDate;
@@ -112,8 +117,15 @@ public class CreaProgetto extends JFrame {
 	    JLabel LabelAttivita = new JLabel("Attivita");
 	    contentPane.add(LabelAttivita, "cell 0 5,alignx trailing");
 	    
-	    JComboBox ComboAttivita = new JComboBox();
+	    JComboBox<String> ComboAttivita = new JComboBox<>();
 	    contentPane.add(ComboAttivita, "cell 1 5 2 1,growx");
+	    // Attività selezionabili
+	    ComboAttivita.addItem("Semina");
+	    ComboAttivita.addItem("Irrigazione");
+	    ComboAttivita.addItem("Raccolta");
+	    // Default: campo vuoto
+	    ComboAttivita.setSelectedIndex(-1);
+
 	    
 	    JTextArea textArea = new JTextArea();
 	    contentPane.add(textArea, "cell 8 5 4 6,grow");
@@ -157,6 +169,23 @@ public class CreaProgetto extends JFrame {
 				else
 					JOptionPane.showMessageDialog(null, "Il formato delle date deve essere 'GG/MM/AAAA'");
 			}
+			String titolo = FieldTitolo.getText();
+			String descrizione = textArea.getText();
+			String stimaRaccolto = FieldStima.getText();
+			String dataIT = FieldDataIT.getText();             
+	        String dataFT = FieldDataFT.getText(); 
+	        
+	        // Raccolgo la scelta dalla ComboBox
+	        String tipoAttivita = (String) ((JComboBox<String>) ComboAttivita).getSelectedItem();
+	        
+	        String dataIA = FieldDataIA.getText();
+	        String dataFA = FieldDataFA.getText();
+
+	        String coltivatori = FieldColtivatori.getText();
+
+	        // Chiamo il metodo che salva il progetto
+	        boolean checkPr = Controller.creaP(titolo, descrizione, stimaRaccolto, dataIT, dataFT, tipoAttivita, dataIA, dataFA, coltivatori);
+			
 		});
 	    
 	    JButton ButtonColtura = new JButton("Colture ed irrigazione");
@@ -184,5 +213,6 @@ public class CreaProgetto extends JFrame {
 	    contentPane.add(FieldDataFA, "cell 2 6");
 	    FieldDataFA.setColumns(10);
 	}
+	
 
 }
