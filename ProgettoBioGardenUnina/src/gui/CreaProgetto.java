@@ -169,7 +169,8 @@ public class CreaProgetto extends JFrame {
 				else
 					JOptionPane.showMessageDialog(null, "Il formato delle date deve essere 'GG/MM/AAAA'");
 			}
-			String titolo = FieldTitolo.getText();
+			
+			/* 	String titolo = FieldTitolo.getText();
 			String descrizione = textArea.getText();
 			String stimaRaccolto = FieldStima.getText();
 			String dataIT = FieldDataIT.getText();             
@@ -185,6 +186,7 @@ public class CreaProgetto extends JFrame {
 
 	        // Chiamo il metodo che salva il progetto
 	        boolean checkPr = Controller.creaP(titolo, descrizione, stimaRaccolto, dataIT, dataFT, tipoAttivita, dataIA, dataFA, coltivatori);
+			*/
 			
 		});
 	    
