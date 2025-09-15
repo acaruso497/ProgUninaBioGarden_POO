@@ -20,10 +20,12 @@ import javax.swing.plaf.basic.BasicArrowButton;
 
 import dao.DAO;
 import database.Connessione;
+import controller.CreaProgettoController;
 import net.miginfocom.swing.MigLayout;
 import utils.ControlloData;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
@@ -48,7 +50,11 @@ public class CreaProgetto extends JFrame {
 	HomePageProprietario home;
 	Colture colture;
 	
-	public CreaProgetto(HomePageProprietario home) {
+    private JComboBox<String> ComboLotto = new JComboBox<String>();  //La JComboBox è un array di stringhe per contenere i lotti
+    private CreaProgettoController creaProgettoController;  
+	
+	public CreaProgetto(HomePageProprietario home, String username) {
+		this.home = home;
 		setTitle("Crea Progetto");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    setBounds(100, 100, 842, 577);
@@ -139,7 +145,6 @@ public class CreaProgetto extends JFrame {
 	    JLabel LabelLotto = new JLabel("Lotto");
 	    contentPane.add(LabelLotto, "cell 0 8,alignx right");
 	    
-	    JComboBox ComboLotto = new JComboBox();
 	    contentPane.add(ComboLotto, "cell 1 8 2 1,growx");
 	    
 	    JLabel LabelColtivatori = new JLabel("Coltivatori");
@@ -161,35 +166,36 @@ public class CreaProgetto extends JFrame {
 				if(ControlloData.isDataValida(DataInseritaIT) && ControlloData.isDataValida(DataInseritaFT) && ControlloData.isDataValida(DataInseritaIA) && ControlloData.isDataValida(DataInseritaFA)) {
 					if(ControlloData.isPrimaDataMinore(DataInseritaIT, DataInseritaFT) && ControlloData.isPrimaDataMinore(DataInseritaIA, DataInseritaFA) && ControlloData.isPrimaDataMinore(DataInseritaIA, DataInseritaFT) && ControlloData.isPrimaDataMinore(DataInseritaFA, DataInseritaFT) && ControlloData.isPrimaDataMinore(DataInseritaIT, DataInseritaIA))
 					{
+						
+						String titolo = FieldTitolo.getText();
+						String descrizione = textArea.getText();
+						String stimaRaccolto = FieldStima.getText();
+			      
+						
+				        // Raccolgo la scelta dalla ComboBox
+				        String tipoAttivita = (String) ComboAttivita.getSelectedItem();  // Cast semplice
+			          
+						String lotto = (String) ComboLotto.getSelectedItem();  
+						int idLotto = Integer.parseInt(lotto); //converte l'array list di lotti in un intero per salvare l'id del lotto
+			                        
+			           String coltivatori = FieldColtivatori.getText();
+			           
+			           
+			        // Chiamo il metodo che salva il progetto
+			             boolean checkPr = DAO.creaP(titolo, descrizione, stimaRaccolto, DataInseritaIT, DataInseritaFT, tipoAttivita, DataInseritaIA, DataInseritaFA, coltivatori, idLotto); 
+						
 						JOptionPane.showMessageDialog(null, "Progetto creato con successo!");
 					}
 					else
 						JOptionPane.showMessageDialog(null, "L'ordine delle date è errato!");				
 				}
 				else
-					JOptionPane.showMessageDialog(null, "Il formato delle date deve essere 'GG/MM/AAAA'");
+					JOptionPane.showMessageDialog(null, "Il formato delle date deve essere 'GG/MM/AAAA'"); 
 			}
-			
-			/* 	String titolo = FieldTitolo.getText();
-			String descrizione = textArea.getText();
-			String stimaRaccolto = FieldStima.getText();
-			String dataIT = FieldDataIT.getText();             
-	        String dataFT = FieldDataFT.getText(); 
-	        
-	        // Raccolgo la scelta dalla ComboBox
-	        String tipoAttivita = (String) ((JComboBox<String>) ComboAttivita).getSelectedItem();
-	        
-	        String dataIA = FieldDataIA.getText();
-	        String dataFA = FieldDataFA.getText();
-
-	        String coltivatori = FieldColtivatori.getText();
-
-	        // Chiamo il metodo che salva il progetto
-	        boolean checkPr = DAO.creaP(titolo, descrizione, stimaRaccolto, dataIT, dataFT, tipoAttivita, dataIA, dataFA, coltivatori);
-			*/
-			
+   	
 		});
-	    
+
+
 	    JButton ButtonColtura = new JButton("Colture ed irrigazione");
 	    contentPane.add(ButtonColtura, "cell 11 12");
 	    ButtonColtura.addActionListener(new ActionListener() {
@@ -198,7 +204,7 @@ public class CreaProgetto extends JFrame {
 				colture.setVisible(true);
 			}
 		});
-	    
+	     
 	    FieldDataIT = new JTextField();
 	    contentPane.add(FieldDataIT, "cell 0 3,growx");
 	    FieldDataIT.setColumns(10);
@@ -214,7 +220,18 @@ public class CreaProgetto extends JFrame {
 	    FieldDataFA = new JTextField();
 	    contentPane.add(FieldDataFA, "cell 2 6");
 	    FieldDataFA.setColumns(10);
+	    
+        DAO dao = new DAO(); //crea il DAO
+        creaProgettoController = new CreaProgettoController(dao); //crea il controller
+        
+        //Popola la ComboLotto con i lotti del proprietario loggato
+        popolaComboLotto(username);
+	}
+        private void popolaComboLotto(String username) { 
+            List<String> lotti = creaProgettoController.getLottiPerCombo(username);  // GUI chiama Controller
+            for (String lotto : lotti) { 
+                ComboLotto.addItem(lotto);  // Aggiunge ogni ID_Lotto alla ComboBox (es. "1", "2")
+            }
 	}
 	
-
 }

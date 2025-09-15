@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import controller.ControllerLogin;
 import dao.DAO;
 import database.Connessione;
 import net.miginfocom.swing.MigLayout;
@@ -31,8 +32,9 @@ public class Login extends JFrame {
 	private JPasswordField FieldPassword;
 	private JLabel Logo;
 	private JButton ButtonLogin;
-	HomePageProprietario homeP = new HomePageProprietario();
+	private String username;
 	HomePageColtivatore homeC = new HomePageColtivatore();
+	HomePageProprietario homeP = new HomePageProprietario(username);
 
 	/**
 	 * Launch the application.
@@ -95,26 +97,82 @@ public class Login extends JFrame {
 		    ButtonLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				
+				
+				
+				
+				
+				
+				ControllerLogin cl = new ControllerLogin();
+				
 				String username = FieldUsername.getText();
 				String psw = FieldPassword.getText();
 				
-				boolean checkP = DAO.authP(username, psw); //controlla le credenziali del proprietario
-				boolean checkC = DAO.authC(username, psw); //controlla le credenziali del coltivatore
 				
-				if(checkP==true) { //se è un proprietario, allora porta all'home page proprietario
-					setVisible(false);
-					homeP.setVisible(true); 
-				} else if(checkC==true) { //se è un coltivatore, allora porta all'home page coltivatore
-					setVisible(false);
+				
+				boolean[] check = cl.login(username, psw);
+				
+				if (check[0] == false) {// campi non validi
+					JOptionPane.showMessageDialog(Login.this, "\n USERNAME E/O PASSWORD \n RISULTANO VUOTI O NULLI");}
+				
+				
+				else if (check[0]==true && check[1]==true && check[2]==false) {// proprietario homepage
+					Login.this.setVisible(false);
+					homeP.setVisible(true);
+				}
+				else if (check[0]==true && check[1]==false && check[2]==true) {// coltivatore homepage
+					Login.this.setVisible(false);		
 					homeC.setVisible(true);
-				}else {
-					JOptionPane.showMessageDialog(null, "Credenziali errate"); //se le credenziali sono errate, porta un messaggio di errore
-				}
+					
+				}else if (check[0]==true && check[1]==false && check[2]==false) {// nessuno dei due
+					
+					JOptionPane.showMessageDialog(Login.this, "Username o Password errati!!");
+				}			
 				
-
-				}
-		    });
+			
+			}
+		    
+		    
+			
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+		    }); 
 		    
 	}
-
 }
+

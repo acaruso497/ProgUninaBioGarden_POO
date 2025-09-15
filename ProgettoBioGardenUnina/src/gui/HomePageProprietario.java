@@ -28,9 +28,11 @@ public class HomePageProprietario extends JFrame {
 	private VisualizzaProgetti visualizza;
 	private CreaNotifica creanotifica;
 	private CreaProgetto creaprogetto;
+	private String username;
 
 	
-	public HomePageProprietario() {
+	public HomePageProprietario(String username) {
+		this.username = username;  // Salvo l'username e lo passo come parametro a HomePageProprietario
 		setTitle("HomePageProprietario");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    setBounds(100, 100, 843, 564);
@@ -46,9 +48,9 @@ public class HomePageProprietario extends JFrame {
 
 	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 	  
-	    visualizza = new VisualizzaProgetti(this);
+	    visualizza = new VisualizzaProgetti(this, username);
 	    creanotifica = new CreaNotifica(this);
-	    creaprogetto = new CreaProgetto(this);
+	    creaprogetto = new CreaProgetto(this, username); //passo l'username del proprietario così può avere informazioni sui suoi lotti
 	    
 	    
 	    JLabel LabelBenvenuto = new JLabel("Benvenuto! Sei un Proprietario");

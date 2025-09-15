@@ -5,12 +5,15 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 
+import controller.ControllerVisualizzaP;
+import dao.daoVisualizzaP;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -28,14 +31,22 @@ public class VisualizzaProgetti extends JFrame {
 	HomePageProprietario home;
 	private JTextField FieldStima;
 	private JTextField FieldEffettivo;
-	private JTextField FieldFataIP;
+	private JTextField FieldDataIP;
 	private JTextField FieldDataFP;
 	private JTextField FieldDataIA;
 	private JTextField FieldDataFA;
+	String username;
+	private ControllerVisualizzaP controller; 
+    private daoVisualizzaP dao; 
 
+    JComboBox<String> ComboAttivita = new JComboBox<>();
+    JComboBox<String> ComboProgetto = new JComboBox<>();
+    JComboBox<String> ComboLotto = new JComboBox<>();
+    JComboBox<String> ComboColtivatori = new JComboBox<>();
 	
-	public VisualizzaProgetti(HomePageProprietario home) {
+	public VisualizzaProgetti(HomePageProprietario home, String username) {
 		this.home = home;
+		this.username = username;
 		
 		setTitle("Visualizza Progetti");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -72,11 +83,11 @@ public class VisualizzaProgetti extends JFrame {
 	    JLabel LabelProgetto = new JLabel("Progetto");
 	    contentPane.add(LabelProgetto, "cell 0 2,alignx trailing");
 	    
-	    JComboBox ComboProgetto = new JComboBox();
+	    
 	    contentPane.add(ComboProgetto, "cell 1 2,growx");
 	    ComboProgetto.setPreferredSize(new Dimension(150, 20));
-	    
-	    
+	
+	 
 	    
 	    JButton ButtonGrafici = new JButton("Visualizza Grafici");
 	    contentPane.add(ButtonGrafici, "cell 10 2");
@@ -85,9 +96,9 @@ public class VisualizzaProgetti extends JFrame {
 	    JLabel LabelDataIP = new JLabel("Data Inizio");
 	    contentPane.add(LabelDataIP, "cell 0 3,alignx right,aligny center");
 	    
-	    FieldFataIP = new JTextField();
-	    contentPane.add(FieldFataIP, "cell 1 3,growx");
-	    FieldFataIP.setColumns(10);
+	    FieldDataIP = new JTextField();
+	    contentPane.add(FieldDataIP, "cell 1 3,growx");
+	    FieldDataIP.setColumns(10);
 	    
 	    JLabel LabelDataFP = new JLabel("Data Fine");
 	    contentPane.add(LabelDataFP, "cell 0 4,alignx right,aligny center");
@@ -101,7 +112,7 @@ public class VisualizzaProgetti extends JFrame {
 	    
 	    ButtonGroup gruppoStato = new ButtonGroup();
 	    
-	    JComboBox ComboColtivatori = new JComboBox();
+	    
 	    contentPane.add(ComboColtivatori, "cell 10 4,growx");
 	    ComboColtivatori.setPreferredSize(new Dimension(150, 20));
 	    
@@ -124,20 +135,19 @@ public class VisualizzaProgetti extends JFrame {
 	    
 	    	    
 	    	    
-	    	    JLabel LabelLotto = new JLabel("Lotto");
-	    	    contentPane.add(LabelLotto, "cell 0 8,alignx trailing");
+	    JLabel LabelLotto = new JLabel("Lotto");
+	    contentPane.add(LabelLotto, "cell 0 8,alignx trailing");
 	    
-	    JComboBox ComboLotto = new JComboBox();
+	    
 	    contentPane.add(ComboLotto, "cell 1 8,growx");
 	    ComboLotto.setPreferredSize(new Dimension(150, 20));
 	    
 	    JLabel LabelAttivita = new JLabel("Attività");
 	    contentPane.add(LabelAttivita, "cell 0 10,alignx trailing");
 	    
-	    JComboBox ComboAttivita = new JComboBox();
+	    
 	    contentPane.add(ComboAttivita, "cell 1 10,growx");
 	    ComboAttivita.setPreferredSize(new Dimension(150, 20));
-	    
 	    
 	    
 	    JRadioButton RadioPianificata = new JRadioButton("Pianificata");
@@ -154,6 +164,7 @@ public class VisualizzaProgetti extends JFrame {
 	    contentPane.add(RadioCompletata, "cell 9 10");
 	    RadioCompletata.setOpaque(false);
 	    gruppoStato.add(RadioCompletata);
+	    
 	    
 	    JLabel LabelDataIA = new JLabel("Data Inizio");
 	    contentPane.add(LabelDataIA, "cell 0 11,alignx trailing");
@@ -173,6 +184,60 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldDataFA = new JTextField();
 	    contentPane.add(FieldDataFA, "cell 1 12,growx");
 	    FieldDataFA.setColumns(10);
+	    
+	    dao = new daoVisualizzaP();
+        controller = new ControllerVisualizzaP(dao);
+	    
+        popolaComboProgetto();
+        popolaComboLotto();
+        
+        ComboProgetto.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedProgetto = (String) ComboProgetto.getSelectedItem();
+                if (selectedProgetto != null && !selectedProgetto.isEmpty()) {
+                    // Popola ComboColtivatori direttamente
+                    ComboColtivatori.removeAllItems();
+                    List<String> coltivatori = controller.getColtivatoriByProgetto(selectedProgetto);
+                    for (String coltivatore : coltivatori) {
+                        ComboColtivatori.addItem(coltivatore);
+                    }
+                    
+
+                    // Popola ComboAttivita direttamente
+                    ComboAttivita.removeAllItems();
+                    List<String> attivita = controller.getAttivitaByProgetto(selectedProgetto);
+                    for (String attivitaId : attivita) {
+                        ComboAttivita.addItem(attivitaId);
+                    }
+                    ComboAttivita.setSelectedIndex(-1);
+
+                    // Popola i campi progetto
+                    controller.popolaDatiProgetto(selectedProgetto, FieldStima, FieldEffettivo, FieldDataIP, FieldDataFP);
+                }
+            }
+        });
+        
 	}
+	
+	 // Popola ComboProgetto 
+    private void popolaComboProgetto() {
+        List<String> progetti = controller.getProgettiByProprietario(username);
+        for (String idProgetto : progetti) {
+            ComboProgetto.addItem(idProgetto); // Solo ID numerico (es. "1")
+        }
+        ComboProgetto.setSelectedIndex(-1);
+    }
+
+    // Popola ComboLotto 
+    private void popolaComboLotto() {
+        List<String> lotti = controller.getLottiByProprietario(username);
+        for (String lotto : lotti) {
+            ComboLotto.addItem(lotto);
+        }
+        ComboLotto.setSelectedIndex(-1);
+    }
+	
 
 }
+
+
