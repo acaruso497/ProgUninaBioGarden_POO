@@ -163,8 +163,13 @@ public class CreaProgetto extends JFrame {
 				String DataInseritaIA = FieldDataIA.getText();
 				String DataInseritaFA = FieldDataFA.getText();
 				//Controllo che le date di fine siano DOPO le date di inizio e che le date delle attività siano comprese nelle date del progetto, inoltre controllo che le date siano in formato "data
-				if(ControlloData.isDataValida(DataInseritaIT) && ControlloData.isDataValida(DataInseritaFT) && ControlloData.isDataValida(DataInseritaIA) && ControlloData.isDataValida(DataInseritaFA)) {
-					if(ControlloData.isPrimaDataMinore(DataInseritaIT, DataInseritaFT) && ControlloData.isPrimaDataMinore(DataInseritaIA, DataInseritaFA) && ControlloData.isPrimaDataMinore(DataInseritaIA, DataInseritaFT) && ControlloData.isPrimaDataMinore(DataInseritaFA, DataInseritaFT) && ControlloData.isPrimaDataMinore(DataInseritaIT, DataInseritaIA))
+				if(ControlloData.isDataValida(DataInseritaIT) && ControlloData.isDataValida(DataInseritaFT) 
+				&& ControlloData.isDataValida(DataInseritaIA) && ControlloData.isDataValida(DataInseritaFA)) {
+					if(ControlloData.isPrimaDataMinore(DataInseritaIT, DataInseritaFT) 
+							&& ControlloData.isPrimaDataMinore(DataInseritaIA, DataInseritaFA) 
+							&& ControlloData.isPrimaDataMinore(DataInseritaIA, DataInseritaFT) 
+							&& ControlloData.isPrimaDataMinore(DataInseritaFA, DataInseritaFT) 
+							&& ControlloData.isPrimaDataMinore(DataInseritaIT, DataInseritaIA))
 					{
 						
 						String titolo = FieldTitolo.getText();

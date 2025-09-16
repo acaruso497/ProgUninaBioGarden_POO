@@ -95,20 +95,12 @@ public class Login extends JFrame {
 		    ButtonLogin.setPreferredSize(new Dimension(150, 20));
 		    contentPane.add(ButtonLogin, "cell 6 9 2 1, alignx center");
 		    ButtonLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				
-				
-				
-				
-				
+			 public void actionPerformed(ActionEvent e) {			
 				
 				ControllerLogin cl = new ControllerLogin();
 				
 				String username = FieldUsername.getText();
 				String psw = FieldPassword.getText();
-				
-				
 				
 				boolean[] check = cl.login(username, psw);
 				
@@ -130,48 +122,8 @@ public class Login extends JFrame {
 				}			
 				
 			
-			}
-		    
-		    
-			
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-		    }); 
+			}				
+		   }); 
 		    
 	}
 }

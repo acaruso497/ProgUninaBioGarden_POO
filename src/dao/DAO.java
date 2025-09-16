@@ -5,70 +5,51 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-import code.Proprietario;
-
 public class DAO {
 
 	//METODI
 	
 	//Autenticazione proprietario
+
 	public static boolean authP(String username, String password) {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet risultato = null;
-		try {
-				conn = Connessione.getConnection(); 
-				String sql = "SELECT * FROM proprietario WHERE username=? AND psw=?";
-				stmt = conn.prepareStatement(sql);
-				stmt.setString(1, username);
-				stmt.setString(2, password);
-				risultato = stmt.executeQuery();
-				if(risultato.next()) {
-					return true;
-				}else {
-					return false;
-				}
-		   } catch(SQLException ex) {
-			   ex.printStackTrace();
-			   return false;
-		   } finally {
-			   try { if (risultato != null) risultato.close(); } catch (Exception e) {}
-		        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-		        try { if (conn != null) conn.close(); } catch (Exception e) {}
-		   }
-		
-	}
+		  final String sql = "SELECT * FROM proprietario WHERE username=? AND psw=?";
+		  try (Connection conn = Connessione.getConnection();
+		       PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+		    stmt.setString(1, username);
+		    stmt.setString(2, password);
 
+		    try (ResultSet rs = stmt.executeQuery()) {
+		      return rs.next();
+		    }
+
+		  } catch (SQLException ex) {
+		    ex.printStackTrace();
+		    return false;
+		  }
+		}
+	
 	//Autenticazione coltivatore
+	
 	public static boolean authC(String username, String password) {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet risultato = null;
-		try {
-				conn = Connessione.getConnection(); 
-				String sql = "SELECT * FROM coltivatore WHERE username=? AND psw=?";
-				stmt = conn.prepareStatement(sql);
-				stmt.setString(1, username);
-				stmt.setString(2, password);
-				risultato = stmt.executeQuery();
-				if(risultato.next()) {
-					return true;
-				}else {
-					return false;
-				}
-		   } catch(SQLException ex) {
-			   ex.printStackTrace();
-			   return false;
-		   } finally {
-			   try { if (risultato != null) risultato.close(); } catch (Exception e) {}
-		        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-		        try { if (conn != null) conn.close(); } catch (Exception e) {}
-		   }
-		
-	}
+		  String sql = "SELECT * FROM coltivatore WHERE username=? AND psw=?";
+		  try (Connection conn = Connessione.getConnection();
+		       PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-// GUI: CREA PROGETTO	
+		    stmt.setString(1, username);
+		    stmt.setString(2, password);
+
+		    try (ResultSet rs = stmt.executeQuery()) {
+		      return rs.next();
+		    }
+
+		  } catch (SQLException ex) {
+		    ex.printStackTrace();
+		    return false;
+		  }
+		}
+	
+// GUI: CREA PROGETTO	!!!METODO NON ADTATTATO AL SINGLETON!!!
 	//recupera i lotti di un proprietario (utile per popolare ComboLotti)
 	public List<String> getLottiByProprietario(String username) {
 	    List<String> lista = new ArrayList<>(); // Lista vuota per ID lotti
@@ -131,8 +112,11 @@ public class DAO {
 	
 	
 	
-	//Creazione progetto di coltivazione
-	public static boolean creaP (String titolo, String descrizione, String stimaRaccolto, String dataIT, String dataFT, String tipoAttivita, String dataIA, String dataFA, String coltivatori, int idLotto) {
+	// GUI: CREA PROGETTO  !!!METODO NON ADTATTATO AL SINGLETON!!!
+	public static boolean creaP (String titolo, String descrizione, String stimaRaccolto, 
+								String dataIT, String dataFT, String tipoAttivita, 
+								String dataIA,String dataFA, String coltivatori, int idLotto) {
+		
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet risultato = null;
@@ -231,15 +215,9 @@ public class DAO {
 			
 	// GUI: CREA PROGETTO	
 
-		
-		
-		
-		
-		
-
 	
 	
-	// GUI: CREA NOTIFICA
+	// GUI: CREA NOTIFICA  !!!METODO NON ADTATTATO AL SINGLETON!!!
 	
 	//Creazione notifica
 	
@@ -273,8 +251,7 @@ public class DAO {
 		        try { if (conn != null) conn.close(); } catch (Exception e) {}
 		   }
 		
-	} 
-	 
+	} 	 
 	 
 	 
 }
