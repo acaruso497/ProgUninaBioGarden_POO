@@ -31,3 +31,4 @@ build/
 *.tmp
 *.bak
 *.swp
+bin/
