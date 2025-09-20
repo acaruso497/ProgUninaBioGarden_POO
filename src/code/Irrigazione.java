@@ -4,7 +4,7 @@ enum tipoIrrigazione{
     pioggia,
     scorrimento
 }
-
+@SuppressWarnings("unused")
 public class Irrigazione extends Attivita {
 	//ATTRIBUTI
 	private int ID_Irrigazione;

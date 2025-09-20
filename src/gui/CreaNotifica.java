@@ -1,4 +1,7 @@
 package gui;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,11 +25,12 @@ import javax.swing.JTextArea;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.plaf.basic.BasicArrowButton;
-
+import controller.ControllerCreaN;
 import dao.DAO;
 //checkData
 import utils.ControlloData;
-
+import java.util.ArrayList;
+@SuppressWarnings("unused")
 public class CreaNotifica extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -47,7 +51,9 @@ public class CreaNotifica extends JFrame {
 		    setContentPane(contentPane);
 
 		    // Layout: 15 colonne grow e push, 15 righe grow e push
+		    
 		    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
+		    
 		    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
 		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
@@ -119,26 +125,38 @@ public class CreaNotifica extends JFrame {
 		    JButton ButtonInviaN = new JButton("Invia Notifica");
 		    contentPane.add(ButtonInviaN, "cell 13 13");
 		    ButtonInviaN.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		    	public void actionPerformed(ActionEvent e) {
 					String DataInserita = FieldData.getText();
-					String usernameC = FieldUsernameC.getText();
+					String usernameC = FieldUsernameC.getText().trim();
 					String titolo = FieldTitolo.getText();
 					String descrizione = TxtDescrizione.getText();
 					
-					boolean check = DAO.creaN(DataInserita, usernameC, titolo, descrizione);
 					
-					if(ControlloData.isDataValida(DataInserita)) {
-						JOptionPane.showMessageDialog(null, "Notifica inviata con successo!");
-						FieldData.setBackground(Color.WHITE);
-						FieldData.setText("");
-						setVisible(false);
-						home.setVisible(true);
-					}
-					else {
-						JOptionPane.showMessageDialog(null, "Inserisci una data con formato: 'GG/MM/AAAA'");
-						FieldData.setBackground(Color.RED);
-					}
-				}
+					//controlli fields gui 
+					if (usernameC.isEmpty() || titolo.isEmpty() || descrizione.isEmpty()) {
+					    JOptionPane.showMessageDialog(CreaNotifica.this, "COMPILA TUTTI I CAMPI !!");
+					    return; 
+					}        
+					try {
+			            LocalDate dataInserita = LocalDate.parse(DataInserita, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+			            if (dataInserita.isBefore(LocalDate.now())) {
+			                JOptionPane.showMessageDialog(CreaNotifica.this, "La data non può essere minore di oggi!");
+			                FieldData.setBackground(Color.RED);
+			                
+			                return;
+			            }
+			        } catch (DateTimeParseException ex) {
+			            JOptionPane.showMessageDialog(CreaNotifica.this, "Inserisci una data valida con formato: 'GG/MM/AAAA'");
+			            FieldData.setBackground(Color.RED);
+			            return;
+			        }
+					//controlli fields gui 
+					ControllerCreaN CreaN = new ControllerCreaN();
+					
+					ArrayList<String> listaUsername = new ArrayList<>();
+					//listaUsername =CreaN.dividiUsername(usernameC);
+					
+			}    
 		    });
 	}
 

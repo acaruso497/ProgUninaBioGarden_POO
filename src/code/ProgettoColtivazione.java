@@ -1,5 +1,5 @@
 package code;
-
+@SuppressWarnings("unused")
 public class ProgettoColtivazione {
 	//ATTRIBUTI
 	private int ID_Progetto;

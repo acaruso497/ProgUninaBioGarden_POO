@@ -1,5 +1,5 @@
 package code;
-
+@SuppressWarnings("unused")
 public class Semina extends Attivita {
 	//ATTRIBUTI
 	private String ID_Semina;

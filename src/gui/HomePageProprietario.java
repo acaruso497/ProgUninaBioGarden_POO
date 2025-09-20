@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JButton;
 import java.awt.Font;
 
+@SuppressWarnings("unused")
 public class HomePageProprietario extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -28,11 +29,9 @@ public class HomePageProprietario extends JFrame {
 	private VisualizzaProgetti visualizza;
 	private CreaNotifica creanotifica;
 	private CreaProgetto creaprogetto;
-	private String username;
 
 	
-	public HomePageProprietario(String username) {
-		this.username = username;  // Salvo l'username e lo passo come parametro a HomePageProprietario
+	public HomePageProprietario() {
 		setTitle("HomePageProprietario");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    setBounds(100, 100, 843, 564);
@@ -43,14 +42,16 @@ public class HomePageProprietario extends JFrame {
 	    setContentPane(contentPane);
 
 	    // Layout: 15 colonne grow e push, 15 righe grow e push
+	    @SuppressWarnings("unused")
 	    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
+	    @SuppressWarnings("unused")
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
 	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 	  
-	    visualizza = new VisualizzaProgetti(this, username);
+	    visualizza = new VisualizzaProgetti(this);
 	    creanotifica = new CreaNotifica(this);
-	    creaprogetto = new CreaProgetto(this, username); //passo l'username del proprietario così può avere informazioni sui suoi lotti
+	    creaprogetto = new CreaProgetto(this); 
 	    
 	    
 	    JLabel LabelBenvenuto = new JLabel("Benvenuto! Sei un Proprietario");

@@ -5,6 +5,9 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -12,18 +15,25 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 
+import controller.ControllerLogin;
 import controller.ControllerVisualizzaP;
 import dao.daoVisualizzaP;
 import net.miginfocom.swing.MigLayout;
+import utils.ControlloData;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+
 import java.awt.Font;
 import javax.swing.JTextField;
-
+@SuppressWarnings("unused")
 public class VisualizzaProgetti extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -35,18 +45,36 @@ public class VisualizzaProgetti extends JFrame {
 	private JTextField FieldDataFP;
 	private JTextField FieldDataIA;
 	private JTextField FieldDataFA;
-	String username;
 	private ControllerVisualizzaP controller; 
     private daoVisualizzaP dao; 
+    private String username = ControllerLogin.getUsernameGlobale();
 
+    //combobox
     JComboBox<String> ComboAttivita = new JComboBox<>();
     JComboBox<String> ComboProgetto = new JComboBox<>();
     JComboBox<String> ComboLotto = new JComboBox<>();
-    JComboBox<String> ComboColtivatori = new JComboBox<>();
+    
+    //stati attivita
+    JRadioButton RadioPianificata = new JRadioButton("pianificata");
+    JRadioButton RadioInCorso = new JRadioButton("in corso");
+    JRadioButton RadioCompletata = new JRadioButton("completata");
 	
-	public VisualizzaProgetti(HomePageProprietario home, String username) {
+	public VisualizzaProgetti(HomePageProprietario home) {
 		this.home = home;
-		this.username = username;
+		
+		//Tipo di attività selezionabile
+		ComboAttivita.setModel(new DefaultComboBoxModel<>(
+	    	    new String[] { "-- Seleziona --",
+	    	    				"Semina", 
+	    	    				"Irrigazione",
+	    	    				"Raccolta" }));
+		
+		ComboProgetto.setModel(new DefaultComboBoxModel<>(
+	    	    new String[] { "-- Seleziona --" }));
+		
+		ComboLotto.setModel(new DefaultComboBoxModel<>(
+	    	    new String[] { "-- Seleziona --" }));
+		
 		
 		setTitle("Visualizza Progetti");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,7 +86,9 @@ public class VisualizzaProgetti extends JFrame {
 	    setContentPane(contentPane);
 
 	    // Layout: 15 colonne grow e push, 15 righe grow e push
+	    @SuppressWarnings("unused")
 	    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
+	    @SuppressWarnings("unused")
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
 	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
@@ -90,6 +120,10 @@ public class VisualizzaProgetti extends JFrame {
 	 
 	    
 	    JButton ButtonGrafici = new JButton("Visualizza Grafici");
+	    ButtonGrafici.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    	}
+	    });
 	    contentPane.add(ButtonGrafici, "cell 10 2");
 	    ButtonGrafici.setPreferredSize(new Dimension(150, 20));
 	    
@@ -99,6 +133,7 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldDataIP = new JTextField();
 	    contentPane.add(FieldDataIP, "cell 1 3,growx");
 	    FieldDataIP.setColumns(10);
+	    FieldDataIP.setEditable(false); //blocca il textfield
 	    
 	    JLabel LabelDataFP = new JLabel("Data Fine");
 	    contentPane.add(LabelDataFP, "cell 0 4,alignx right,aligny center");
@@ -106,17 +141,18 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldDataFP = new JTextField();
 	    contentPane.add(FieldDataFP, "cell 1 4,growx");
 	    FieldDataFP.setColumns(10);
-	    
-	    JLabel LabelColtivatori = new JLabel("Coltivatori");
-	    contentPane.add(LabelColtivatori, "cell 9 4,alignx trailing");
+	    FieldDataFP.setEditable(false); //blocca il textfield
 	    
 	    ButtonGroup gruppoStato = new ButtonGroup();
 	    
-	    
-	    contentPane.add(ComboColtivatori, "cell 10 4,growx");
-	    ComboColtivatori.setPreferredSize(new Dimension(150, 20));
-	    
-	    JButton ButtonSalvaProgetto = new JButton("Salva");
+	    JButton ButtonSalvaProgetto = new JButton("Salva"); //salva 1
+	    ButtonSalvaProgetto.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    	
+	    		//salva 1
+	    		
+	    	}
+	    });
 	    contentPane.add(ButtonSalvaProgetto, "cell 1 5,alignx center");
 	    
 	    JLabel LabelStima = new JLabel("Stima raccolto");
@@ -125,6 +161,7 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldStima = new JTextField();
 	    contentPane.add(FieldStima, "cell 10 6,growx");
 	    FieldStima.setColumns(10);
+	    FieldStima.setEditable(false); //blocca il textfield
 	    
 	    JLabel LabelEffettivo = new JLabel("Raccolto effettivo");
 	    contentPane.add(LabelEffettivo, "cell 9 7,alignx trailing");
@@ -132,7 +169,7 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldEffettivo = new JTextField();
 	    contentPane.add(FieldEffettivo, "cell 10 7,growx");
 	    FieldEffettivo.setColumns(10);
-	    
+	    FieldEffettivo.setEditable(false); //blocca il textfield
 	    	    
 	    	    
 	    JLabel LabelLotto = new JLabel("Lotto");
@@ -142,7 +179,7 @@ public class VisualizzaProgetti extends JFrame {
 	    contentPane.add(ComboLotto, "cell 1 8,growx");
 	    ComboLotto.setPreferredSize(new Dimension(150, 20));
 	    
-	    JLabel LabelAttivita = new JLabel("Attività");
+	    JLabel LabelAttivita = new JLabel("Ultima Attività");
 	    contentPane.add(LabelAttivita, "cell 0 10,alignx trailing");
 	    
 	    
@@ -150,20 +187,21 @@ public class VisualizzaProgetti extends JFrame {
 	    ComboAttivita.setPreferredSize(new Dimension(150, 20));
 	    
 	    
-	    JRadioButton RadioPianificata = new JRadioButton("Pianificata");
+	    
 	    contentPane.add(RadioPianificata, "cell 3 10");
 	    RadioPianificata.setOpaque(false);
 	    gruppoStato.add(RadioPianificata);
 	    
-	    JRadioButton RadioInCorso = new JRadioButton("In Corso");
+	    
 	    contentPane.add(RadioInCorso, "cell 6 10");
 	    RadioInCorso.setOpaque(false);
 	    gruppoStato.add(RadioInCorso);
 	    
-	    JRadioButton RadioCompletata = new JRadioButton("Completata");
+	    
 	    contentPane.add(RadioCompletata, "cell 9 10");
 	    RadioCompletata.setOpaque(false);
 	    gruppoStato.add(RadioCompletata);
+	    
 	    
 	    
 	    JLabel LabelDataIA = new JLabel("Data Inizio");
@@ -172,10 +210,51 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldDataIA = new JTextField();
 	    contentPane.add(FieldDataIA, "cell 1 11,growx");
 	    FieldDataIA.setColumns(10);
+	    FieldDataIA.setEditable(false); //blocca il textfield
 	    
 	    
 	    
-	    JButton ButtonSalvaAttivita = new JButton("Salva");
+	    JButton ButtonSalvaAttivita = new JButton("Modifica");
+	    ButtonSalvaAttivita.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) { 
+	    		//Object attivita = ComboAttivita.getSelectedItem();
+	    	
+		    	    if (ComboAttivita.getSelectedItem().equals("-- Seleziona --")) {
+		    	    	JOptionPane.showMessageDialog(VisualizzaProgetti.this, "Seleziona un'attività valida", "Errore", JOptionPane.ERROR_MESSAGE);	
+		    	    	
+		    	    	//chiamata controller
+		    	    	//un metodo che prende RUOLO lo mette in una query con segnaposto nella from per andare a prendere la semina /irrigazione / raccolta
+		    	    	//sicura join on con qualcosa per avere l attivita corretta 
+		    	    	
+		    	    	// affianco drop down scrivi ultima attivita cosi vedremo data inizio e fine dell ultima attivita della tipologia selezionata
+		    	    	// da drop down
+		    	    }
+		    	    
+		    	    if (ComboLotto.getSelectedItem().equals("-- Seleziona --")) {
+		    	    	JOptionPane.showMessageDialog(VisualizzaProgetti.this, "Seleziona un lotto valido", "Errore", JOptionPane.ERROR_MESSAGE);	
+		    	    }
+		    		//Object progetto = ComboProgetto.getSelectedItem();
+		    		//Object lotto = ComboLotto.getSelectedItem();
+		    	    String selectedProgetto = (String) ComboProgetto.getSelectedItem();
+		    	    String selectedLotto = (String) ComboLotto.getSelectedItem(); 
+		    	    
+		    	   
+		    	    String statoSelezionato;
+		    	    String selectedAttivita = (String) ComboAttivita.getSelectedItem();
+		    	    
+		    	    if (RadioPianificata.isSelected()) {
+		    	        statoSelezionato = RadioPianificata.getText(); // Restituisce "pianificata"
+		    	        controller.aggiornaStato(statoSelezionato, selectedAttivita, selectedLotto);
+		    	    } else if (RadioInCorso.isSelected()) {
+		    	        statoSelezionato = RadioInCorso.getText(); // Restituisce "in corso"
+		    	        controller.aggiornaStato(statoSelezionato, selectedAttivita, selectedLotto);
+		    	    } else if (RadioCompletata.isSelected()) {
+		    	        statoSelezionato = RadioCompletata.getText(); // Restituisce "completata"
+		    	        controller.aggiornaStato(statoSelezionato, selectedAttivita, selectedLotto);
+		    	    } 
+		    	    JOptionPane.showMessageDialog(null, "Attività aggiornate con successo!");	      
+	    	}
+	    });
 	    contentPane.add(ButtonSalvaAttivita, "cell 6 11");
 	    
 	    JLabel LabelDataFA = new JLabel("Data Fine");
@@ -184,58 +263,99 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldDataFA = new JTextField();
 	    contentPane.add(FieldDataFA, "cell 1 12,growx");
 	    FieldDataFA.setColumns(10);
+	    FieldDataFA.setEditable(false); //blocca il textfield
 	    
 	    dao = new daoVisualizzaP();
         controller = new ControllerVisualizzaP(dao);
 	    
         popolaComboProgetto();
         popolaComboLotto();
+     
         
         ComboProgetto.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String selectedProgetto = (String) ComboProgetto.getSelectedItem();
-                if (selectedProgetto != null && !selectedProgetto.isEmpty()) {
-                    // Popola ComboColtivatori direttamente
-                    ComboColtivatori.removeAllItems();
-                    List<String> coltivatori = controller.getColtivatoriByProgetto(selectedProgetto);
-                    for (String coltivatore : coltivatori) {
-                        ComboColtivatori.addItem(coltivatore);
-                    }
+                if (ComboProgetto.getSelectedItem().equals("-- Seleziona --")) {
+	    	    	JOptionPane.showMessageDialog(VisualizzaProgetti.this, "Seleziona un progetto valido", "Errore", JOptionPane.ERROR_MESSAGE);	
+	    	    	return;
+	    	    }else {
+	    	    	controller.popolaDatiProgetto(selectedProgetto, FieldStima, FieldEffettivo, FieldDataIP, FieldDataFP);
+	    	    }
+                
+                /*if (selectedProgetto != null && !selectedProgetto.isEmpty()) {
+                	
+                    //ComboAttivita.setSelectedIndex(-1);
                     
-
-                    // Popola ComboAttivita direttamente
-                    ComboAttivita.removeAllItems();
-                    List<String> attivita = controller.getAttivitaByProgetto(selectedProgetto);
-                    for (String attivitaId : attivita) {
-                        ComboAttivita.addItem(attivitaId);
-                    }
-                    ComboAttivita.setSelectedIndex(-1);
-
                     // Popola i campi progetto
-                    controller.popolaDatiProgetto(selectedProgetto, FieldStima, FieldEffettivo, FieldDataIP, FieldDataFP);
-                }
+                    
+                    
+                }*/
+                
+                
+                
             }
+         
         });
+        
+       
+       
+ 
+        
+     // ActionListener per ComboAttivita: recupera stato e seleziona radio button
+        ComboAttivita.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	String selectedAttivita = (String) ComboAttivita.getSelectedItem();
+            	
+                if (selectedAttivita != null && !selectedAttivita.isEmpty()) { //controllo che non sia vuota
+                	String tipoAttivita = (String) selectedAttivita; //converto il tipo di attività selezionata in una stringa
+                    Object selectedProgetto = ComboProgetto.getSelectedItem(); //estraggo l'attività selezionata dalla combobox
+                    String idProgettoStr = selectedProgetto.toString(); //converto il tipo di attività selezionata in una stringa
+                  
+                    // Chiamata al controller per ottenere lo stato e popolare data inizio e data fine
+		    	    String stato = controller.popolaAttivita(idProgettoStr, tipoAttivita, FieldDataIA, FieldDataFA);
+		    	    
+                    // il radio button corrispondente confronta lo stato nel dao
+                    if ("pianificata".equals(stato)) {
+                        RadioPianificata.setSelected(true);
+                    } else if ("in corso".equals(stato)) {
+                        RadioInCorso.setSelected(true);
+                    } else if ("completata".equals(stato)) {
+                        RadioCompletata.setSelected(true);
+                    } else {
+                    	JOptionPane.showMessageDialog(VisualizzaProgetti.this, "Seleziona un'attività valida", "Errore", JOptionPane.ERROR_MESSAGE);
+                    } 
+    	   
+                    
+    	    	    
+                    // Debug
+                    System.out.println("Stato recuperato per " + tipoAttivita + " nel progetto " + idProgettoStr + ": '" + stato + "'" );
+                    System.out.println("Radio button selezionato per stato: " + stato);
+                	} 
+                	
+                }
+                  
+        }); 
         
 	}
 	
+	
+	
 	 // Popola ComboProgetto 
     private void popolaComboProgetto() {
-        List<String> progetti = controller.getProgettiByProprietario(username);
+        List<String> progetti = controller.getProgettiByProprietario(username); // Usa usernameGlobale
         for (String idProgetto : progetti) {
-            ComboProgetto.addItem(idProgetto); // Solo ID numerico (es. "1")
+            ComboProgetto.addItem(idProgetto); //popola la combobox con l'id progetto
         }
-        ComboProgetto.setSelectedIndex(-1);
     }
 
     // Popola ComboLotto 
     private void popolaComboLotto() {
-        List<String> lotti = controller.getLottiByProprietario(username);
+        List<String> lotti = controller.getLottiByProprietario(username); // Usa usernameGlobale
         for (String lotto : lotti) {
-            ComboLotto.addItem(lotto);
+            ComboLotto.addItem(lotto); //popola la combobox con l'id progetto
         }
-        ComboLotto.setSelectedIndex(-1);
     }
+    
 	
 
 }

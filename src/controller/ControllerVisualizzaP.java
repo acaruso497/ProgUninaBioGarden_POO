@@ -11,20 +11,15 @@ private daoVisualizzaP dao;
 		this.dao = dao;
 	}
 
-    // Popola ComboLotto con ID lotti del proprietario (riusa DAO esistente, ma filtra per progetti se serve)
+    // Popola ComboLotto con ID lotti del proprietario
     public List<String> getLottiByProprietario(String username) {
-        return dao.getLottiByProprietario(username);  // Esatto come in CreaProgettoController
-    }
-
-    // Popola ComboColtivatori con username coltivatori assegnati al progetto selezionato
-    public List<String> getColtivatoriByProgetto(String idProgetto) {
-        return dao.getColtivatoriByProgetto(idProgetto);  // int idProgetto da parsing
+        return dao.getLottiByProprietario(username);
     }
     
     
-    // Popola ComboAttivita con tipi/ID attività del progetto selezionato
-    public List<String> getAttivitaByProgetto(String idProgetto) {
-        return dao.getAttivitaByProgetto(idProgetto);
+    //Popola i RadioButton con lo stato estratto dal dao, data inizio e data fine
+    public String popolaAttivita(String idProgetto, String tipoAttivita, JTextField fieldDataIA, JTextField fieldDataFA) {
+        return dao.popolaAttivita(idProgetto, tipoAttivita, fieldDataIA, fieldDataFA); 
     }
     
     	// Popola ComboProgetto con titoli/ID progetti del proprietario
@@ -35,10 +30,14 @@ private daoVisualizzaP dao;
 
     // Per settare campi auto: Fetcha dati specifici per un progetto/attività
     public void popolaDatiProgetto(String idProgetto, JTextField fieldStima, JTextField fieldEffettivo, 
-                                   JTextField fieldDataIP, javax.swing.JTextField fieldDataFP) {
+                                   JTextField fieldDataIP, JTextField fieldDataFP) {
         dao.popolaDatiProgetto(idProgetto, fieldStima, fieldEffettivo, fieldDataIP, fieldDataFP);
     } 
-
+    
+    public boolean aggiornaStato(String stato, String tipoAttivita, String idLotto) {
+    	return dao.aggiornaStato(stato, tipoAttivita, idLotto);
+    }
+    
   
     
 }

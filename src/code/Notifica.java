@@ -1,5 +1,5 @@
 package code;
-
+@SuppressWarnings("unused")
 public class Notifica {
 	//ATTRIBUTI
 	private int ID_Notifica;

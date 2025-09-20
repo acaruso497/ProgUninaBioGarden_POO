@@ -1,5 +1,5 @@
 package code;
-
+@SuppressWarnings("unused")
 public class Lotto {
 	//ATTRIBUTI
 	private int ID_Lotto;

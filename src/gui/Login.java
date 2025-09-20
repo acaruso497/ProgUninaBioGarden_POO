@@ -23,7 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
-
+@SuppressWarnings("unused")
 public class Login extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -32,10 +32,9 @@ public class Login extends JFrame {
 	private JPasswordField FieldPassword;
 	private JLabel Logo;
 	private JButton ButtonLogin;
-	private String username;
-	HomePageColtivatore homeC = new HomePageColtivatore();
-	HomePageProprietario homeP = new HomePageProprietario(username);
 
+	registraUtente registraUtente = new registraUtente();
+	private JButton buttonRegistra;
 	/**
 	 * Launch the application.
 	 */
@@ -66,7 +65,9 @@ public class Login extends JFrame {
 		    setContentPane(contentPane);
 
 		    // Layout: 15 colonne grow e push, 15 righe grow e push
+		    @SuppressWarnings("unused")
 		    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
+		    @SuppressWarnings("unused")
 		    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
 		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
@@ -94,12 +95,26 @@ public class Login extends JFrame {
 		    ButtonLogin = new JButton("Login");
 		    ButtonLogin.setPreferredSize(new Dimension(150, 20));
 		    contentPane.add(ButtonLogin, "cell 6 9 2 1, alignx center");
+		  //registra utente
+		    buttonRegistra = new JButton("registra utente ");
+		    buttonRegistra.addActionListener(new ActionListener() {
+		    	public void actionPerformed(ActionEvent e) {
+		    		Login.this.setVisible(false);
+		    		registraUtente.setVisible(true);
+		    		
+		    	}
+		    });
+		  //registra utente
+		    buttonRegistra.setPreferredSize(new Dimension(150, 20));
+		    contentPane.add(buttonRegistra, "cell 8 9");
+		    
 		    ButtonLogin.addActionListener(new ActionListener() {
 			 public void actionPerformed(ActionEvent e) {			
 				
 				ControllerLogin cl = new ControllerLogin();
 				
 				String username = FieldUsername.getText();
+				@SuppressWarnings("deprecation")
 				String psw = FieldPassword.getText();
 				
 				boolean[] check = cl.login(username, psw);
@@ -110,10 +125,12 @@ public class Login extends JFrame {
 				
 				else if (check[0]==true && check[1]==true && check[2]==false) {// proprietario homepage
 					Login.this.setVisible(false);
+					HomePageProprietario homeP = new HomePageProprietario();
 					homeP.setVisible(true);
 				}
 				else if (check[0]==true && check[1]==false && check[2]==true) {// coltivatore homepage
 					Login.this.setVisible(false);		
+					HomePageColtivatore homeC = new HomePageColtivatore();
 					homeC.setVisible(true);
 					
 				}else if (check[0]==true && check[1]==false && check[2]==false) {// nessuno dei due

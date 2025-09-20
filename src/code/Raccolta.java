@@ -1,5 +1,5 @@
 package code;
-
+@SuppressWarnings("unused")
 public class Raccolta extends Attivita {
 	//ATTRIBUTI
 	private int ID_Raccolta;

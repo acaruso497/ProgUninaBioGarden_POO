@@ -17,8 +17,10 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 
+@SuppressWarnings("unused")
 public class Colture extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -93,14 +95,15 @@ public class Colture extends JFrame {
 	    JLabel LabelTipologiaI = new JLabel("Tipologia Irrigazione");
 	    contentPane.add(LabelTipologiaI, "cell 0 9,alignx trailing");
 	    
+	    
 	    JComboBox<String> ComboTipoIrr = new JComboBox<>();
 	    contentPane.add(ComboTipoIrr, "cell 1 9,growx");
-	    // Attività selezionabili
-	    ComboTipoIrr.addItem("A goccia");
-	    ComboTipoIrr.addItem("A pioggia");
-	    ComboTipoIrr.addItem("Per scorrimento");
-	    // Default: campo vuoto
-	    ComboTipoIrr.setSelectedIndex(-1);
+	    // Tipo di irrigazione selezionabile
+	    ComboTipoIrr.setModel(new DefaultComboBoxModel<>(
+	    	    new String[] { "-- Seleziona --",
+	    	    				"A goccia", 
+	    	    				"Irrigazione",
+	    	    				"Per scorrimento" }));
 	    
 	    JButton ButtonSalva = new JButton("Salva");
 	    contentPane.add(ButtonSalva, "cell 5 13");

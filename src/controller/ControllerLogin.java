@@ -3,11 +3,14 @@ package controller;
 import dao.DAO;
 
 public class ControllerLogin {
-
+	
+public static String usernameGlobale; //variabile globale, in modo che l'username della persona loggata sia visibile nelle gui
+	
 	public ControllerLogin() {}
 
 
     public boolean[] login(String username, String password) {
+    	usernameGlobale = username; 
     	
         boolean[] lista = new boolean[3]; // [0]=true (user e password)campiOK, [1]=proprietario, [2]=coltivatore
 
@@ -27,4 +30,13 @@ public class ControllerLogin {
         return lista;
     }
 
+
+	public static String getUsernameGlobale() {
+		return usernameGlobale;
+	}
+
+
+	public static void setUsernameGlobale(String usernameGlobale) {
+		ControllerLogin.usernameGlobale = usernameGlobale;
+	}
 }
