@@ -27,21 +27,28 @@ public class daoVisualizzaP {
 
 	    try {
 	        conn = Connessione.getConnection();
-	        
-	        
-	        if ("Raccolta".equals(tipoAttivita)) { //in base al tipo di attività selezionata nella combobox, mi estrae lo stato, giorno inizio e giorno fine
-	            sql = "SELECT r.id_attivita, a.stato, r.giorno_inizio, r.giorno_fine " +
-	                  "FROM Raccolta AS r NATURAL JOIN Attivita AS a NATURAL JOIN Ospita_Lotto_Progetto AS o " +
-	                  "WHERE o.id_progetto = ?";
-	        } else if ("Irrigazione".equals(tipoAttivita)) {
-	            sql = "SELECT i.id_attivita, a.stato, i.giorno_inizio, i.giorno_fine " +
-	                  "FROM Irrigazione AS i NATURAL JOIN Attivita AS a NATURAL JOIN Ospita_Lotto_Progetto AS o " +
-	                  "WHERE o.id_progetto = ?";
-	        } else if ("Semina".equals(tipoAttivita)) {
-	            sql = "SELECT s.id_attivita, a.stato, s.giorno_inizio, s.giorno_fine " +
-	                  "FROM Semina AS s NATURAL JOIN Attivita AS a NATURAL JOIN Ospita_Lotto_Progetto AS o " +
-	                  "WHERE o.id_progetto = ?";
-	        } 
+	      
+	        if ("Raccolta".equals(tipoAttivita)) {
+	            sql = "SELECT r.id_attivita, r.stato, r.giorno_inizio, r.giorno_fine " +
+	                    "FROM Raccolta r " +
+	                    "JOIN Attivita a ON r.id_attivita = a.id_attivita " +
+	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
+	                    "WHERE o.id_progetto = ?";
+	                    
+	          } else if ("Irrigazione".equals(tipoAttivita)) {
+	              sql = "SELECT i.id_attivita, i.stato, i.giorno_inizio, i.giorno_fine " +
+	                    "FROM Irrigazione i " +
+	                    "JOIN Attivita a ON i.id_attivita = a.id_attivita " +
+	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
+	                    "WHERE o.id_progetto = ?";
+	                    
+	          } else if ("Semina".equals(tipoAttivita)) {
+	              sql = "SELECT s.id_attivita, s.stato, s.giorno_inizio, s.giorno_fine " +
+	                    "FROM Semina s " +
+	                    "JOIN Attivita a ON s.id_attivita = a.id_attivita " +
+	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
+	                    "WHERE o.id_progetto = ?";
+	          }
 
 	        stmt = conn.prepareStatement(sql);
 	        stmt.setInt(1, idProgetto);  
@@ -52,18 +59,18 @@ public class daoVisualizzaP {
 	        	//formatta le date del text field in date sql
 	        	java.sql.Date sqlDataInizio = risultato.getDate("giorno_inizio");
 			    if (sqlDataInizio != null) {
-			    LocalDate dataInizio = sqlDataInizio.toLocalDate();
-			    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			    fieldDataIA.setText(dataInizio.format(formatter));
+				    LocalDate dataInizio = sqlDataInizio.toLocalDate();
+				    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				    fieldDataIA.setText(dataInizio.format(formatter));
 			    } else {
-			     fieldDataIA.setText("");
+			    	fieldDataIA.setText("");
 			    } 
 	        	
-			    java.sql.Date sqlDataFine = risultato.getDate("giorno_fine");
+			     java.sql.Date sqlDataFine = risultato.getDate("giorno_fine");
 			     if (sqlDataFine != null) {
-			     LocalDate dataFine = sqlDataFine.toLocalDate();
-			     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			     fieldDataFA.setText(dataFine.format(formatter));
+				     LocalDate dataFine = sqlDataFine.toLocalDate();
+				     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				     fieldDataFA.setText(dataFine.format(formatter));
 			     } else {
 			     	fieldDataFA.setText("");
 			     } 
@@ -71,13 +78,12 @@ public class daoVisualizzaP {
 	        	return risultato.getString("stato"); // Restituisce lo stato dell'attività
 	        } 
 	        else {
-	            System.err.println("Nessun stato trovato per attività " + tipoAttivita + " nel progetto " + idProgetto);
 	            return null; 
 	        }
 	        
 	        
-	    } catch (SQLException e) {
-	        System.err.println("Errore SELECT stato attività: " + e.getMessage());
+	    } catch (SQLException ex) {
+	    	ex.printStackTrace();
 	        return null;
 	    } finally {
 	        try { if (risultato != null) risultato.close(); } catch (Exception ex) {}
@@ -86,20 +92,24 @@ public class daoVisualizzaP {
 	    }
 	}
 	
-	//aggiorna lo stato nella tabella attività
+
+	// Aggiorna lo stato di ciascuna attività
 	public boolean aggiornaStato(String stato, String tipoAttivita, String idLottoStr) {
 		int idLotto = Integer.parseInt(idLottoStr);
-	    Connection conn = null;
+		Connection conn = null;
 	    PreparedStatement stmt = null;
-	    String sql = null;
-
+	    String sql1 = null;
+	    String sql2 = null;
 	    try {
-	        conn = Connessione.getConnection();
-	        
-	        sql = "UPDATE Attivita SET stato = ?, giorno_assegnazione = CURRENT_DATE WHERE ID_Lotto = ?"; 
-	        
-	        stmt = conn.prepareStatement(sql);
-	        stmt.setString(1, stato); 
+	    	conn = Connessione.getConnection();
+	    	
+	    	sql1 ="SELECT ID_Attivita FROM Attivita WHERE ID_Lotto = ?"; //seleziona l'id dell'attività da un lotto
+	    	stmt = conn.prepareStatement(sql1);
+	    	stmt.setInt(1, idLotto);
+	    	
+	    	sql2 = "UPDATE " + tipoAttivita + " SET stato = ? WHERE ID_Attivita = ?"; //aggiorna lo stato di quell'attività da un id attività collegato ad un lotto
+	    	stmt = conn.prepareStatement(sql2);
+	        stmt.setString(1, stato);
 	        stmt.setInt(2, idLotto);
 
 	        return stmt.executeUpdate() > 0; // Ritorna true se almeno una riga è stata aggiornata
@@ -111,6 +121,7 @@ public class daoVisualizzaP {
 	        try { if (conn != null) conn.close(); } catch (Exception e) {}
 	    }
 	}
+
 	
 	//seleziono tutti i progetti del proprietario dato il suo username (utile per ComboProgetto)
     public List<String> getProgettiByProprietario(String username) {
@@ -138,11 +149,9 @@ public class daoVisualizzaP {
                 lista.add(String.valueOf(idProgetto));
             }
 
-            // Debug: Stampa username e numero di progetti trovati
-            System.out.println("Username: " + username + ", Progetti trovati: " + lista.size());
 
-        } catch (SQLException e) {
-            System.err.println("Errore SELECT progetti: " + e.getMessage());
+        } catch (SQLException ex) {
+        	ex.printStackTrace();
         } finally {
             try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
             try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
@@ -179,8 +188,8 @@ public class daoVisualizzaP {
 	                lista.add(idStr); // Aggiunge alla lista
 		        }
 
-		    } catch (SQLException e) {
-		        System.err.println("Errore SELECT: " + e.getMessage());
+		    } catch (SQLException ex) {
+		    	ex.printStackTrace();
 		    } finally {
 		        try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
 		        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
@@ -193,7 +202,7 @@ public class daoVisualizzaP {
 		
 	//popola la combobox del progetto, il text field di data inizio, data fine, stima raccolto e raccolto effettivo  
 	public void popolaDatiProgetto(String idProgettoStr, JTextField fieldStima, JTextField fieldEffettivo, 
-			                JTextField fieldDataIP, JTextField fieldDataFP) {
+			                		JTextField fieldDataIP, JTextField fieldDataFP) {
 			// Estrai ID numerico
 			int idProgetto = Integer.parseInt(idProgettoStr);
 			Connection conn = null;
@@ -236,18 +245,16 @@ public class daoVisualizzaP {
 			}
 			
 			
-			} catch (SQLException | NumberFormatException e) {
-			System.err.println("Errore popola dati progetto: " + e.getMessage());
+			} catch (SQLException | NumberFormatException ex) {
+				ex.printStackTrace();
 			} finally {
-			// Chiudi risorse
-			try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
-			try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
-			try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+				try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+				try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+				try { if (conn != null) conn.close(); } catch (Exception ignored) {}
 			}
 	}
 }   
 	
 		
 
-//GUI: Visualizza Progetti	                    
-
+//GUI: Visualizza Progetti	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
