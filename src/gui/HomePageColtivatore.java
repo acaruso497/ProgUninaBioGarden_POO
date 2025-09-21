@@ -9,6 +9,9 @@ import java.net.URL;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import controller.ControllerColtivatore;
+import controller.ControllerLogin;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
@@ -66,28 +69,24 @@ public class HomePageColtivatore extends JFrame {
 	    TButtonNotifiche.setFocusPainted(false);
 
 	    
+	    ControllerColtivatore ControllerC = new ControllerColtivatore();		//SISTEMA NOTIFICHE
+	    
 	    JTextArea TxtListaNotifiche = new JTextArea();
-	    TxtListaNotifiche.setText("""
-	    		1. Devi irrigare
-	    		2. Controlla il lotto C2
-	    		3. Coltivazione in scadenza
-	    		4. Nuova notifica ricevuta
-	    		5. Aggiorna i dati colturali
-	    		""");
 	    TxtListaNotifiche.setEditable(false);
 	    JScrollPane scrollNotifiche = new JScrollPane(TxtListaNotifiche);
 	    scrollNotifiche.setVisible(false); // Inizialmente nascosto
 	    contentPane.add(scrollNotifiche, "cell 13 1 1 4, grow");
 	    
 	    //CONTROLLO NOTIFICHE
-	    String notifiche = TxtListaNotifiche.getText();
-	    if(notifiche.isEmpty()) {
+	    if(!ControllerC.checknotifiche(ControllerLogin.getUsernameGlobale())) {
 		    ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/notifichevuote.png"));
 		    Image scaledImage = originalIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);	//ridimensionamento immagine
 		    ImageIcon scaledIcon = new ImageIcon(scaledImage);
 		    TButtonNotifiche.setIcon(scaledIcon);
 	    }
 	    else {
+	    	TxtListaNotifiche.setText(ControllerC.mostranotifiche(ControllerLogin.getUsernameGlobale()));
+	    	ControllerC.legginotifiche(ControllerLogin.getUsernameGlobale());
 		    ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/notifichepiene.png"));
 		    Image scaledImage = originalIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);	//ridimensionamento immagine
 		    ImageIcon scaledIcon = new ImageIcon(scaledImage);
@@ -102,6 +101,9 @@ public class HomePageColtivatore extends JFrame {
 		        // Per ridisegnare il pannello dopo il cambio visibilità
 		        contentPane.revalidate();
 		        contentPane.repaint();
+		        
+		        ControllerColtivatore controllerColtivatore = new ControllerColtivatore();
+				controllerColtivatore.legginotifiche(ControllerLogin.getUsernameGlobale());
 			}
 		});
 	    

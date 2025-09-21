@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.net.URL;
+import java.sql.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -26,6 +27,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.plaf.basic.BasicArrowButton;
 import controller.ControllerCreaN;
+import controller.ControllerLogin;
 import dao.DAO;
 //checkData
 import utils.ControlloData;
@@ -38,6 +40,7 @@ public class CreaNotifica extends JFrame {
 	private JTextField FieldData;
 	private JTextField FieldUsernameC;
 	private JTextField FieldTitolo;
+	private boolean tutti;
 	HomePageProprietario home;
 
 	public CreaNotifica(HomePageProprietario home) {
@@ -98,10 +101,12 @@ public class CreaNotifica extends JFrame {
 					FieldUsernameC.setEditable(false);
 					FieldUsernameC.setBackground(Color.LIGHT_GRAY);
 					FieldUsernameC.setText("");
+					tutti = true;
 				}
 				else {
 					FieldUsernameC.setEditable(true);
 					FieldUsernameC.setBackground(Color.WHITE);
+					tutti = false;
 				}
 				}
 		    });
@@ -133,7 +138,7 @@ public class CreaNotifica extends JFrame {
 					
 					
 					//controlli fields gui 
-					if (usernameC.isEmpty() || titolo.isEmpty() || descrizione.isEmpty()) {
+					if (usernameC.isEmpty() && tutti == false || titolo.isEmpty() || descrizione.isEmpty()) {
 					    JOptionPane.showMessageDialog(CreaNotifica.this, "COMPILA TUTTI I CAMPI !!");
 					    return; 
 					}        
@@ -151,11 +156,18 @@ public class CreaNotifica extends JFrame {
 			            return;
 			        }
 					//controlli fields gui 
+					
 					ControllerCreaN CreaN = new ControllerCreaN();
+					LocalDate datalocal = LocalDate.parse(DataInserita, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+					Date data = Date.valueOf(datalocal);
 					
-					ArrayList<String> listaUsername = new ArrayList<>();
-					//listaUsername =CreaN.dividiUsername(usernameC);
-					
+					if(tutti == false) {
+						CreaN.dividiUsername(usernameC, data, titolo, descrizione);
+					}
+					else {
+						CreaN.dividiUsernameTutti(ControllerLogin.getUsernameGlobale(), data, titolo, descrizione);
+					}
+			
 			}    
 		    });
 	}
