@@ -3,7 +3,7 @@ package code;
 public class Semina extends Attivita {
 	//ATTRIBUTI
 	private String ID_Semina;
-	private float profondita;
+	
 	private String giornoInizio;
 	private String giornoFine;
 	

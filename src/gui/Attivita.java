@@ -28,24 +28,12 @@ public class Attivita extends JFrame {
 	private JTextField FieldDataFA;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Attivita frame = new Attivita();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+
 
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings("unused")
 	public Attivita() {
 		setTitle("Attività");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,7 +45,8 @@ public class Attivita extends JFrame {
 	    setContentPane(contentPane);
 
 	    // Layout: 15 colonne grow e push, 15 righe grow e push
-	    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
+	    @SuppressWarnings("unused")
+		String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
 	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));

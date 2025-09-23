@@ -45,7 +45,9 @@ public class Colture extends JFrame {
 	    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow]"
+	    		+ "[grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow]"
+	    		+ "[grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    // Pulsante freccia indietro
 	    BasicArrowButton ButtonIndietro = new BasicArrowButton(BasicArrowButton.WEST);

@@ -487,5 +487,257 @@ public class DAO {
 
 		
 		
-		}
+		
 	//GUI: CREA NOTIFICA
+
+
+//_____________________!!!   DAO:coltivatore !!!!____________________________________
+
+public List<String> popolaProgettiCB(String username) {
+    List<String> lista = new ArrayList<>(); // Lista vuota per i titoli dei progetti
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet risultato = null;
+
+    try {
+        conn = Connessione.getConnection(); // Ottiene la connessione al DB
+
+        String sql = "SELECT titolo_progetto FROM coltivatoreview WHERE username_coltivatore = ?"; 
+        // Seleziona solo i titoli dei progetti associati all'username
+
+        stmt = conn.prepareStatement(sql);   
+        stmt.setString(1, username);         // Imposta il parametro username
+        risultato = stmt.executeQuery();     // Esegue la query
+
+        while (risultato.next()) {
+            String titolo = risultato.getString("titolo_progetto"); // Ottiene il titolo
+            lista.add(titolo); // Aggiunge il titolo alla lista
+        }
+
+    } catch (SQLException ex) {
+        ex.printStackTrace(); // Stampa l'errore in console
+    } finally {
+        try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+    }
+
+    return lista; // Restituisce la lista (vuota se nessun risultato o errore)
+}
+//           _____________________________________________________________
+
+public ArrayList<String> dateI_FProgCB(String titolo_progetto, String username) {
+	ArrayList<String> date = new ArrayList<>();
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet risultato = null;
+
+    try {
+        conn = Connessione.getConnection();
+        String sql = "SELECT data_inizio_progetto, data_fine_progetto "
+        		+ "FROM coltivatoreview WHERE username_coltivatore = ? AND titolo_progetto = ?";
+        
+        stmt = conn.prepareStatement(sql);
+        stmt.setString(1, username);
+        stmt.setString(2, titolo_progetto);
+        risultato = stmt.executeQuery();
+
+        while (risultato.next()) {
+            String dataInizio = risultato.getString("data_inizio_progetto");
+            String dataFine = risultato.getString("data_fine_progetto");
+            date.add(dataInizio);
+            date.add(dataFine);
+        }
+
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    } finally {
+        try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+    }
+
+    return date;
+}
+
+//           _____________________________________________________________
+
+//attivita data inizio e fine
+public static ArrayList<String> idList = new ArrayList<>();
+
+public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username) {
+    ArrayList<String> tipi = new ArrayList<>();
+    idList.clear();
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+
+    try {
+        conn = Connessione.getConnection();
+        String sql = "SELECT ID_Attivita, " +
+                     "CASE WHEN ID_Semina IS NOT NULL THEN 'Semina' " +
+                     "     WHEN ID_Irrigazione IS NOT NULL THEN 'Irrigazione' " +
+                     "     WHEN ID_Raccolta IS NOT NULL THEN 'Raccolta' END AS tipo_attivita " +
+                     "FROM coltivatoreview " +
+                     "WHERE username = ? AND titolo_progetto = ? " +
+                     "ORDER BY data_inizio_attivita";
+        stmt = conn.prepareStatement(sql);
+        stmt.setString(1, username);
+        stmt.setString(2, titolo_progetto);
+        rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            String tipo = rs.getString("tipo_attivita");
+            String id = rs.getString("ID_Attivita");
+            if (tipo != null) {
+                tipi.add(tipo);
+                idList.add(id);
+            }
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    } finally {
+        try { if (rs != null) rs.close(); } catch (SQLException ignored) {}
+        try { if (stmt != null) stmt.close(); } catch (SQLException ignored) {}
+        try { if (conn != null) conn.close(); } catch (SQLException ignored) {}
+    }
+
+    return tipi;
+}
+
+public String[] getDateByAttivitaId(String idAttivita) {
+    String[] date = new String[2];
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+
+    try {
+        conn = Connessione.getConnection();
+        String sql = "SELECT " +
+                     "COALESCE(data_inizio_semina, data_inizio_irrigazione, data_inizio_raccolta) AS data_inizio, " +
+                     "COALESCE(data_fine_semina, data_fine_irrigazione, data_fine_raccolta) AS data_fine " +
+                     "FROM coltivatoreview WHERE ID_Attivita = ?";
+        
+        stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, Integer.parseInt(idAttivita)); // ✅ CONVERTI String → int
+        rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            date[0] = rs.getString("data_inizio");
+            date[1] = rs.getString("data_fine");
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    } catch (NumberFormatException e) {
+        System.err.println("ID attivita non valido: " + idAttivita);
+    } finally {
+        try { if (rs != null) rs.close(); } catch (SQLException ignored) {}
+        try { if (stmt != null) stmt.close(); } catch (SQLException ignored) {}
+        try { if (conn != null) conn.close(); } catch (SQLException ignored) {}
+    }
+
+    return date;
+}
+
+//PRIMA FUNZIONE: Restituisce gli ID per la dropdown
+public List<String> getIdAttivitaColtivatore(String username) {
+ List<String> idList = new ArrayList<>();
+ Connection conn = null;
+ PreparedStatement stmt = null;
+ ResultSet rs = null;
+
+ try {
+     conn = Connessione.getConnection();
+     String sql = "SELECT id_semina, id_irrigazione, id_raccolta " +
+                  "FROM coltivatoreview " +
+                  "WHERE username_coltivatore = ? " +
+                  "ORDER BY giorno_assegnazione";
+     
+     stmt = conn.prepareStatement(sql);
+     stmt.setString(1, username);
+     rs = stmt.executeQuery();
+
+     while (rs.next()) {
+ 	    if (rs.getObject("id_semina") != null) {
+ 	        idList.add("Semina-" + rs.getInt("id_semina"));
+ 	    }
+ 	    if (rs.getObject("id_irrigazione") != null) {
+ 	        idList.add("Irrigazione-" + rs.getInt("id_irrigazione"));
+ 	    }
+ 	    if (rs.getObject("id_raccolta") != null) {
+ 	        idList.add("Raccolta-" + rs.getInt("id_raccolta"));
+ 	    }
+ 	}
+ } catch (SQLException ex) {
+     ex.printStackTrace();
+ } finally {
+     // cleanup
+ }
+ return idList;
+}
+
+//SECONDA FUNZIONE: Restituisce i tipi per indice
+public List<String> getTipiAttivitaColtivatore(String username) {
+ List<String> tipoList = new ArrayList<>();
+ Connection conn = null;
+ PreparedStatement stmt = null;
+ ResultSet rs = null;
+
+ try {
+     conn = Connessione.getConnection();
+     String sql = "SELECT id_semina, id_irrigazione, id_raccolta " +
+                  "FROM coltivatoreview " +
+                  "WHERE username_coltivatore = ? " +
+                  "ORDER BY giorno_assegnazione";
+     
+     stmt = conn.prepareStatement(sql);
+     stmt.setString(1, username);
+     rs = stmt.executeQuery();
+
+     while (rs.next()) {
+         if (rs.getObject("id_semina") != null) {
+             tipoList.add("Semina");  // CORRETTO: aggiungi solo il tipo
+         }
+         if (rs.getObject("id_irrigazione") != null) {
+             tipoList.add("Irrigazione");  // CORRETTO: aggiungi solo il tipo
+         }
+         if (rs.getObject("id_raccolta") != null) {
+             tipoList.add("Raccolta");  // CORRETTO: aggiungi solo il tipo
+         }
+     }
+ } catch (SQLException ex) {
+     ex.printStackTrace();
+ } finally {
+     // cleanup
+ }
+ return tipoList;
+}
+
+public String getLottoEPosizione(String progetto, String username) {
+    String risultato = "";
+    
+    try (Connection conn = Connessione.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT DISTINCT id_lotto, posizione " +
+             "FROM coltivatoreview " +
+             "WHERE titolo_progetto = ? AND username_coltivatore = ?")) {
+        
+        stmt.setString(1, progetto);
+        stmt.setString(2, username);
+        ResultSet rs = stmt.executeQuery();
+        
+        if (rs.next()) {
+            risultato = "Lotto: " + rs.getInt("id_lotto") + ", Posizione: " + rs.getInt("posizione");
+        }
+        
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+    
+    return risultato;
+}
+}
+
+
+//_____________________!!!   DAO:coltivatore !!!!____________________________________
+
