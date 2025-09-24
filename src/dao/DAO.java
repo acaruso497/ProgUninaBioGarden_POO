@@ -740,4 +740,3 @@ public String getLottoEPosizione(String progetto, String username) {
 
 
 //_____________________!!!   DAO:coltivatore !!!!____________________________________
-

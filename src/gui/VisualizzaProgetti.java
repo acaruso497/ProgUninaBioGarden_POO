@@ -251,7 +251,8 @@ public class VisualizzaProgetti extends JFrame {
         });
         
  
-          // ActionListener per ComboAttivita: recupera stato e seleziona radio button
+        
+        // ActionListener per ComboAttivita: recupera stato e seleziona radio button
         ComboAttivita.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
               try {
@@ -279,7 +280,10 @@ public class VisualizzaProgetti extends JFrame {
                   
         }); 
         
-	}			
+	}
+	
+	
+	
 	 // Popola ComboProgetto 
     private void popolaComboProgetto() {
         List<String> progetti = controller.getProgettiByProprietario(username); // Usa usernameGlobale
