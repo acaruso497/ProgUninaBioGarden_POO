@@ -42,10 +42,11 @@ public class Attivita extends JFrame {
 	private JTextField FieldTipologia;
 	private JTextField FieldVarieta;
 	private JTextField FieldProfondita;
+	private JTextField FieldStimaRaccolto;
 	/**
 	 * Create the frame.
 	 */
-	public Attivita(String titolo, String lotto, String dataInizioP, String dataFineP, String descrizione) {
+	public Attivita(String titolo, String lotto, String stimaRaccolto, String dataInizioP, String dataFineP, String descrizione) {
 		setTitle("Attività");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    setBounds(100, 100, 843, 564);
@@ -66,9 +67,6 @@ public class Attivita extends JFrame {
 	    
 	    JLabel LabelLotto = new JLabel("Lotto Numero");
 	    contentPane.add(LabelLotto, "flowx,cell 2 0");
-	    
-	    JLabel LabelAttivita = new JLabel("Attività");
-	    contentPane.add(LabelAttivita, "flowx,cell 10 0,alignx trailing,aligny bottom");
 	    
 	    JLabel LabelDataIP = new JLabel("Data Inizio");
 	    contentPane.add(LabelDataIP, "flowx,cell 0 1,alignx right");
@@ -95,6 +93,9 @@ public class Attivita extends JFrame {
 	    contentPane.add(FieldLotto, "cell 2 0");
 	    FieldLotto.setColumns(10);
 	    FieldLotto.setEditable(false); //blocca il textfield
+	    
+	    JLabel LabelAttivita = new JLabel("Attività");
+	    contentPane.add(LabelAttivita, "flowx,cell 8 1,alignx trailing,aligny bottom");
 	    
 	    
 	    JComboBox<String> ComboAttivita = new JComboBox<>();
@@ -132,6 +133,7 @@ public class Attivita extends JFrame {
 	    
 	    JComboBox<String> ComboTipoIrr = new JComboBox<String>();
 	    contentPane.add(ComboTipoIrr, "cell 9 5,growx");
+	    //Tipo di irrigazione selezionabile
 	    ComboTipoIrr.setModel(new DefaultComboBoxModel<>(
 	    	    new String[] { "-- Seleziona --",
 	    	    				"a goccia", 
@@ -191,21 +193,53 @@ public class Attivita extends JFrame {
 				}
 				
 				try {
+					// Converte le date dell'attività
 					LocalDate dataInseritaIA = LocalDate.parse(dataInizioA, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-		            if (dataInseritaIA.isBefore(LocalDate.now())) {
+		            if (dataInseritaIA.isBefore(LocalDate.now())) { //data inizio attività < oggi
 		                JOptionPane.showMessageDialog(Attivita.this, "La data non può essere minore di oggi!");
 		                FieldDataIA.setBackground(Color.RED);
 		                
 		                return;
 		            }
 		            
+		            
 		            LocalDate dataInseritaFA = LocalDate.parse(dataFineA, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-		            if (dataInseritaFA.isBefore(LocalDate.now())) {
+		            if (dataInseritaFA.isBefore(LocalDate.now())) { //data fine attività < oggi
 		                JOptionPane.showMessageDialog(Attivita.this, "La data non può essere minore di oggi!");
 		                FieldDataFA.setBackground(Color.RED);
 		                
 		                return;
 		            }
+		            
+		            if (dataInseritaFA.isBefore(dataInseritaIA)) { //data fine attività < data inizio attività
+		                JOptionPane.showMessageDialog(Attivita.this, "La data non può essere minore della data di inizio!");
+		                FieldDataFA.setBackground(Color.RED);
+		                
+		                return;
+		            }
+		            
+		            if (dataInseritaIA.isAfter(dataInseritaFA)) { //data inizio attività > data fine attività
+		                JOptionPane.showMessageDialog(Attivita.this, "La data non può essere maggiore della data di fine!");
+		                FieldDataIA.setBackground(Color.RED);
+		                
+		                return;
+		            }
+		            
+		            // Converte le date del progetto
+                    LocalDate dataInizioProgetto = LocalDate.parse(dataInizioP, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+                    if (dataInseritaIA.isBefore(dataInizioProgetto)) { // Controlla che la data inizio attività non sia precedente alla data di inizio del progetto
+                        JOptionPane.showMessageDialog(Attivita.this, "La data di inizio attività non può essere precedente alla data di inizio del progetto (" + dataInizioP + ")!", "Errore", JOptionPane.ERROR_MESSAGE);
+                        FieldDataIA.setBackground(Color.RED);
+                        return;
+                    }
+                    
+                    LocalDate dataFineProgetto = LocalDate.parse(dataFineP, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    if (dataInseritaFA.isAfter(dataFineProgetto)) {  // Controlla che la data fine attività non sia successiva alla data di fine del progetto
+                        JOptionPane.showMessageDialog(Attivita.this, "La data di fine attività non può essere successiva alla data di fine del progetto (" + dataFineP + ")!", "Errore", JOptionPane.ERROR_MESSAGE);
+                        FieldDataFA.setBackground(Color.RED);
+                        return;
+                    }
 					
 		        } catch (DateTimeParseException ex) {
 		            JOptionPane.showMessageDialog(Attivita.this, "Inserisci una data valida con formato: 'GG/MM/AAAA'");
@@ -220,7 +254,7 @@ public class Attivita extends JFrame {
 				Date dataFA = Date.valueOf(datalocalFA);
 				
 				DAO dao = new DAO(); // Crea il DAO
-		        creaProgettoController = new CreaProgettoController(dao);
+		        creaProgettoController = new CreaProgettoController(dao); //crea il controller
 
 		        
 				boolean check = creaProgettoController.creaAttivita(attivita, dataIA, dataFA, tipoIrrigazione, tipoSemina);
@@ -231,36 +265,51 @@ public class Attivita extends JFrame {
 	    });
 	    contentPane.add(ButtonSalva, "cell 10 7");
 	    
-	    JLabel LabelTipologia = new JLabel("Tipologia");
-	    contentPane.add(LabelTipologia, "cell 0 14");
 	    
-	    FieldTipologia = new JTextField();
-	    FieldTipologia.setColumns(10);
-	    contentPane.add(FieldTipologia, "cell 0 15,growx");
-	    FieldTipologia.setEditable(false); //blocca il textfield
-	    
-	    JLabel LabelVarieta = new JLabel("Varietà");
-	    contentPane.add(LabelVarieta, "cell 0 16");
-	    
-	    FieldVarieta = new JTextField();
-	    FieldVarieta.setColumns(10);
-	    contentPane.add(FieldVarieta, "cell 0 17,growx");
-	    FieldVarieta.setEditable(false); //blocca il textfield
-	    
-	    JLabel LabelProfondita = new JLabel("Profondità Semina");
-	    contentPane.add(LabelProfondita, "cell 0 18");
-	    
-	    FieldProfondita = new JTextField();
-	    FieldProfondita.setText("10cm (default)");
-	    FieldProfondita.setEditable(false); //blocca il textfield
-	    FieldProfondita.setColumns(10);
-	    contentPane.add(FieldProfondita, "cell 0 19,growx");
-	    
-	    if (titolo != null && !titolo.isEmpty()) {
+        
+        JLabel LabelStimaRaccolto = new JLabel("Stima Raccolto");
+        contentPane.add(LabelStimaRaccolto, "cell 0 13");
+        
+        FieldStimaRaccolto = new JTextField();
+        FieldStimaRaccolto.setEditable(false); //blocca il textfield
+        FieldStimaRaccolto.setColumns(10);
+        contentPane.add(FieldStimaRaccolto, "cell 0 14,growx");
+        
+        JLabel LabelTipologia = new JLabel("Tipologia");
+        contentPane.add(LabelTipologia, "cell 0 16");
+        
+        FieldTipologia = new JTextField();
+        FieldTipologia.setColumns(10);
+        contentPane.add(FieldTipologia, "cell 0 17,growx");
+        FieldTipologia.setEditable(false); //blocca il textfield
+        
+        
+        JLabel LabelVarieta = new JLabel("Varietà");
+        contentPane.add(LabelVarieta, "cell 0 18");
+        
+        FieldVarieta = new JTextField();
+        FieldVarieta.setColumns(10);
+        contentPane.add(FieldVarieta, "cell 0 19,growx");
+        FieldVarieta.setEditable(false); //blocca il textfield
+        
+        JLabel LabelProfondita = new JLabel("Profondità Semina");
+        contentPane.add(LabelProfondita, "cell 0 20");
+        
+        FieldProfondita = new JTextField();
+        FieldProfondita.setText("10cm (default)");
+        FieldProfondita.setEditable(false); //blocca il textfield
+        FieldProfondita.setColumns(10);
+        contentPane.add(FieldProfondita, "cell 0 21,growx");
+        
+        //controlla ed imposta tutti field ottenuti tramite variabile locali (provienienti dalla GUI CreaProgetto)
+        if (titolo != null && !titolo.isEmpty()) {
             FieldTitolo.setText(titolo);
         }
         if (lotto != null && !lotto.isEmpty()) {
             FieldLotto.setText(lotto);
+        }
+        if (stimaRaccolto != null && !stimaRaccolto.isEmpty()) {
+        	FieldStimaRaccolto.setText(stimaRaccolto + " kg");
         }
         if (dataInizioP != null && !dataInizioP.isEmpty()) {
             FieldDataIP.setText(dataInizioP);
@@ -272,10 +321,9 @@ public class Attivita extends JFrame {
             TextDescrizione.setText(descrizione);
         }
 	    
-        String idLottoStr = FieldLotto.getText();
-         DAO dao = new DAO(); // Crea il DAO
+        DAO dao = new DAO(); // Crea il DAO
         creaProgettoController = new CreaProgettoController(dao); //crea il controller
-        creaProgettoController.popolaColtura(FieldTipologia, FieldVarieta, idLottoStr); 
+        creaProgettoController.popolaColtura(FieldTipologia, FieldVarieta, lotto); //popola tutti i dati relativi alla coltura
 	}
 
 }

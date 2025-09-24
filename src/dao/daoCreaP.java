@@ -14,8 +14,10 @@ public class daoCreaP {
 //GUI: Crea Progetto
 	
 	//Registrazione dei dati del progetto
-	public static boolean registraProgetto(String titolo, String idLottoStr, String descrizione, Date dataIP, Date dataFP) {
-	    int idLotto = Integer.parseInt(idLottoStr);
+	public static boolean registraProgetto(String titolo, String idLottoStr, String stimaRaccoltoStr, 
+										   String descrizione, Date dataIP, Date dataFP) {
+	    int idLotto = Integer.parseInt(idLottoStr);  //converte l'ID del lotto nella combo box in un intero
+	    double stimaRaccolto = Double.parseDouble(stimaRaccoltoStr); //converte la stringa della stima del raccolto in un double
 	    
 	    Connection conn = null;
 	    PreparedStatement stmt = null;
@@ -24,15 +26,17 @@ public class daoCreaP {
 	    try {
 	        conn = Connessione.getConnection();
 	        
-	        String sql1 = "INSERT INTO Progetto_Coltivazione (titolo, descrizione, data_inizio, data_fine) VALUES (?, ?, ?, ?) RETURNING id_progetto";
+	        //inserisce tutte le informazioni dei textfield dentro progetto coltivazione
+	        String sql1 = "INSERT INTO Progetto_Coltivazione (titolo, descrizione, stima_raccolto, data_inizio, data_fine) VALUES (?, ?, ?, ?, ?) RETURNING id_progetto";
 	        stmt = conn.prepareStatement(sql1);
 	        stmt.setString(1, titolo);
 	        stmt.setString(2, descrizione);
-	        stmt.setDate(3, dataIP);
-	        stmt.setDate(4, dataFP);
+	        stmt.setDouble(3, stimaRaccolto);
+	        stmt.setDate(4, dataIP);
+	        stmt.setDate(5, dataFP);
 	        risultato = stmt.executeQuery();
 	        
-	        int idProgetto = 0;
+	        int idProgetto = 0; //ottiene l'id del progetto così da collegarlo al lotto di appartenenza
 	        if (risultato.next()) {
 	            idProgetto = risultato.getInt("id_progetto");
 	        }
@@ -40,6 +44,7 @@ public class daoCreaP {
 	        risultato.close();
 	        stmt.close();
 	        
+	      //inserisce l'id lotto e l'id del progetto nella tabella ponte
 	        String sql2 = "INSERT INTO Ospita_Lotto_Progetto (id_progetto, id_lotto) VALUES (?, ?)";
 	        stmt = conn.prepareStatement(sql2);
 	        stmt.setInt(1, idProgetto);
@@ -52,7 +57,7 @@ public class daoCreaP {
 	            return false;
 	        }
 	        
-	    } catch(SQLException ex) {
+	    } catch(SQLException | NumberFormatException ex) {
 	        ex.printStackTrace();
 	        return false;
 	    } finally {
@@ -72,7 +77,7 @@ public class daoCreaP {
 	    try {
 	        conn = Connessione.getConnection();
 	        
-	        
+	        //in base all'attività selezionata, fa un inserimento
 	        if ("Raccolta".equals(tipoAttivita)) {
 	        	sql = "INSERT INTO Raccolta (giorno_inizio, giorno_fine, raccolto_effettivo, id_attivita) VALUES (?,?,0, (SELECT MAX(ID_Attivita) FROM Attivita))";
 	        	stmt = conn.prepareStatement(sql);
@@ -111,7 +116,7 @@ public class daoCreaP {
 	
 	//Popola i textfield relativi alla coltura
 		public void popolaColtura(JTextField FieldTipologia, JTextField FieldVarieta, String idLottoStr) {
-				int idLotto = Integer.parseInt(idLottoStr);
+				int idLotto = Integer.parseInt(idLottoStr); //converte l'ID del lotto nella combo box in un intero
 				Connection conn = null;
 				PreparedStatement stmt = null;
 				ResultSet risultato = null;
@@ -146,7 +151,8 @@ public class daoCreaP {
 		    String sql2 = null;
 		    try {
 		    	conn = Connessione.getConnection();
-
+		    	
+		    	//aggiorna le tabelle in base al tipo di semina o raccolta selezionata
 		    	sql1 = "UPDATE Semina SET tipo_semina = ? WHERE ID_Attivita = (SELECT MAX(ID_Attivita) FROM Attivita)"; //aggiorna lo stato di quell'attività da un id attività collegato ad un lotto
 		    	stmt = conn.prepareStatement(sql1);
 		        stmt.setString(1, tipoSemina);
@@ -156,7 +162,6 @@ public class daoCreaP {
 		    	stmt = conn.prepareStatement(sql2);
 		        stmt.setString(1, tipoIrrigazione);
 		        stmt.executeUpdate();
-		        
 
 		        return stmt.executeUpdate() > 0; // Ritorna true se almeno una riga è stata aggiornata
 		    } catch (SQLException ex) {

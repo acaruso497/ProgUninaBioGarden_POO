@@ -24,8 +24,8 @@ public class CreaProgettoController {
     }
     
     //Crea il progetto di coltivazione inserendo i parametri tramite dao
-    public boolean creaProgetto(String titolo, String idLotto, String descrizione, Date dataInizio, Date dataFine) {
-    	return daoCreaP.registraProgetto(titolo, idLotto, descrizione, dataInizio, dataFine);
+    public boolean creaProgetto(String titolo, String idLotto, String descrizione, String stimaRaccoltoStr, Date dataInizio, Date dataFine) {
+    	return daoCreaP.registraProgetto(titolo, idLotto, descrizione, stimaRaccoltoStr, dataInizio, dataFine);
     }
     
     //Crea l'attività inserendo i parametri tramite dao
@@ -42,4 +42,5 @@ public class CreaProgettoController {
     public boolean aggiornaTipo(String tipoIrrigazione, String tipoSemina) {
     	return daoCreap.aggiornaTipo(tipoIrrigazione, tipoSemina);
     }
+    
 }

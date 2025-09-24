@@ -18,7 +18,7 @@ public class daoVisualizzaP {
 	
 	//popola il text field di giorno inizio, giorno fine e il radio button dello stato dell'attività
 	public String popolaAttivita(String idProgettoStr, String tipoAttivita, JTextField fieldDataIA, JTextField fieldDataFA) {
-	    int idProgetto = Integer.parseInt(idProgettoStr);
+	    int idProgetto = Integer.parseInt(idProgettoStr); //converte l'ID del progetto nella combo box in un intero
 	    
 	    Connection conn = null;
 	    PreparedStatement stmt = null;
@@ -95,7 +95,7 @@ public class daoVisualizzaP {
 
 	// Aggiorna lo stato di ciascuna attività
 	public boolean aggiornaStato(String stato, String tipoAttivita, String idLottoStr) {
-		int idLotto = Integer.parseInt(idLottoStr);
+		int idLotto = Integer.parseInt(idLottoStr); //converte l'ID del lotto nella combo box in un intero
 		Connection conn = null;
 	    PreparedStatement stmt = null;
 	    String sql1 = null;
@@ -203,8 +203,7 @@ public class daoVisualizzaP {
 	//popola la combobox del progetto, il text field di data inizio, data fine, stima raccolto e raccolto effettivo  
 	public void popolaDatiProgetto(String idProgettoStr, JTextField fieldStima, JTextField fieldEffettivo, 
 			                		JTextField fieldDataIP, JTextField fieldDataFP) {
-			// Estrai ID numerico
-			int idProgetto = Integer.parseInt(idProgettoStr);
+			int idProgetto = Integer.parseInt(idProgettoStr); //converte l'ID del progetto nella combo box in un intero
 			Connection conn = null;
 			PreparedStatement stmt = null;
 			ResultSet risultato = null;
@@ -218,10 +217,21 @@ public class daoVisualizzaP {
 			risultato = stmt.executeQuery();
 			
 			if (risultato.next()) {
-			// Setta stima del raccolto
-			fieldStima.setText(risultato.getString("stima_raccolto") != null ? 
-			               risultato.getString("stima_raccolto") + " kg" : "");
-			fieldEffettivo.setText(risultato.getString("raccolto_effettivo"));
+				// Setta stima del raccolto
+	            String stima = risultato.getString("stima_raccolto");
+	            if (stima != null) {
+	                fieldStima.setText(stima + " kg");
+	            } else {
+	                fieldStima.setText("");
+	            }
+	            
+	            // Setta raccolto effettivo
+	            String effettivo = risultato.getString("raccolto_effettivo");
+	            if (effettivo != null) {
+	                fieldEffettivo.setText(effettivo);
+	            } else {
+	                fieldEffettivo.setText("");
+	            }
 			
 			// Converte date SQL in stringa semplice in modo da popolare il field
 			java.sql.Date sqlDataInizio = risultato.getDate("data_inizio");

@@ -39,6 +39,7 @@ public class VisualizzaProgetti extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	HomePageProprietario home;
+	Grafico grafico;
 	private JTextField FieldStima;
 	private JTextField FieldEffettivo;
 	private JTextField FieldDataIP;
@@ -115,6 +116,10 @@ public class VisualizzaProgetti extends JFrame {
 	    JButton ButtonGrafici = new JButton("Visualizza Grafici");
 	    ButtonGrafici.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
+	    		VisualizzaProgetti.this.setVisible(false);
+	    		String selectedLotto = (String) ComboLotto.getSelectedItem();
+                Grafico grafico = new Grafico(selectedLotto);
+	    		grafico.setVisible(true);
 	    	}
 	    });
 	    contentPane.add(ButtonGrafici, "cell 10 2");
