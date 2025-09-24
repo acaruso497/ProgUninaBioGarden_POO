@@ -39,10 +39,11 @@ public class HomePageColtivatore extends JFrame {
 	private JTextField FieldEsperienza;
 	private JTextField FieldStima;
 	private JComboBox<String> ComboProgetti;
-	
+	private JTextField FieldTipologia;
     private JComboBox<String> ComboAttivita;
     private List<String> tipiAttivita;
     private JTextField lottovisualizza;
+    private JTextField tipoSeminaField;
 	
 	public HomePageColtivatore() {
 		setTitle("HomePageColtivatore");
@@ -60,7 +61,7 @@ public class HomePageColtivatore extends JFrame {
 	    
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][][][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][][][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][][][grow][][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][][grow][grow][][][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    JLabel LabelBenvenuto = new JLabel("Benvenuto sei un coltivatore!");
 	    contentPane.add(LabelBenvenuto, "cell 0 0");
@@ -68,7 +69,7 @@ public class HomePageColtivatore extends JFrame {
 	    //inzio sezione notifiche
 	    
 	    JToggleButton TButtonNotifiche = new JToggleButton("");
-	    contentPane.add(TButtonNotifiche, "cell 15 0,alignx center,aligny center");
+	    contentPane.add(TButtonNotifiche, "cell 16 0,alignx center,aligny center");
 	    TButtonNotifiche.setBorderPainted(false);
 	    TButtonNotifiche.setContentAreaFilled(false);
 	    TButtonNotifiche.setFocusPainted(false);
@@ -82,13 +83,17 @@ public class HomePageColtivatore extends JFrame {
 	    scrollNotifiche.setVisible(false); // Inizialmente nascosto
 	    
 	    JLabel LabelEsperienza = new JLabel("Esperienza");
-	    contentPane.add(LabelEsperienza, "cell 6 1,alignx trailing");
+	    contentPane.add(LabelEsperienza, "cell 7 1,alignx right");
 	    
 	    FieldEsperienza = new JTextField();
+	    FieldEsperienza.setEditable(false);
 	    contentPane.add(FieldEsperienza, "cell 8 1,growx");
 	    FieldEsperienza.setColumns(10);
-	    contentPane.add(scrollNotifiche, "cell 15 1 1 4,grow");
-	    
+	    contentPane.add(scrollNotifiche, "cell 16 1 1 4,grow");
+	    //popola esperienza
+	    ControllerColtivatore controllerEsperienza = new ControllerColtivatore();
+	    String esperienza = controllerEsperienza.getEsperienzaColtivatore(ControllerLogin.getUsernameGlobale());
+	    FieldEsperienza.setText(esperienza);
 	    //CONTROLLO NOTIFICHE
 	    if(!ControllerC.checknotifiche(ControllerLogin.getUsernameGlobale())) {
 		    ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/notifichevuote.png"));
@@ -140,16 +145,20 @@ public class HomePageColtivatore extends JFrame {
 	    FieldDataFP.setColumns(10);
 	    
 	    ComboProgetti.addActionListener(e -> {
-	    aggiornaCampiProgetto();
-	    aggiornaLottoEPosizione(); }
-	    		);
+	        aggiornaLottoEPosizione();    
+	        aggiornaCampiProgetto();      
+	        popolaAttivita();
+	    });
 	    //data inizio e fine progetto
 	    JLabel LabelStima = new JLabel("Stima raccolto");
-	    contentPane.add(LabelStima, "cell 6 3,alignx trailing");
+	    contentPane.add(LabelStima, "cell 7 3,alignx right");
 	    
 	    FieldStima = new JTextField();
 	    contentPane.add(FieldStima, "cell 8 3,growx");
 	    FieldStima.setColumns(10);
+	    
+	    JLabel kg = new JLabel("KG");
+	    contentPane.add(kg, "cell 9 3");
 	    
 	    JLabel LabelAttivita = new JLabel("Attività");
 	    contentPane.add(LabelAttivita, "cell 1 4,alignx trailing,aligny baseline");
@@ -175,51 +184,55 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.add(FieldDataIA, "cell 0 5");
 	    FieldDataIA.setColumns(10);
 	    
-	    JLabel LabelColtura = new JLabel("Coltura ed Irrigazione");
-	    contentPane.add(LabelColtura, "cell 8 5");
-	    
-	    JLabel LabelTipologia = new JLabel("Tipologia");
+	    JLabel LabelTipologia = new JLabel("Tipologia Coltura");
 	    contentPane.add(LabelTipologia, "cell 7 6,alignx trailing");
 	    
-	    JTextArea FieldTipologia = new JTextArea();
+	    FieldTipologia = new JTextField();
 	    FieldTipologia.setEditable(false);
-	    contentPane.add(FieldTipologia, "cell 8 6 1 2,grow");
-	    
-	    JLabel LabelLotti = new JLabel("Lotti assegnato");
-	    contentPane.add(LabelLotti, "cell 1 7,alignx trailing");
-	    
-	    lottovisualizza = new JTextField();
-	    lottovisualizza.setColumns(10);
-	    contentPane.add(lottovisualizza, "cell 2 7,growx");
-	    
-	    JLabel LabelPosizioneLotto = new JLabel("Posizione lotto");
-	    contentPane.add(LabelPosizioneLotto, "cell 1 8,alignx trailing");
-	    
-	    FieldPosizione = new JTextField();
-	    contentPane.add(FieldPosizione, "cell 2 8,growx");
-	    FieldPosizione.setColumns(10);
+	    contentPane.add(FieldTipologia, "cell 8 6 1 3,grow");
 	    
 	    FieldDataIP = new JTextField();
 	    contentPane.add(FieldDataIP, "cell 0 2");
 	    FieldDataIP.setColumns(10);
 	    
-	    JLabel LabelVarieta = new JLabel("Varietà");
-	    contentPane.add(LabelVarieta, "cell 7 8,alignx trailing");
+	    JLabel lblTipoSemina = new JLabel("Tipo Semina");
+	    contentPane.add(lblTipoSemina, "cell 1 7,alignx trailing");
+	    
+	    tipoSeminaField = new JTextField();
+	    tipoSeminaField.setColumns(10);
+	    contentPane.add(tipoSeminaField, "cell 2 7,growx");
+	    
+	    JLabel LabelVarieta = new JLabel("Varietà Coltura");
+	    contentPane.add(LabelVarieta, "cell 7 9,alignx trailing");
 	    
 	    FieldVarieta = new JTextField();
-	    contentPane.add(FieldVarieta, "cell 8 8,growx");
+	    contentPane.add(FieldVarieta, "cell 8 9,growx");
 	    FieldVarieta.setColumns(10);
 	    
+	    JLabel LabelLotti = new JLabel("Lotti assegnato");
+	    contentPane.add(LabelLotti, "cell 1 10,alignx trailing");
+	    
+	    lottovisualizza = new JTextField();
+	    lottovisualizza.setColumns(10);
+	    contentPane.add(lottovisualizza, "cell 2 10,growx");
+	    
 	    JLabel LabelIrrigazione = new JLabel("Irrigazione");
-	    contentPane.add(LabelIrrigazione, "cell 7 9,alignx trailing");
+	    contentPane.add(LabelIrrigazione, "cell 7 10,alignx trailing");
 	    
 	    
 	    FieldIrrigazione = new JTextField();
-	    contentPane.add(FieldIrrigazione, "cell 8 9,growx");
+	    contentPane.add(FieldIrrigazione, "cell 8 10,growx");
 	    FieldIrrigazione.setColumns(10);
 	    
-	    }//costruttore
+	    JLabel LabelPosizioneLotto = new JLabel("Posizione lotto");
+	    contentPane.add(LabelPosizioneLotto, "cell 1 11,alignx trailing");
 	    
+	    FieldPosizione = new JTextField();
+	    contentPane.add(FieldPosizione, "cell 2 11,growx");
+	    FieldPosizione.setColumns(10);
+	    
+	    }//costruttore
+	 // funzioni gui   
 	private void dropdownProg() {
 	    ControllerColtivatore controller = new ControllerColtivatore();
 	    ComboProgetti.removeAllItems();
@@ -233,88 +246,152 @@ public class HomePageColtivatore extends JFrame {
 	
 	private void aggiornaCampiProgetto() {
 	    String progettoSelezionato = (String) ComboProgetti.getSelectedItem();
-	    
-	    //  ELIMINA: ComboProgetti.addItem("--seleziona--");
+	    String username = ControllerLogin.getUsernameGlobale();
 	    
 	    if (progettoSelezionato != null && !progettoSelezionato.equals("--seleziona--")) {
 	        ControllerColtivatore controller = new ControllerColtivatore();
 	        
-	        List<String> dateProgetto = controller.DateInizioFineP(progettoSelezionato, ControllerLogin.getUsernameGlobale());
-	        
+	        // Date progetto
+	        List<String> dateProgetto = controller.DateInizioFineP(progettoSelezionato, username);
 	        if (dateProgetto != null && dateProgetto.size() >= 2) {
-	            FieldDataIP.setText(dateProgetto.get(0));  // IMPOSTA DATA INIZIO
-	            FieldDataFP.setText(dateProgetto.get(1));  // IMPOSTA DATA FINE
-	        } else {
-	            FieldDataIP.setText("");  // PULISCE SE NON CI SONO DATE
-	            FieldDataFP.setText("");  // PULISCE SE NON CI SONO DATE
+	            FieldDataIP.setText(dateProgetto.get(0));
+	            FieldDataFP.setText(dateProgetto.get(1));
 	        }
+	        
+	        // COLTURA E VARIETÀ (con 2 parametri)
+	        String[] colturaVarieta = controller.getColturaEVarieta(username, progettoSelezionato);
+	        FieldTipologia.setText(colturaVarieta[0]);
+	        FieldVarieta.setText(colturaVarieta[1]);
+	        
+	        // Altri campi
+	        FieldStima.setText(controller.getStimaRaccolto(username, progettoSelezionato));
+	        FieldIrrigazione.setText(controller.getIrrigazione(username, progettoSelezionato));
+	        
 	    } else {
-	        //  QUANDO SI SELEZIONA "--seleziona--", PULISCE I CAMPI
-	        FieldDataIP.setText("");  //  PULISCE DATA INIZIO
-	        FieldDataFP.setText("");  //  PULISCE DATA FINE
+	        // Pulisci tutti i campi
+	        FieldDataIP.setText("");
+	        FieldDataFP.setText("");
+	        FieldStima.setText("");
+	        FieldTipologia.setText("");
+	        FieldVarieta.setText("");
+	        FieldIrrigazione.setText("");
 	    }
 	}
-
-	private void popolaAttivita() {
-	    ControllerColtivatore controller = new ControllerColtivatore();
-	    ComboAttivita.removeAllItems();
 	    
+	    
+	private void popolaAttivita() {
+	    String progettoSelezionato = (String) ComboProgetti.getSelectedItem();
+	    String username = ControllerLogin.getUsernameGlobale();
+	    
+	    ComboAttivita.removeAllItems();
 	    ComboAttivita.addItem("--seleziona--");
 	    
+	    if (progettoSelezionato == null || progettoSelezionato.equals("--seleziona--")) {
+	        return;
+	    }
 	    
-	    tipiAttivita = controller.getTipiAttivita(ControllerLogin.getUsernameGlobale());
+	    ControllerColtivatore controller = new ControllerColtivatore();
 	    
-	    for (String idSpecifico : controller.getIdAttivita(ControllerLogin.getUsernameGlobale())) {
+	    // CORREGGI: PASSA 2 PARAMETRI (username E progetto)
+	    tipiAttivita = controller.getTipiAttivita(username, progettoSelezionato);
+	    
+	    for (String idSpecifico : controller.getIdAttivita(username, progettoSelezionato)) {
 	        ComboAttivita.addItem(idSpecifico);
 	    }
 	    
 	    ComboAttivita.setSelectedItem("--seleziona--");
-	    
-	    
 	    ComboAttivita.addActionListener(e -> aggiornaDateAttivita());
 	}
 	    
 	private void aggiornaDateAttivita() {
+	    // Recupera l'attività selezionata dalla dropdown
 	    String attivitaSelezionata = (String) ComboAttivita.getSelectedItem();
 	    
+	    // Verifica se è stata selezionata un'attività valida (non "--seleziona--")
 	    if (attivitaSelezionata != null && !attivitaSelezionata.equals("--seleziona--")) {
+	        // Calcola l'indice effettivo (tolto 1 per escludere "--seleziona--")
 	        int selectedIndex = ComboAttivita.getSelectedIndex() - 1;
 	        
+	        // Verifica che l'indice sia valido e che la lista dei tipi esista
 	        if (tipiAttivita != null && tipiAttivita.size() > selectedIndex && selectedIndex >= 0) {
+	            // Recupera il tipo di attività (Semina, Irrigazione, Raccolta) dalla lista
 	            String tipo = tipiAttivita.get(selectedIndex);
 	            
-	            // CONTROLLO SPLIT SICURO
+	            // POPOLA IL TIPO DI SEMINA SE L'ATTIVITÀ È "Semina"
+	            // Controlla se l'attività selezionata è di tipo Semina
+	            if (tipo.equals("Semina")) {
+	                // Estrai l'ID dalla stringa (es: "Semina-1" -> 1)
+	                // Splitta la stringa usando il trattino come separatore
+	                String[] parts = attivitaSelezionata.split("-");
+	                // Verifica che ci siano almeno 2 parti (tipo e ID)
+	                if (parts.length >= 2) {
+	                    // Prendi la seconda parte che contiene l'ID
+	                    String id = parts[1];
+	                    // Gestione delle eccezioni per evitare crash
+	                    try {
+	                        // Crea un nuovo controller per le operazioni sul database
+	                        ControllerColtivatore controller = new ControllerColtivatore();
+	                        // Recupera il tipo di semina dal database usando l'ID
+	                        String tipoSemina = controller.getTipoSemina(id);
+	                        // Imposta il testo nel campo tipoSeminaField
+	                        tipoSeminaField.setText(tipoSemina);
+	                    } catch (Exception e) {
+	                        // In caso di errore, pulisce il campo
+	                        tipoSeminaField.setText("");
+	                    }
+	                }
+	            } else {
+	                // SE NON È SEMINA, PULISCI IL CAMPO
+	                // Se l'attività non è Semina, lascia vuoto il campo
+	                tipoSeminaField.setText("");
+	            }
+	            
+	            // CONTROLLO SPLIT SICURO PER LE DATE
+	            // Ripete lo split per estrarre l'ID per le date (potrebbe essere ottimizzato)
 	            String[] parts = attivitaSelezionata.split("-");
+	            // Verifica che ci siano almeno 2 parti
 	            if (parts.length >= 2) {
+	                // Prendi la seconda parte che contiene l'ID
 	                String id = parts[1];
 	                
 	                // CONTROLLA SE L'ID È UN NUMERO VALIDO
 	                try {
-	                    Integer.parseInt(id); // Verifica che sia un numero
+	                    // Verifica che l'ID sia un numero valido
+	                    Integer.parseInt(id);
 	                    
+	                    // Crea un nuovo controller per le operazioni sul database
 	                    ControllerColtivatore controller = new ControllerColtivatore();
+	                    // Recupera le date dell'attività dal database
 	                    String[] date = controller.getDateByAttivitaId(id);
 	                    
+	                    // Se le date sono state trovate, popola i campi
 	                    if (date != null && date[0] != null) {
+	                        // Imposta la data di inizio attività
 	                        FieldDataIA.setText(date[0]);
+	                        // Imposta la data di fine attività
 	                        FieldDataFA.setText(date[1]);
 	                    } else {
+	                        // Se non ci sono date, pulisce i campi
 	                        FieldDataIA.setText("");
 	                        FieldDataFA.setText("");
 	                    }
 	                } catch (NumberFormatException e) {
+	                    // Gestione errore se l'ID non è un numero valido
 	                    System.err.println("ID non valido: " + id);
+	                    // Pulisce i campi date
 	                    FieldDataIA.setText("");
 	                    FieldDataFA.setText("");
 	                }
 	            }
 	        }
 	    } else {
+	        // SE NON È SELEZIONATA NESSUNA ATTIVITÀ VALIDA
+	        // Pulisce tutti i campi
 	        FieldDataIA.setText("");
 	        FieldDataFA.setText("");
+	        tipoSeminaField.setText(""); // PULISCI ANCHE IL CAMPO TIPO SEMINA
 	    }
 	}
-	
 	//lotto e posizione in base al progetto selezionato
 	
 	private void aggiornaLottoEPosizione() {
@@ -326,14 +403,14 @@ public class HomePageColtivatore extends JFrame {
 	        String lottoEPosizione = controller.getLottoEPosizioneByProgetto(progettoSelezionato, ControllerLogin.getUsernameGlobale());
 	        
 	        if (lottoEPosizione != null && !lottoEPosizione.isEmpty()) {
-	            // 🎯 ESTRAI LOTTO E POSIZIONE SEPARATAMENTE
+	            //  ESTRAI LOTTO E POSIZIONE SEPARATAMENTE
 	            String[] parti = lottoEPosizione.split(", ");
 	            if (parti.length >= 2) {
 	                String lotto = parti[0].replace("Lotto: ", "Lotto ");
 	                String posizione = parti[1].replace("Posizione: ", "");
 	                
-	                lottovisualizza.setText(lotto);      // "Lotto 2"
-	                FieldPosizione.setText(posizione);   // "2"
+	                lottovisualizza.setText(lotto);       
+	                FieldPosizione.setText(posizione);   
 	            }
 	        } else {
 	            lottovisualizza.setText("");

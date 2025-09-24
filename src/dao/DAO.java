@@ -640,77 +640,67 @@ public String[] getDateByAttivitaId(String idAttivita) {
 }
 
 //PRIMA FUNZIONE: Restituisce gli ID per la dropdown
-public List<String> getIdAttivitaColtivatore(String username) {
- List<String> idList = new ArrayList<>();
- Connection conn = null;
- PreparedStatement stmt = null;
- ResultSet rs = null;
+public List<String> getIdAttivitaColtivatore(String username, String progetto) {
+    List<String> idList = new ArrayList<>();
+    
+    try (Connection conn = Connessione.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT id_semina, id_irrigazione, id_raccolta " +
+             "FROM coltivatoreview " +
+             "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
+             "ORDER BY giorno_assegnazione")) {
+        
+        stmt.setString(1, username);
+        stmt.setString(2, progetto);
+        ResultSet rs = stmt.executeQuery();
 
- try {
-     conn = Connessione.getConnection();
-     String sql = "SELECT id_semina, id_irrigazione, id_raccolta " +
-                  "FROM coltivatoreview " +
-                  "WHERE username_coltivatore = ? " +
-                  "ORDER BY giorno_assegnazione";
-     
-     stmt = conn.prepareStatement(sql);
-     stmt.setString(1, username);
-     rs = stmt.executeQuery();
-
-     while (rs.next()) {
- 	    if (rs.getObject("id_semina") != null) {
- 	        idList.add("Semina-" + rs.getInt("id_semina"));
- 	    }
- 	    if (rs.getObject("id_irrigazione") != null) {
- 	        idList.add("Irrigazione-" + rs.getInt("id_irrigazione"));
- 	    }
- 	    if (rs.getObject("id_raccolta") != null) {
- 	        idList.add("Raccolta-" + rs.getInt("id_raccolta"));
- 	    }
- 	}
- } catch (SQLException ex) {
-     ex.printStackTrace();
- } finally {
-     // cleanup
- }
- return idList;
+        while (rs.next()) {
+            if (rs.getObject("id_semina") != null) {
+                idList.add("Semina-" + rs.getInt("id_semina"));
+            }
+            if (rs.getObject("id_irrigazione") != null) {
+                idList.add("Irrigazione-" + rs.getInt("id_irrigazione"));
+            }
+            if (rs.getObject("id_raccolta") != null) {
+                idList.add("Raccolta-" + rs.getInt("id_raccolta"));
+            }
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+    return idList;
 }
 
 //SECONDA FUNZIONE: Restituisce i tipi per indice
-public List<String> getTipiAttivitaColtivatore(String username) {
- List<String> tipoList = new ArrayList<>();
- Connection conn = null;
- PreparedStatement stmt = null;
- ResultSet rs = null;
+public List<String> getTipiAttivitaColtivatore(String username, String progetto) {
+    List<String> tipoList = new ArrayList<>();
+    
+    try (Connection conn = Connessione.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT id_semina, id_irrigazione, id_raccolta " +
+             "FROM coltivatoreview " +
+             "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
+             "ORDER BY giorno_assegnazione")) {
+        
+        stmt.setString(1, username);
+        stmt.setString(2, progetto);
+        ResultSet rs = stmt.executeQuery();
 
- try {
-     conn = Connessione.getConnection();
-     String sql = "SELECT id_semina, id_irrigazione, id_raccolta " +
-                  "FROM coltivatoreview " +
-                  "WHERE username_coltivatore = ? " +
-                  "ORDER BY giorno_assegnazione";
-     
-     stmt = conn.prepareStatement(sql);
-     stmt.setString(1, username);
-     rs = stmt.executeQuery();
-
-     while (rs.next()) {
-         if (rs.getObject("id_semina") != null) {
-             tipoList.add("Semina");  // CORRETTO: aggiungi solo il tipo
-         }
-         if (rs.getObject("id_irrigazione") != null) {
-             tipoList.add("Irrigazione");  // CORRETTO: aggiungi solo il tipo
-         }
-         if (rs.getObject("id_raccolta") != null) {
-             tipoList.add("Raccolta");  // CORRETTO: aggiungi solo il tipo
-         }
-     }
- } catch (SQLException ex) {
-     ex.printStackTrace();
- } finally {
-     // cleanup
- }
- return tipoList;
+        while (rs.next()) {
+            if (rs.getObject("id_semina") != null) {
+                tipoList.add("Semina");
+            }
+            if (rs.getObject("id_irrigazione") != null) {
+                tipoList.add("Irrigazione");
+            }
+            if (rs.getObject("id_raccolta") != null) {
+                tipoList.add("Raccolta");
+            }
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+    return tipoList;
 }
 
 public String getLottoEPosizione(String progetto, String username) {
@@ -736,8 +726,148 @@ public String getLottoEPosizione(String progetto, String username) {
     
     return risultato;
 }
+
+// da testare 
+public String getEsperienzaColtivatore(String username) {
+    String esperienza = "";
+    
+    try (Connection conn = Connessione.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT DISTINCT esperienza " +
+             "FROM coltivatoreview " +
+             "WHERE username_coltivatore = ?")) {
+        
+        stmt.setString(1, username);
+        ResultSet rs = stmt.executeQuery();
+        
+        if (rs.next()) {
+            esperienza = rs.getString("esperienza");
+        }
+        
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+    
+    return esperienza;
 }
 
+
+public String getStimaRaccolto(String username, String progetto) {
+    String stima = "";
+    try (Connection conn = Connessione.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT raccolto_effettivo FROM coltivatoreview " +
+             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+        
+        stmt.setString(1, username);
+        stmt.setString(2, progetto);
+        ResultSet rs = stmt.executeQuery();
+        
+        if (rs.next()) {
+            stima = rs.getString("raccolto_effettivo");
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+    return stima;
+}
+
+public String getTipologia(String username, String progetto) {
+    String tipologia = "";
+    try (Connection conn = Connessione.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT tipo_semina FROM coltivatoreview " +
+             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+        
+        stmt.setString(1, username);
+        stmt.setString(2, progetto);
+        ResultSet rs = stmt.executeQuery();
+        
+        if (rs.next()) {
+            tipologia = rs.getString("tipo_semina");
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+    return tipologia;
+}
+
+public String getVarieta(String username, String progetto) {
+    // Implementazione simile - dipende da quale colonna nella vista contiene la varietà
+    return "";
+}
+
+public String getIrrigazione(String username, String progetto) {
+    String irrigazione = "";
+    try (Connection conn = Connessione.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT tipo_irrigazione FROM coltivatoreview " +
+             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+        
+        stmt.setString(1, username);
+        stmt.setString(2, progetto);
+        ResultSet rs = stmt.executeQuery();
+        
+        if (rs.next()) {
+            irrigazione = rs.getString("tipo_irrigazione");
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+    return irrigazione;
+}
+// f coltura e varieta
+public String[] getColturaEVarieta(String username, String progetto) {
+    String[] risultato = new String[2];
+    risultato[0] = "";
+    risultato[1] = "";
+    
+    try (Connection conn = Connessione.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT DISTINCT tipo_coltura, varieta_coltura " +
+             "FROM coltivatoreview " +
+             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+        
+        stmt.setString(1, username);
+        stmt.setString(2, progetto);
+        ResultSet rs = stmt.executeQuery();
+        
+        if (rs.next()) {
+            risultato[0] = rs.getString("tipo_coltura") != null ? rs.getString("tipo_coltura") : "";
+            risultato[1] = rs.getString("varieta_coltura") != null ? rs.getString("varieta_coltura") : "";
+        }
+        
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+    
+    return risultato;
+}
+
+
+public String getTipoSemina(String idSemina) {
+    String tipoSemina = "";
+    
+    try (Connection conn = Connessione.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(
+             "SELECT tipo_semina FROM coltivatoreview WHERE id_semina = ?")) {
+        
+        stmt.setInt(1, Integer.parseInt(idSemina));
+        ResultSet rs = stmt.executeQuery();
+        
+        if (rs.next()) {
+            tipoSemina = rs.getString("tipo_semina");
+        }
+        
+    } catch (SQLException | NumberFormatException ex) {
+        ex.printStackTrace();
+    }
+    
+    return tipoSemina != null ? tipoSemina : "";
+}
+
+
+}
 
 //_____________________!!!   DAO:coltivatore !!!!____________________________________
 

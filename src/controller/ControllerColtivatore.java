@@ -44,22 +44,20 @@ public class ControllerColtivatore {
 
 
     
-    public List<String> getIdAttivita(String username) {
-        return dao.getIdAttivitaColtivatore(username);
+    public List<String> getTipiAttivita(String username, String progetto) {
+        return dao.getTipiAttivitaColtivatore(username, progetto);
     }
 
-    public List<String> getTipiAttivita(String username) {
-        return dao.getTipiAttivitaColtivatore(username);
+    public List<String> getIdAttivita(String username, String progetto) {
+        return dao.getIdAttivitaColtivatore(username, progetto);
     }
 
-    public String getTipoAttivitaByIndex(String username, int index) {
-        List<String> tipi = getTipiAttivita(username);
-        if (tipi != null && tipi.size() > index) {
-            return tipi.get(index);
-        }
-        return null;
+  
+    public String getEsperienzaColtivatore(String username) {
+        DAO dao = new DAO();
+        return dao.getEsperienzaColtivatore(username);
     }
-    
+    	
     
     public String[] getDateByAttivitaId(String idAttivita) {
         return dao.getDateByAttivitaId(idAttivita);
@@ -70,6 +68,20 @@ public class ControllerColtivatore {
         return dao.getLottoEPosizione(progetto, username);
     }
     
-    
+    public String getStimaRaccolto(String username, String progetto) {
+        return dao.getStimaRaccolto(username, progetto);
+    }
+
+    public String[] getColturaEVarieta(String username, String progetto) {
+        DAO dao = new DAO();
+        return dao.getColturaEVarieta(username, progetto);
+    }
+    public String getIrrigazione(String username, String progetto) {
+        return dao.getIrrigazione(username, progetto);
+    } 
+    public String getTipoSemina(String idSemina) {
+        DAO dao = new DAO();
+        return dao.getTipoSemina(idSemina);
+    }
     
 }
