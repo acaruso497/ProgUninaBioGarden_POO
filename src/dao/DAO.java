@@ -870,4 +870,3 @@ public String getTipoSemina(String idSemina) {
 }
 
 //_____________________!!!   DAO:coltivatore !!!!____________________________________
-
