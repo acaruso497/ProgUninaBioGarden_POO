@@ -29,6 +29,7 @@ public class HomePageColtivatore extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	//no editable
 	private JTextField FieldDataIP;
 	private JTextField FieldDataFP;
 	private JTextField FieldDataIA;
@@ -38,12 +39,14 @@ public class HomePageColtivatore extends JFrame {
 	private JTextField FieldIrrigazione;
 	private JTextField FieldEsperienza;
 	private JTextField FieldStima;
-	private JComboBox<String> ComboProgetti;
-	private JTextField FieldTipologia;
+	private JTextField FieldTipologia; 
+	private JTextField lottovisualizza;
+    private JTextField tipoSeminaField;
+    //drop down
+	private JComboBox<String> ComboProgetti;	
     private JComboBox<String> ComboAttivita;
     private List<String> tipiAttivita;
-    private JTextField lottovisualizza;
-    private JTextField tipoSeminaField;
+   
 	
 	public HomePageColtivatore() {
 		setTitle("HomePageColtivatore");
@@ -141,6 +144,7 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.add(LabelDataFP, "flowx,cell 1 2,alignx trailing");
 	    
 	    FieldDataFP = new JTextField();
+	    FieldDataFP.setEditable(false);
 	    contentPane.add(FieldDataFP, "cell 2 2,growx");
 	    FieldDataFP.setColumns(10);
 	    
@@ -154,6 +158,7 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.add(LabelStima, "cell 7 3,alignx right");
 	    
 	    FieldStima = new JTextField();
+	    FieldStima.setEditable(false);
 	    contentPane.add(FieldStima, "cell 8 3,growx");
 	    FieldStima.setColumns(10);
 	    
@@ -177,10 +182,12 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.add(LabelDataFA, "cell 1 5,alignx trailing");
 	    
 	    FieldDataFA = new JTextField();
+	    FieldDataIA.setEditable(false);
 	    contentPane.add(FieldDataFA, "cell 2 5,growx");
 	    FieldDataFA.setColumns(10);
 	    
 	    FieldDataIA = new JTextField();
+	    FieldDataIA.setEditable(false);
 	    contentPane.add(FieldDataIA, "cell 0 5");
 	    FieldDataIA.setColumns(10);
 	    
@@ -192,6 +199,7 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.add(FieldTipologia, "cell 8 6 1 3,grow");
 	    
 	    FieldDataIP = new JTextField();
+	    FieldDataIP.setEditable(false);
 	    contentPane.add(FieldDataIP, "cell 0 2");
 	    FieldDataIP.setColumns(10);
 	    
@@ -206,6 +214,7 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.add(LabelVarieta, "cell 7 9,alignx trailing");
 	    
 	    FieldVarieta = new JTextField();
+	    FieldVarieta.setEditable(false);
 	    contentPane.add(FieldVarieta, "cell 8 9,growx");
 	    FieldVarieta.setColumns(10);
 	    
@@ -221,6 +230,7 @@ public class HomePageColtivatore extends JFrame {
 	    
 	    
 	    FieldIrrigazione = new JTextField();
+	    FieldIrrigazione.setEditable(false);
 	    contentPane.add(FieldIrrigazione, "cell 8 10,growx");
 	    FieldIrrigazione.setColumns(10);
 	    
@@ -228,6 +238,7 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.add(LabelPosizioneLotto, "cell 1 11,alignx trailing");
 	    
 	    FieldPosizione = new JTextField();
+	    FieldPosizione.setEditable(false);
 	    contentPane.add(FieldPosizione, "cell 2 11,growx");
 	    FieldPosizione.setColumns(10);
 	    
@@ -258,7 +269,7 @@ public class HomePageColtivatore extends JFrame {
 	            FieldDataFP.setText(dateProgetto.get(1));
 	        }
 	        
-	        // COLTURA E VARIETÀ (con 2 parametri)
+	        // COLTURA E VARIETÀ 
 	        String[] colturaVarieta = controller.getColturaEVarieta(username, progettoSelezionato);
 	        FieldTipologia.setText(colturaVarieta[0]);
 	        FieldVarieta.setText(colturaVarieta[1]);
