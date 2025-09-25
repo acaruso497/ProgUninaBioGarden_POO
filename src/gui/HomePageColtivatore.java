@@ -29,7 +29,7 @@ public class HomePageColtivatore extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	//no editable
+	//no editable text field
 	private JTextField FieldDataIP;
 	private JTextField FieldDataFP;
 	private JTextField FieldDataIA;
