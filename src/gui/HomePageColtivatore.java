@@ -182,7 +182,7 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.add(LabelDataFA, "cell 1 5,alignx trailing");
 	    
 	    FieldDataFA = new JTextField();
-	    FieldDataIA.setEditable(false);
+	    FieldDataFA.setEditable(false);
 	    contentPane.add(FieldDataFA, "cell 2 5,growx");
 	    FieldDataFA.setColumns(10);
 	    
@@ -207,6 +207,7 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.add(lblTipoSemina, "cell 1 7,alignx trailing");
 	    
 	    tipoSeminaField = new JTextField();
+	    tipoSeminaField.setEditable(false);
 	    tipoSeminaField.setColumns(10);
 	    contentPane.add(tipoSeminaField, "cell 2 7,growx");
 	    
@@ -218,10 +219,11 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.add(FieldVarieta, "cell 8 9,growx");
 	    FieldVarieta.setColumns(10);
 	    
-	    JLabel LabelLotti = new JLabel("Lotti assegnato");
+	    JLabel LabelLotti = new JLabel("Lotto assegnato");
 	    contentPane.add(LabelLotti, "cell 1 10,alignx trailing");
 	    
 	    lottovisualizza = new JTextField();
+	    lottovisualizza.setEditable(false);
 	    lottovisualizza.setColumns(10);
 	    contentPane.add(lottovisualizza, "cell 2 10,growx");
 	    
