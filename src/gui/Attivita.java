@@ -114,6 +114,9 @@ public class Attivita extends JFrame {
 	    contentPane.add(FieldDataIA, "cell 9 2,growx");
 	    FieldDataIA.setColumns(10);
 	    
+	    JLabel date = new JLabel("GG/MM/AAAA");
+	    contentPane.add(date, "cell 10 2");
+	    
 	    JLabel LabelDescrizione = new JLabel("Descrizione");
 	    contentPane.add(LabelDescrizione, "cell 0 3");
 	    
@@ -123,6 +126,9 @@ public class Attivita extends JFrame {
 	    FieldDataFA = new JTextField();
 	    contentPane.add(FieldDataFA, "cell 9 3,growx");
 	    FieldDataFA.setColumns(10);
+	    
+	    JLabel date_1 = new JLabel("GG/MM/AAAA");
+	    contentPane.add(date_1, "cell 10 3");
 	    
 	    JTextArea TextDescrizione = new JTextArea();
 	    contentPane.add(TextDescrizione, "cell 0 4 3 9,grow");

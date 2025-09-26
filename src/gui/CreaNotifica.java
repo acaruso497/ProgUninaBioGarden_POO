@@ -176,8 +176,7 @@ public class CreaNotifica extends JFrame {
 						CreaN.dividiUsernameTutti(ControllerLogin.getUsernameGlobale(), data, titolo, descrizione);
 						JOptionPane.showMessageDialog(CreaNotifica.this, "Notifica inviata con successo!");
 					}
-					
-					
+						
 			
 			}    
 		    });

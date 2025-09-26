@@ -69,7 +69,7 @@ public class CreaProgetto extends JFrame {
 	    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][][grow][][][][grow][grow][][grow][grow][grow][][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][][grow][][][][grow][grow][][grow][grow][grow][][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][][grow][grow][][grow][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    JLabel LabelProgetto = new JLabel("Crea Il Tuo Progetto");
 	    LabelProgetto.setFont(new Font("Tahoma", Font.BOLD, 17));
@@ -99,35 +99,41 @@ public class CreaProgetto extends JFrame {
 	    contentPane.add(ComboLotto, "cell 1 2,growx");
 	     
 	     JLabel LabelStima = new JLabel("Stima Raccolto (kg)");
-	     contentPane.add(LabelStima, "cell 0 4,alignx trailing");
+	     contentPane.add(LabelStima, "cell 0 5,alignx trailing");
 	     
 	     FieldStimaRaccolto = new JTextField();
 	     FieldStimaRaccolto.setColumns(10);
-	     contentPane.add(FieldStimaRaccolto, "cell 1 4,growx");
+	     contentPane.add(FieldStimaRaccolto, "cell 1 5,growx");
+	     
+	     JLabel date = new JLabel("GG/MM/AAAA");
+	     contentPane.add(date, "cell 1 7,alignx center,aligny center");
+	     
+	     JLabel date_1 = new JLabel("GG/MM/AAAA");
+	     contentPane.add(date_1, "cell 4 7,alignx center");
 	     
 	     JLabel LabelDataIP = new JLabel("Data Di Inizio");
-	     contentPane.add(LabelDataIP, "flowx,cell 0 6,alignx trailing");
+	     contentPane.add(LabelDataIP, "flowx,cell 0 8,alignx trailing");
 	     
 	     FieldDataIP = new JTextField();
-	     contentPane.add(FieldDataIP, "cell 1 6,growx");
+	     contentPane.add(FieldDataIP, "cell 1 8,growx");
 	     FieldDataIP.setColumns(10);
 	     
 	     JLabel LabelDataFP = new JLabel("Data Di Fine");
-	     contentPane.add(LabelDataFP, "cell 3 6,alignx trailing");
+	     contentPane.add(LabelDataFP, "cell 3 8,alignx trailing");
 	     
 	     FieldDataFP = new JTextField();
-	     contentPane.add(FieldDataFP, "cell 4 6,growx");
+	     contentPane.add(FieldDataFP, "cell 4 8,growx");
 	     FieldDataFP.setColumns(10);
 	    	    
 	     JLabel LabelDescrizione = new JLabel("Descrizione");
-	     contentPane.add(LabelDescrizione, "cell 0 7");
+	     contentPane.add(LabelDescrizione, "cell 0 9");
 	    
 	    	    
 	    JTextArea textArea = new JTextArea();
-	    contentPane.add(textArea, "cell 0 8 8 4,grow");
+	    contentPane.add(textArea, "cell 0 10 8 4,grow");
 	    
 	    JButton ButtonSalva = new JButton("Salva");
-	    contentPane.add(ButtonSalva, "cell 1 12,alignx center");
+	    contentPane.add(ButtonSalva, "cell 1 14,alignx center");
 	    ButtonSalva.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String titolo = FieldTitolo.getText();
@@ -277,7 +283,7 @@ public class CreaProgetto extends JFrame {
 	    	
 	    	}
 	    });
-	    contentPane.add(ButtonAvanti, "cell 3 12");
+	    contentPane.add(ButtonAvanti, "cell 3 14");
 	    
 	    DAO dao = new DAO(); // Crea il DAO
         creaProgettoController = new CreaProgettoController(dao); // Crea il controller
