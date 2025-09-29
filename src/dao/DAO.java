@@ -605,7 +605,7 @@ public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username
     return tipi;
 }
 
-public String[] getDateByAttivitaId(String idAttivita) {
+public String[] getDateByAttivitaId(String idAttivita, String tipoAttivita) {
     String[] date = new String[2];
     Connection conn = null;
     PreparedStatement stmt = null;
@@ -613,18 +613,30 @@ public String[] getDateByAttivitaId(String idAttivita) {
 
     try {
         conn = Connessione.getConnection();
-        String sql = "SELECT " +
-                     "COALESCE(data_inizio_semina, data_inizio_irrigazione, data_inizio_raccolta) AS data_inizio, " +
-                     "COALESCE(data_fine_semina, data_fine_irrigazione, data_fine_raccolta) AS data_fine " +
-                     "FROM coltivatoreview WHERE ID_Attivita = ?";
+        
+        // Query DINAMICA in base al tipo di attività
+        String sql = "";
+        switch(tipoAttivita.toLowerCase()) {
+            case "semina":
+                sql = "SELECT data_inizio_semina, data_fine_semina FROM coltivatoreview WHERE ID_Attivita = ?";
+                break;
+            case "irrigazione":
+                sql = "SELECT data_inizio_irrigazione, data_fine_irrigazione FROM coltivatoreview WHERE ID_Attivita = ?";
+                break;
+            case "raccolta":
+                sql = "SELECT data_inizio_raccolta, data_fine_raccolta FROM coltivatoreview WHERE ID_Attivita = ?";
+                break;
+            default:
+                return date;
+        }
         
         stmt = conn.prepareStatement(sql);
-        stmt.setInt(1, Integer.parseInt(idAttivita)); // ✅ CONVERTI String → int
+        stmt.setInt(1, Integer.parseInt(idAttivita));
         rs = stmt.executeQuery();
 
         if (rs.next()) {
-            date[0] = rs.getString("data_inizio");
-            date[1] = rs.getString("data_fine");
+            date[0] = rs.getString(1); // Prima colonna (data inizio)
+            date[1] = rs.getString(2); // Seconda colonna (data fine)
         }
     } catch (SQLException ex) {
         ex.printStackTrace();
