@@ -908,6 +908,43 @@ public boolean sommaRaccolto(String raccolto, String coltura, String progetto) {
 	
 }
 
+//!!da pulire tutte le system out interne di debug!!
+public static String getCodiceFiscaleByUsername(String username) {
+    String codiceFiscale = null;
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+
+    try {
+        // Ottieni la connessione al database (assumo che Connessione sia una classe di utilità)
+        conn = Connessione.getConnection();
+
+        // Query SQL diretta sulla tabella Proprietario
+        String sql = "SELECT Codice_Fiscale FROM Proprietario WHERE username = ?";
+        stmt = conn.prepareStatement(sql);
+        stmt.setString(1, username); // Imposta il parametro username
+
+        // Esegui la query
+        rs = stmt.executeQuery();
+
+        // Recupera il risultato
+        if (rs.next()) {
+            codiceFiscale = rs.getString("Codice_Fiscale"); // Recupera il Codice_Fiscale
+        } else {
+            System.out.println("Nessun proprietario trovato con username: " + username);
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace(); // Stampa l'errore per debugging
+        System.out.println("Errore durante l'esecuzione della query: " + ex.getMessage());
+    } finally {
+        // Chiudi tutte le risorse nel blocco finally
+        try { if (rs != null) rs.close(); } catch (Exception e) {}
+        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+        try { if (conn != null) conn.close(); } catch (Exception e) {}
+    }
+
+    return codiceFiscale; // Restituisce il Codice_Fiscale o null se non trovato
+}
 
 
 

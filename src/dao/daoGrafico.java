@@ -78,15 +78,27 @@ public class daoGrafico {
             conn = Connessione.getConnection();
 
             
-            String sql =
-                "SELECT " + expr + " AS val " +
-                "FROM raccolta r " +
-                "JOIN attivita a   ON a.id_attivita = r.id_attivita " +
-                "JOIN contiene ct  ON ct.id_lotto   = a.id_lotto " +
-                "JOIN coltura  c   ON c.id_coltura  = ct.id_coltura " +
-                "WHERE a.id_lotto = ? " +
-                "  AND lower(trim(c.\"varietà\")) = lower(trim(?)) " +
-                "  AND r.stato IN ('completata')"; 
+//            String sql =
+//                "SELECT " + expr + " AS val " +
+//                "FROM raccolta r " +
+//                "JOIN attivita a   ON a.id_attivita = r.id_attivita " +
+//                "JOIN contiene ct  ON ct.id_lotto   = a.id_lotto " +
+//                "JOIN coltura  c   ON c.id_coltura  = ct.id_coltura " +
+//                "WHERE a.id_lotto = ? " +
+//                "  AND lower(trim(c.\"varietà\")) = lower(trim(?)) " +
+//                "  AND r.stato IN ('completata')"; 
+            
+            
+          String sql =
+          "SELECT " + expr + " AS val " +
+          "FROM raccolta r " +
+          "JOIN attivita a   ON a.id_attivita = r.id_attivita " +
+          "JOIN Progetto_Coltivazione pc  ON pc.id_lotto= a.id_lotto " +
+          "JOIN Progetto_Coltura pcol ON pcol.id_progetto=pc.id_progetto " +
+          "JOIN coltura  c   ON c.id_coltura  = pcol.id_coltura " +
+          "WHERE a.id_lotto = ? " +
+          "  AND lower(trim(c.\"varietà\")) = lower(trim(?)) " +
+          "  AND r.stato IN ('completata')"; 
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, idLotto);

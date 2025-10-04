@@ -28,9 +28,11 @@ private daoVisualizzaP dao;
     }
 	
     // Popola ComboLotto con ID lotti del proprietario
-    public List<String> getLottiByProprietario(String username) {
+    public String getLottiByProprietario(String username) {
         return dao.getLottiByProprietario(username);
     }
+    
+   
     
     public List<String> getColtureByLotto(String idLottoStr, String idProgettoStr) {
     	return dao.getColtureByLotto(idLottoStr, idProgettoStr);

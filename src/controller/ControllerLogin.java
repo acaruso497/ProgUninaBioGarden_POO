@@ -39,4 +39,9 @@ public static String usernameGlobale; //variabile globale, in modo che l'usernam
 	public static void setUsernameGlobale(String usernameGlobale) {
 		ControllerLogin.usernameGlobale = usernameGlobale;
 	}
+	
+	 //Restituisce il Codice Fiscale del proprietario loggato
+    public static String getCodiceFiscaleByUsername(String username) {
+    	return DAO.getCodiceFiscaleByUsername(username);
+    }
 }

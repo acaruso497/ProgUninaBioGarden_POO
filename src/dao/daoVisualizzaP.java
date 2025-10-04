@@ -29,27 +29,46 @@ public class daoVisualizzaP {
 	        conn = Connessione.getConnection();
 	      
 	        if ("Raccolta".equals(tipoAttivita)) {
-	            sql = "SELECT r.id_attivita, r.stato, r.giorno_inizio, r.giorno_fine " +
-	                    "FROM Raccolta r " +
-	                    "JOIN Attivita a ON r.id_attivita = a.id_attivita " +
-	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
-	                    "WHERE o.id_progetto = ?";
+//	            sql = "SELECT r.id_attivita, r.stato, r.giorno_inizio, r.giorno_fine " +
+//	                    "FROM Raccolta r " +
+//	                    "JOIN Attivita a ON r.id_attivita = a.id_attivita " +
+//	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
+//	                    "WHERE o.id_progetto = ?";
 
+	        	sql="SELECT r.id_attivita, r.stato, r.giorno_inizio, r.giorno_fine " +
+	        			" FROM Raccolta r " +
+	        		    " JOIN Attivita a ON r.id_attivita = a.id_attivita " +
+	        			" JOIN Lotto l ON l.id_lotto = a.id_lotto " +
+	        			" JOIN Progetto_Coltivazione pc ON pc.id_progetto=l.id_progetto " +
+	        			" WHERE pc.id_progetto = ?";
 	                    
 	          } else if ("Irrigazione".equals(tipoAttivita)) {
-	              sql = "SELECT i.id_attivita, i.stato, i.giorno_inizio, i.giorno_fine " +
-	                    "FROM Irrigazione i " +
-	                    "JOIN Attivita a ON i.id_attivita = a.id_attivita " +
-	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
-	                    "WHERE o.id_progetto = ?";
+//	              sql = "SELECT i.id_attivita, i.stato, i.giorno_inizio, i.giorno_fine " +
+//	                    "FROM Irrigazione i " +
+//	                    "JOIN Attivita a ON i.id_attivita = a.id_attivita " +
+//	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
+//	                    "WHERE o.id_progetto = ?";
+	        	  
+	        	  sql="SELECT i.id_attivita, i.stato, i.giorno_inizio, i.giorno_fine " +
+		        			" FROM Irrigazione i " +
+		        		    " JOIN Attivita a ON i.id_attivita = a.id_attivita " +
+		        			" JOIN Lotto l ON l.id_lotto = a.id_lotto " +
+		        			" JOIN Progetto_Coltivazione pc ON pc.id_progetto=l.id_progetto " +
+		        			" WHERE pc.id_progetto = ?";
 	        	  
 	                    
 	          } else if ("Semina".equals(tipoAttivita)) {
-	              sql = "SELECT s.id_attivita, s.stato, s.giorno_inizio, s.giorno_fine " +
-	                    "FROM Semina s " +
-	                    "JOIN Attivita a ON s.id_attivita = a.id_attivita " +
-	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
-	                    "WHERE o.id_progetto = ?";
+//	              sql = "SELECT s.id_attivita, s.stato, s.giorno_inizio, s.giorno_fine " +
+//	                    "FROM Semina s " +
+//	                    "JOIN Attivita a ON s.id_attivita = a.id_attivita " +
+//	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
+//	                    "WHERE o.id_progetto = ?";
+	        	  sql="SELECT s.id_attivita, s.stato, s.giorno_inizio, s.giorno_fine " +
+		        			" FROM Semina s " +
+		        		    " JOIN Attivita a ON s.id_attivita = a.id_attivita " +
+		        			" JOIN Lotto l ON l.id_lotto = a.id_lotto " +
+		        			" JOIN Progetto_Coltivazione pc ON pc.id_progetto=l.id_progetto " +
+		        			" WHERE pc.id_progetto = ?";
 	        	  
 	          }
 
@@ -136,14 +155,21 @@ public class daoVisualizzaP {
 
         try {
             conn = Connessione.getConnection(); 
-            String sql = "SELECT DISTINCT pc.ID_Progetto " + 
-                        "FROM Progetto_Coltivazione pc " +
-                        "JOIN Ospita_Lotto_Progetto olp ON pc.ID_Progetto = olp.ID_Progetto " +
-                        "JOIN Lotto l ON olp.ID_Lotto = l.ID_Lotto " +
-                        "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
-                        "WHERE p.username = ? " +
-                        "ORDER BY pc.ID_Progetto";
+//            String sql = "SELECT DISTINCT pc.ID_Progetto " + 
+//                        "FROM Progetto_Coltivazione pc " +
+//                        "JOIN Ospita_Lotto_Progetto olp ON pc.ID_Progetto = olp.ID_Progetto " +
+//                        "JOIN Lotto l ON olp.ID_Lotto = l.ID_Lotto " +
+//                        "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+//                        "WHERE p.username = ? " +
+//                        "ORDER BY pc.ID_Progetto";
 
+          String sql = "SELECT pc.ID_Progetto " + 
+          "FROM Progetto_Coltivazione pc " +
+          "JOIN Lotto l ON l.ID_Lotto = pc.ID_Lotto " +
+          "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+          "WHERE p.username = ? " +
+          "ORDER BY pc.ID_Progetto";
+            
             stmt = conn.prepareStatement(sql);   
             stmt.setString(1, username);
             risultato = stmt.executeQuery();
@@ -204,8 +230,7 @@ public class daoVisualizzaP {
 	
 	
 	//recupera i lotti di un proprietario (utile per popolare ComboLotti)
-		public List<String> getLottiByProprietario(String username) {
-		    List<String> lista = new ArrayList<>(); // Lista vuota per ID lotti
+		public String getLottiByProprietario(String username) {
 		    Connection conn = null;
 		    PreparedStatement stmt = null;
 		    ResultSet risultato = null;
@@ -213,11 +238,10 @@ public class daoVisualizzaP {
 		    try {
 		        conn = Connessione.getConnection(); 
 
-		        String sql = "SELECT l.ID_Lotto, l.posizione " + //seleziono tutti i lotti del proprietario dato il suo username
-	                    "FROM Lotto l " +
-	                    "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
-	                    "WHERE p.username = ? " +
-	                    "ORDER BY l.posizione"; 
+		        String sql = "SELECT l.ID_Lotto " + //seleziono tutti i lotti del proprietario dato il suo username
+	                    "FROM Proprietario p " +
+	                    "JOIN Lotto l ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+	                    "WHERE p.username = ? ";
 		        
 
 		        stmt = conn.prepareStatement(sql);   

@@ -331,10 +331,8 @@ public class VisualizzaProgetti extends JFrame {
 
     // Popola ComboLotto 
     private void popolaComboLotto() {
-        List<String> lotti = controller.getLottiByProprietario(username); // Usa usernameGlobale
-        for (String lotto : lotti) {
-            ComboLotto.addItem(lotto); //popola la combobox con l'id progetto
-        }
+        String lotti = controller.getLottiByProprietario(username); // Usa usernameGlobale
+        
         ComboLotto.setSelectedIndex(-1);
     }
     

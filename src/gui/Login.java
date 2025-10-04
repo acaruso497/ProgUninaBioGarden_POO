@@ -32,7 +32,10 @@ public class Login extends JFrame {
 	private JPasswordField FieldPassword;
 	private JLabel Logo;
 	private JButton ButtonLogin;
-
+	public static String usernameGlobale;
+	public static String CFProprietario; /* appena ci recuperiamo l'username, 
+	                                      deve partire una select per prendere il codice fiscale del proprietario
+	                                        per recuperare nella GUI VisualizzaProgetti in base al progetto selezionato il lotto corrispondente (1 solo)      */
 	registraUtente registraUtente = new registraUtente();
 	private JButton buttonRegistra;
 	/**
@@ -113,11 +116,13 @@ public class Login extends JFrame {
 				
 				ControllerLogin cl = new ControllerLogin();
 				
-				String username = FieldUsername.getText();
+				//tramite questa variabile troveremo il codice fiscale da passare al metodo getLottiByProprietario 
+				usernameGlobale = FieldUsername.getText(); 
 				@SuppressWarnings("deprecation")
 				String psw = FieldPassword.getText();
+				CFProprietario = ControllerLogin.getCodiceFiscaleByUsername(usernameGlobale);
 				
-				boolean[] check = cl.login(username, psw);
+				boolean[] check = cl.login(usernameGlobale, psw);
 				
 				if (check[0] == false) {// campi non validi
 					JOptionPane.showMessageDialog(Login.this, "\n USERNAME E/O PASSWORD \n RISULTANO VUOTI O NULLI");}
