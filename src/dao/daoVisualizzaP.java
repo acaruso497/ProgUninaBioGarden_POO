@@ -34,6 +34,7 @@ public class daoVisualizzaP {
 	                    "JOIN Attivita a ON r.id_attivita = a.id_attivita " +
 	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
 	                    "WHERE o.id_progetto = ?";
+
 	                    
 	          } else if ("Irrigazione".equals(tipoAttivita)) {
 	              sql = "SELECT i.id_attivita, i.stato, i.giorno_inizio, i.giorno_fine " +
@@ -41,6 +42,7 @@ public class daoVisualizzaP {
 	                    "JOIN Attivita a ON i.id_attivita = a.id_attivita " +
 	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
 	                    "WHERE o.id_progetto = ?";
+	        	  
 	                    
 	          } else if ("Semina".equals(tipoAttivita)) {
 	              sql = "SELECT s.id_attivita, s.stato, s.giorno_inizio, s.giorno_fine " +
@@ -48,7 +50,9 @@ public class daoVisualizzaP {
 	                    "JOIN Attivita a ON s.id_attivita = a.id_attivita " +
 	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
 	                    "WHERE o.id_progetto = ?";
+	        	  
 	          }
+
 
 	        stmt = conn.prepareStatement(sql);
 	        stmt.setInt(1, idProgetto);  
@@ -160,6 +164,43 @@ public class daoVisualizzaP {
 
         return lista;
     }
+    
+  //seleziono tutte le tipologie colture presenti in un lotto dato il suo progetto (utile per ComboListaColture)
+    public List<String> getColtureByLotto(String idLottoStr, String idProgettoStr) {
+    	int idLotto= Integer.parseInt(idLottoStr);
+    	int idProgetto= Integer.parseInt(idProgettoStr);
+    	
+        List<String> lista = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet risultato = null;
+
+        try {
+            conn = Connessione.getConnection(); 
+            //String sql = "SELECT DISTINCT varietà FROM coltivatoreview WHERE id_progetto = ? AND id_lotto = ?";
+            String sql = "SELECT varietà FROM ComboListaColture WHERE id_progetto = ? AND id_lotto = ?";
+            
+            stmt = conn.prepareStatement(sql);   
+            stmt.setInt(1, idProgetto);
+            stmt.setInt(2, idLotto);
+            risultato = stmt.executeQuery();
+
+            while (risultato.next()) {
+                String coltura = risultato.getString("varietà");
+                lista.add(coltura);
+            }
+
+
+        } catch (SQLException | NumberFormatException ex) {
+        	ex.printStackTrace();
+        } finally {
+            try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+            try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+        }
+
+        return lista;
+    }
 	
 	
 	//recupera i lotti di un proprietario (utile per popolare ComboLotti)
@@ -177,6 +218,7 @@ public class daoVisualizzaP {
 	                    "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
 	                    "WHERE p.username = ? " +
 	                    "ORDER BY l.posizione"; 
+		        
 
 		        stmt = conn.prepareStatement(sql);   
 		        stmt.setString(1, username);         
@@ -201,8 +243,7 @@ public class daoVisualizzaP {
 	
 		
 	//popola la combobox del progetto, il text field di data inizio, data fine, stima raccolto e raccolto effettivo  
-	public void popolaDatiProgetto(String idProgettoStr, JTextField fieldStima, JTextField fieldEffettivo, 
-			                		JTextField fieldDataIP, JTextField fieldDataFP) {
+	public void popolaDatiProgetto(String idProgettoStr, JTextField fieldStima, JTextField fieldDataIP, JTextField fieldDataFP) {
 			int idProgetto = Integer.parseInt(idProgettoStr); //converte l'ID del progetto nella combo box in un intero
 			Connection conn = null;
 			PreparedStatement stmt = null;
@@ -210,7 +251,7 @@ public class daoVisualizzaP {
 			
 			try {
 			conn = Connessione.getConnection(); 
-			String sql = "SELECT * FROM view_raccolto WHERE ID_Progetto = ?"; //recupera tutti i dati del progetto tramite la view
+			String sql = "SELECT stima_raccolto, data_inizio, data_fine FROM view_raccolto WHERE ID_Progetto = ?"; //recupera tutti i dati del progetto tramite la view
 			
 			stmt = conn.prepareStatement(sql);   
 			stmt.setInt(1, idProgetto);
@@ -226,12 +267,12 @@ public class daoVisualizzaP {
 	            }
 	            
 	            // Setta raccolto effettivo
-	            String effettivo = risultato.getString("raccolto_effettivo");
-	            if (effettivo != null) {
-	                fieldEffettivo.setText(effettivo);
-	            } else {
-	                fieldEffettivo.setText("");
-	            }
+//	            String effettivo = risultato.getString("raccolto_effettivo");
+//	            if (effettivo != null) {
+//	                fieldEffettivo.setText(effettivo + " kg");
+//	            } else {
+//	                fieldEffettivo.setText("");
+//	            }
 			
 			// Converte date SQL in stringa semplice in modo da popolare il field
 			java.sql.Date sqlDataInizio = risultato.getDate("data_inizio");
@@ -252,6 +293,9 @@ public class daoVisualizzaP {
 						fieldDataFP.setText("");
 					} 
 				
+				
+				
+				
 			}
 			
 			
@@ -263,7 +307,50 @@ public class daoVisualizzaP {
 				try { if (conn != null) conn.close(); } catch (Exception ignored) {}
 			}
 	}
+	
+	
+	
+		
+	
+	public void mostraRaccolto(String idProgettoStr, String idLottoStr, String coltura, JTextField FieldEffettivo) {
+		int idProgetto = Integer.parseInt(idProgettoStr);
+		int idLotto = Integer.parseInt(idLottoStr);
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet risultato = null;
+		
+		try {
+				conn = Connessione.getConnection(); 
+				String sql="SELECT raccoltoprodotto FROM ProprietarioRaccoltoColture WHERE varietà = ? AND id_lotto = ? AND id_progetto = ?";
+				stmt = conn.prepareStatement(sql);   
+				stmt.setString(1, coltura);
+				stmt.setInt(2, idLotto);
+				stmt.setInt(3, idProgetto);
+				risultato = stmt.executeQuery();
+			
+				if(risultato.next()) {
+					int raccolto = risultato.getInt("raccoltoprodotto");
+					FieldEffettivo.setText(raccolto + " kg");
+		         } else {
+		        	 FieldEffettivo.setText("");
+		         }
+			
+			
+		}  catch (SQLException | NumberFormatException ex) {
+			ex.printStackTrace();
+		} finally {
+			try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+			try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+			try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+		}
+		
+		
+	}
+	
+	
 }   
+	
+
 	
 		
 

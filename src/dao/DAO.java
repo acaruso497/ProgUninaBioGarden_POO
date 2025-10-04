@@ -210,111 +210,7 @@ public class DAO {
     }
 	
 	
-	
-	// GUI: CREA PROGETTO 
-		public static boolean creaP (String titolo, String descrizione, String stimaRaccolto, 
-									String dataIT, String dataFT, String tipoAttivita, 
-									String dataIA,String dataFA, String coltivatori, int idLotto) {
-			
-			Connection conn = null;
-			PreparedStatement stmt = null;
-			ResultSet risultato = null;
-			try {
-					conn = Connessione.getConnection();
-					String sql1 = "INSERT INTO Progetto_Coltivazione (titolo, descrizione, "
-							+ "stima_raccolto, data_inizio, data_fine) VALUES (?, ?, ?, ?, ?)";
-					stmt = conn.prepareStatement(sql1);
-					stmt.setString(1, titolo);
-					stmt.setString(2, descrizione);
-					stmt.setString(3, stimaRaccolto);
-					stmt.setString(4, dataIT);
-					stmt.setString(5, dataFT);
-					int rowsProgetto = stmt.executeUpdate();  // Esegui l'INSERT e ottieni quante righe sono state modificate
-			        if (rowsProgetto == 0) {  // Controlla se l'INSERT ha fallito (es. violazione constraint nel DB)
-			            System.err.println("Errore: Nessuna riga inserita nel progetto");
-			            return false;  // Esci con errore
-			        }
-					
-				/* 	risultato = stmt.executeQuery();
-					
-				 	if(risultato.next()) {
-						return true;
-					}else {
-						return false;
-					}  */
-				 
-			        
-			     // Passo 2: Valida coltivatori (singolo username, controlli rigorosi)
-		            if (coltivatori == null || coltivatori.trim().isEmpty()) {
-		                System.err.println("Errore: campo coltivatori vuoto o nullo");
-		                return false;
-		            }
-		            String coltivatore = coltivatori.trim();
-		            // Controllo base: solo alfanumerici, lunghezza tra 1 e 50
-		            if (!coltivatore.matches("[a-zA-Z0-9]+") || coltivatore.length() > 50) {
-		                System.err.println("Errore: username coltivatore non valido: " + coltivatore);
-		                return false;
-		            }
-		            String usernameCol = getColtivatoreByUsername(coltivatore);
-		            if (usernameCol == null) {
-		                System.err.println("Errore: coltivatore non trovato nel DB: " + coltivatore);
-		                return false;
-		            }
-		            
-		           
-		            
-		            // Passo 3: INSERT in Attivita
-		            String sqlAttivita = "INSERT INTO Attivita (Codice_FiscaleCol, ID_Lotto) VALUES (?, ?)";
-		            stmt = conn.prepareStatement(sqlAttivita);
-		            stmt.setString(1, usernameCol);
-		            stmt.setInt(2, idLotto);
-		            stmt.executeUpdate();
-		            
-		            
-		            
-		            // Passo 4: INSERT nella tabella specifica (if-else semplice)
-		            if (tipoAttivita.equals("Semina")) {
-		                String sqlSemina = "INSERT INTO Semina (giorno_inizio, giorno_fine, "
-		                		+ "profondita, tipo_semina, ID_Attivita) "
-		                		+ "VALUES (?, ?, 10, 'Diretta', (SELECT MAX(ID_Attivita) FROM Attivita))";
-		                stmt = conn.prepareStatement(sqlSemina);
-		                stmt.setString(1, dataIA);
-		                stmt.setString(2, dataFA);
-		                stmt.executeUpdate();
-		            } else if (tipoAttivita.equals("Irrigazione")) {
-		                String sqlIrrigazione = "INSERT INTO Irrigazione (giorno_inizio, giorno_fine, "
-		                		+ "tipo_irrigazione, ID_Attivita) "
-		                		+ "VALUES (?, ?, 'a goccia', (SELECT MAX(ID_Attivita) FROM Attivita))";
-		                stmt = conn.prepareStatement(sqlIrrigazione);
-		                stmt.setString(1, dataIA);
-		                stmt.setString(2, dataFA);
-		                stmt.executeUpdate();
-		            } else if (tipoAttivita.equals("Raccolta")) {
-		                String sqlRaccolta = "INSERT INTO Raccolta (giorno_inizio, giorno_fine, "
-		                		+ "raccolto_effettivo, ID_Attivita) "
-		                		+ "VALUES (?, ?, 0, (SELECT MAX(ID_Attivita) FROM Attivita))";
-		                stmt = conn.prepareStatement(sqlRaccolta);
-		                stmt.setString(1, dataIA);
-		                stmt.setString(2, dataFA);
-		                stmt.executeUpdate();
-		            } else {
-		                System.err.println("Errore: tipo attività non valido: " + tipoAttivita);
-		                return false;
-		            }
-		            
-		            return true; 			
-				} catch(SQLException ex) {
-				   ex.printStackTrace();
-				   return false;
-				} finally {
-				   try { if (risultato != null) risultato.close(); } catch (Exception e) {}
-			        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-			        try { if (conn != null) conn.close(); } catch (Exception e) {}
-			   }
-			
-		}			
-			
-	// GUI: CREA PROGETTO	
+		
 
 	
 	
@@ -502,7 +398,8 @@ public List<String> popolaProgettiCB(String username) {
     try {
         conn = Connessione.getConnection(); // Ottiene la connessione al DB
 
-        String sql = "SELECT titolo_progetto FROM coltivatoreview WHERE username_coltivatore = ?"; 
+        //String sql = "SELECT DISTINCT titolo_progetto FROM coltivatoreview WHERE username_coltivatore = ?";
+        String sql = "SELECT titolo_progetto FROM ComboProgettiColtivatore WHERE username_coltivatore = ?";
         // Seleziona solo i titoli dei progetti associati all'username
 
         stmt = conn.prepareStatement(sql);   
@@ -534,8 +431,11 @@ public ArrayList<String> dateI_FProgCB(String titolo_progetto, String username) 
 
     try {
         conn = Connessione.getConnection();
+//        String sql = "SELECT data_inizio_progetto, data_fine_progetto "
+//        		+ "FROM coltivatoreview WHERE username_coltivatore = ? AND titolo_progetto = ?";
+        
         String sql = "SELECT data_inizio_progetto, data_fine_progetto "
-        		+ "FROM coltivatoreview WHERE username_coltivatore = ? AND titolo_progetto = ?";
+                + "FROM date_progetti_coltivatore WHERE username_coltivatore = ? AND titolo_progetto = ?";
         
         stmt = conn.prepareStatement(sql);
         stmt.setString(1, username);
@@ -574,13 +474,22 @@ public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username
 
     try {
         conn = Connessione.getConnection();
+//        String sql = "SELECT ID_Attivita, " +
+//                     "CASE WHEN ID_Semina IS NOT NULL THEN 'Semina' " +
+//                     "     WHEN ID_Irrigazione IS NOT NULL THEN 'Irrigazione' " +
+//                     "     WHEN ID_Raccolta IS NOT NULL THEN 'Raccolta' END AS tipo_attivita " +
+//                     "FROM coltivatoreview " +
+//                     "ORDER BY data_inizio_attivita";
+        
         String sql = "SELECT ID_Attivita, " +
-                     "CASE WHEN ID_Semina IS NOT NULL THEN 'Semina' " +
-                     "     WHEN ID_Irrigazione IS NOT NULL THEN 'Irrigazione' " +
-                     "     WHEN ID_Raccolta IS NOT NULL THEN 'Raccolta' END AS tipo_attivita " +
-                     "FROM coltivatoreview " +
-                     "WHERE username = ? AND titolo_progetto = ? " +
-                     "ORDER BY data_inizio_attivita";
+                "CASE WHEN ID_Semina IS NOT NULL THEN 'Semina' " +
+                "     WHEN ID_Irrigazione IS NOT NULL THEN 'Irrigazione' " +
+                "     WHEN ID_Raccolta IS NOT NULL THEN 'Raccolta' END AS tipo_attivita " +
+                "FROM AttivitaColtivatore " +
+                "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
+                "ORDER BY data_inizio_attivita";
+       
+        
         stmt = conn.prepareStatement(sql);
         stmt.setString(1, username);
         stmt.setString(2, titolo_progetto);
@@ -605,7 +514,7 @@ public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username
     return tipi;
 }
 
-public String[] getDateByAttivitaId(String idAttivita) {
+public String[] getDateByAttivitaId(String idAttivita, String tipoAttivita) {
     String[] date = new String[2];
     Connection conn = null;
     PreparedStatement stmt = null;
@@ -613,18 +522,33 @@ public String[] getDateByAttivitaId(String idAttivita) {
 
     try {
         conn = Connessione.getConnection();
-        String sql = "SELECT " +
-                     "COALESCE(data_inizio_semina, data_inizio_irrigazione, data_inizio_raccolta) AS data_inizio, " +
-                     "COALESCE(data_fine_semina, data_fine_irrigazione, data_fine_raccolta) AS data_fine " +
-                     "FROM coltivatoreview WHERE ID_Attivita = ?";
+        // Query DINAMICA in base al tipo di attività
+        String sql = "";
+        switch(tipoAttivita.toLowerCase()) {
+            case "semina":
+                //sql = "SELECT data_inizio_semina, data_fine_semina FROM coltivatoreview WHERE ID_Attivita = ?";
+            	sql = "SELECT data_inizio_semina, data_fine_semina FROM DateAttivitaColtivatore WHERE ID_Attivita = ?";
+                break;
+            case "irrigazione":
+                //sql = "SELECT data_inizio_irrigazione, data_fine_irrigazione FROM coltivatoreview WHERE ID_Attivita = ?";
+            	sql = "SELECT data_inizio_irrigazione, data_fine_irrigazione FROM DateAttivitaColtivatore WHERE ID_Attivita = ?";
+                break;
+            case "raccolta":
+                //sql = "SELECT data_inizio_raccolta, data_fine_raccolta FROM coltivatoreview WHERE ID_Attivita = ?";
+            	sql = "SELECT data_inizio_raccolta, data_fine_raccolta FROM DateAttivitaColtivatore WHERE ID_Attivita = ?";
+                break;
+            default:
+                return date;
+        }
+        
         
         stmt = conn.prepareStatement(sql);
-        stmt.setInt(1, Integer.parseInt(idAttivita)); // ✅ CONVERTI String → int
+        stmt.setInt(1, Integer.parseInt(idAttivita));
         rs = stmt.executeQuery();
 
         if (rs.next()) {
-            date[0] = rs.getString("data_inizio");
-            date[1] = rs.getString("data_fine");
+        	date[0] = rs.getString(1); // Prima colonna (data inizio)
+            date[1] = rs.getString(2); // Seconda colonna (data fine)
         }
     } catch (SQLException ex) {
         ex.printStackTrace();
@@ -635,7 +559,7 @@ public String[] getDateByAttivitaId(String idAttivita) {
         try { if (stmt != null) stmt.close(); } catch (SQLException ignored) {}
         try { if (conn != null) conn.close(); } catch (SQLException ignored) {}
     }
-
+    
     return date;
 }
 
@@ -643,12 +567,19 @@ public String[] getDateByAttivitaId(String idAttivita) {
 public List<String> getIdAttivitaColtivatore(String username, String progetto) {
     List<String> idList = new ArrayList<>();
     
+//    try (Connection conn = Connessione.getConnection();
+//         PreparedStatement stmt = conn.prepareStatement(
+//             "SELECT id_semina, id_irrigazione, id_raccolta " +
+//             "FROM coltivatoreview " +
+//             "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
+//             "ORDER BY giorno_assegnazione")) {
+    
     try (Connection conn = Connessione.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT id_semina, id_irrigazione, id_raccolta " +
-             "FROM coltivatoreview " +
-             "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
-             "ORDER BY giorno_assegnazione")) {
+            PreparedStatement stmt = conn.prepareStatement(
+                "SELECT id_semina, id_irrigazione, id_raccolta " +
+                "FROM ComboAttivitaColtivatore " +
+                "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
+                "ORDER BY giorno_assegnazione")) {
         
         stmt.setString(1, username);
         stmt.setString(2, progetto);
@@ -671,16 +602,24 @@ public List<String> getIdAttivitaColtivatore(String username, String progetto) {
     return idList;
 }
 
+
 //SECONDA FUNZIONE: Restituisce i tipi per indice
 public List<String> getTipiAttivitaColtivatore(String username, String progetto) {
     List<String> tipoList = new ArrayList<>();
     
+//    try (Connection conn = Connessione.getConnection();
+//         PreparedStatement stmt = conn.prepareStatement(
+//             "SELECT id_semina, id_irrigazione, id_raccolta " +
+//             "FROM coltivatoreview " +
+//             "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
+//             "ORDER BY giorno_assegnazione")) {
+    
     try (Connection conn = Connessione.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT id_semina, id_irrigazione, id_raccolta " +
-             "FROM coltivatoreview " +
-             "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
-             "ORDER BY giorno_assegnazione")) {
+            PreparedStatement stmt = conn.prepareStatement(
+                "SELECT id_semina, id_irrigazione, id_raccolta " +
+                "FROM tipi_attivita_coltivatore " +
+                "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
+                "ORDER BY giorno_assegnazione")) {
         
         stmt.setString(1, username);
         stmt.setString(2, progetto);
@@ -703,14 +642,22 @@ public List<String> getTipiAttivitaColtivatore(String username, String progetto)
     return tipoList;
 }
 
+
 public String getLottoEPosizione(String progetto, String username) {
     String risultato = "";
     
+//    try (Connection conn = Connessione.getConnection();
+//         PreparedStatement stmt = conn.prepareStatement(
+//             "SELECT DISTINCT id_lotto, posizione " +
+//             "FROM coltivatoreview " +
+//             "WHERE titolo_progetto = ? AND username_coltivatore = ?")) {
+    
+    
     try (Connection conn = Connessione.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT DISTINCT id_lotto, posizione " +
-             "FROM coltivatoreview " +
-             "WHERE titolo_progetto = ? AND username_coltivatore = ?")) {
+            PreparedStatement stmt = conn.prepareStatement(
+                "SELECT id_lotto, posizione " +
+                "FROM VisualizzaLottoColtivatore " +
+                "WHERE titolo_progetto = ? AND username_coltivatore = ?")) {
         
         stmt.setString(1, progetto);
         stmt.setString(2, username);
@@ -731,11 +678,17 @@ public String getLottoEPosizione(String progetto, String username) {
 public String getEsperienzaColtivatore(String username) {
     String esperienza = "";
     
+//    try (Connection conn = Connessione.getConnection();
+//         PreparedStatement stmt = conn.prepareStatement(
+//             "SELECT DISTINCT esperienza " +
+//             "FROM coltivatoreview " +
+//             "WHERE username_coltivatore = ?")) {
+    
     try (Connection conn = Connessione.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT DISTINCT esperienza " +
-             "FROM coltivatoreview " +
-             "WHERE username_coltivatore = ?")) {
+            PreparedStatement stmt = conn.prepareStatement(
+                "SELECT DISTINCT esperienza " +
+                "FROM esperienza_coltivatore " +
+                "WHERE username = ?")) {
         
         stmt.setString(1, username);
         ResultSet rs = stmt.executeQuery();
@@ -754,11 +707,16 @@ public String getEsperienzaColtivatore(String username) {
 
 public String getStimaRaccolto(String username, String progetto) {
     String stima = "";
-    try (Connection conn = Connessione.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT raccolto_effettivo FROM coltivatoreview " +
-             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+//    try (Connection conn = Connessione.getConnection();
+//         PreparedStatement stmt = conn.prepareStatement(
+//             "SELECT raccolto_effettivo FROM coltivatoreview " +
+//             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
         
+    try (Connection conn = Connessione.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(
+                "SELECT raccolto_effettivo FROM stima_raccoltoColtivatore " +
+                "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+    
         stmt.setString(1, username);
         stmt.setString(2, progetto);
         ResultSet rs = stmt.executeQuery();
@@ -772,13 +730,21 @@ public String getStimaRaccolto(String username, String progetto) {
     return stima;
 }
 
+
+
+
 public String getTipologia(String username, String progetto) {
     String tipologia = "";
-    try (Connection conn = Connessione.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT tipo_semina FROM coltivatoreview " +
-             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+//    try (Connection conn = Connessione.getConnection();
+//         PreparedStatement stmt = conn.prepareStatement(
+//             "SELECT tipo_semina FROM coltivatoreview " +
+//             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
         
+    try (Connection conn = Connessione.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(
+                "SELECT tipo_semina FROM tipologia_seminaColtivatore " +
+                "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+    
         stmt.setString(1, username);
         stmt.setString(2, progetto);
         ResultSet rs = stmt.executeQuery();
@@ -799,10 +765,15 @@ public String getVarieta(String username, String progetto) {
 
 public String getIrrigazione(String username, String progetto) {
     String irrigazione = "";
+//    try (Connection conn = Connessione.getConnection();
+//         PreparedStatement stmt = conn.prepareStatement(
+//             "SELECT tipo_irrigazione FROM coltivatoreview " +
+//             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+    
     try (Connection conn = Connessione.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT tipo_irrigazione FROM coltivatoreview " +
-             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+            PreparedStatement stmt = conn.prepareStatement(
+                "SELECT tipo_irrigazione FROM irrigazione_coltivatore " +
+                "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
         
         stmt.setString(1, username);
         stmt.setString(2, progetto);
@@ -816,41 +787,63 @@ public String getIrrigazione(String username, String progetto) {
     }
     return irrigazione;
 }
-// f coltura e varieta
-public String[] getColturaEVarieta(String username, String progetto) {
-    String[] risultato = new String[2];
-    risultato[0] = "";
-    risultato[1] = "";
-    
-    try (Connection conn = Connessione.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT DISTINCT tipo_coltura, varieta_coltura " +
-             "FROM coltivatoreview " +
-             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
-        
-        stmt.setString(1, username);
-        stmt.setString(2, progetto);
-        ResultSet rs = stmt.executeQuery();
-        
-        if (rs.next()) {
-            risultato[0] = rs.getString("tipo_coltura") != null ? rs.getString("tipo_coltura") : "";
-            risultato[1] = rs.getString("varieta_coltura") != null ? rs.getString("varieta_coltura") : "";
-        }
-        
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-    }
-    
-    return risultato;
+
+
+public List<String> getColtura(String username, String progetto) {
+	List<String> lista = new ArrayList<>();
+	
+	Connection conn = null;
+	PreparedStatement stmt = null;
+	ResultSet risultato = null;
+	
+	try {
+		  conn = Connessione.getConnection();
+//	       String sql = "SELECT DISTINCT tipo_coltura " +
+//	       "FROM coltivatoreview " +
+//	       "WHERE username_coltivatore = ? AND titolo_progetto = ?"; 
+
+		  String sql = "SELECT varieta_coltura " +
+                  "FROM ComboTipologiaColturaColtivatore " +
+                  "WHERE username_coltivatore = ? AND titolo_progetto = ?";
+		 
+	 
+		 stmt = conn.prepareStatement(sql); 
+		 stmt.setString(1, username);
+		 stmt.setString(2, progetto);
+		 risultato= stmt.executeQuery();
+	  
+	  while (risultato.next()) {
+//	      String tipoColtura = risultato.getString("tipo_coltura").toLowerCase();
+		  String varieta = risultato.getString("varieta_coltura").toLowerCase();
+	      //lista.add(String.valueOf(tipoColtura));
+		  lista.add(String.valueOf(varieta));
+	  }
+	  
+	} catch (SQLException ex) {
+	  ex.printStackTrace();
+	} finally {
+	    try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+	    try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+	    try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+	}
+
+
+	return lista;
 }
+
+
 
 
 public String getTipoSemina(String idSemina) {
     String tipoSemina = "";
     
+//    try (Connection conn = Connessione.getConnection();
+//         PreparedStatement stmt = conn.prepareStatement(
+//             "SELECT tipo_semina FROM coltivatoreview WHERE id_semina = ?")) {
+    
     try (Connection conn = Connessione.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(
-             "SELECT tipo_semina FROM coltivatoreview WHERE id_semina = ?")) {
+            PreparedStatement stmt = conn.prepareStatement(
+                "SELECT tipo_semina FROM semina_view WHERE id_semina = ?")) {
         
         stmt.setInt(1, Integer.parseInt(idSemina));
         ResultSet rs = stmt.executeQuery();
@@ -865,6 +858,57 @@ public String getTipoSemina(String idSemina) {
     
     return tipoSemina != null ? tipoSemina : "";
 }
+
+// !!NON ANCORA USATO!!
+public boolean sommaRaccolto(String raccolto, String coltura, String progetto) {
+	
+	Connection conn = null;
+	PreparedStatement stmt = null;
+	ResultSet risultato = null;
+	String sql1 = null;
+	String sql2 = null;
+	
+	try {
+		
+		conn = Connessione.getConnection();
+		sql1 = "SELECT SUM(raccoltoProdotto) AS somma, id_raccolta FROM sommaRaccolti WHERE titolo_progetto = ? AND varietà = ? GROUP BY id_raccolta";
+		stmt = conn.prepareStatement(sql1);
+		stmt.setString(1, progetto);
+		stmt.setString(2, coltura);
+		risultato = stmt.executeQuery();
+		
+		double sommaRaccolti = Double.parseDouble(raccolto);
+
+		if (risultato.next()) {
+            sommaRaccolti += risultato.getDouble("somma"); // SOMMA il nuovo raccolto all'esistente
+            System.out.println("Nuova somma dei raccolti: " + sommaRaccolti); // Debug
+        }
+		stmt.close();
+        risultato.close();
+		
+        sql2 = "UPDATE Coltura SET raccoltoProdotto = ? WHERE varietà = ?";
+        stmt = conn.prepareStatement(sql2);
+        stmt.setDouble(1, sommaRaccolti);
+        stmt.setString(2, coltura);
+        
+        int rows = stmt.executeUpdate();
+        
+        return rows > 0;
+		
+	}catch (SQLException ex) {
+		  ex.printStackTrace();
+		  return false;
+	} finally {
+		    try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+		    try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+		    try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+	}
+	
+	
+	
+}
+
+
 
 
 }

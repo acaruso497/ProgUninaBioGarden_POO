@@ -32,12 +32,21 @@ private daoVisualizzaP dao;
         return dao.getLottiByProprietario(username);
     }
     
+    public List<String> getColtureByLotto(String idLottoStr, String idProgettoStr) {
+    	return dao.getColtureByLotto(idLottoStr, idProgettoStr);
+    }
+    
     
     // Setta l'ID del progetto, i campi di data inizio e data fine
-    public void popolaDatiProgetto(String idProgettoStr, JTextField fieldStima, JTextField fieldEffettivo, 
-                                   JTextField fieldDataIP, JTextField fieldDataFP) {
-        dao.popolaDatiProgetto(idProgettoStr, fieldStima, fieldEffettivo, fieldDataIP, fieldDataFP);
+    public void popolaDatiProgetto(String idProgettoStr, JTextField fieldStima, 
+    								JTextField fieldDataIP, JTextField fieldDataFP) {
+        dao.popolaDatiProgetto(idProgettoStr, fieldStima, fieldDataIP, fieldDataFP);
     } 
      
+    
+    public void mostraRaccolto (String idProgettoStr, String idLottoStr, String coltura, JTextField FieldEffettivo) {
+    	
+    	dao.mostraRaccolto(idProgettoStr, idLottoStr, coltura, FieldEffettivo);
+    }
     
 }

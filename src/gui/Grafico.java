@@ -10,6 +10,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import controller.ControllerGrafico;
 import controller.ControllerLogin;
 import controller.CreaProgettoController;
@@ -17,8 +23,10 @@ import dao.DAO;
 import dao.daoGrafico;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import java.awt.Dimension;
+import javax.swing.JButton;
 
 public class Grafico extends JFrame {
 
@@ -65,6 +73,78 @@ public class Grafico extends JFrame {
 	    ComboColtura.setSelectedIndex(-1);
 	    ComboColtura.setPreferredSize(new Dimension(150, 20));
 	    contentPane.add(ComboColtura, "cell 1 2,growx");
+	    
+	    JButton ButtonReport = new JButton("Report grafico");
+	    ButtonReport.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	            Object selLotto = ComboLotto.getSelectedItem();
+	            Object selColt  = ComboColtura.getSelectedItem();
+
+	            if (selLotto == null || selColt == null) {
+	                JOptionPane.showMessageDialog(Grafico.this, "Seleziona Lotto e Coltura");
+	                return;
+	            }
+
+	            final int idlotto;
+	            try {
+	                idlotto = Integer.parseInt(selLotto.toString().trim());
+	            } catch (NumberFormatException ex) {
+	                JOptionPane.showMessageDialog(Grafico.this, "ID lotto non valido.");
+	                return;
+	            }
+	            final String varieta = selColt.toString().trim();
+
+	            // Controller (meglio avere un field, ma se vuoi lasciarlo qui va bene)
+	            ControllerGrafico controller = new ControllerGrafico();
+
+	            double[] stats = controller.getStatistiche(idlotto, varieta);
+	            // stats: [0]=num_raccolte, [1]=media, [2]=min, [3]=max
+	            System.out.println("DEBUG stats: " + java.util.Arrays.toString(stats));
+
+	            //se non c'è nessun dato, avvisa
+	            if (stats == null) {
+	                JOptionPane.showMessageDialog(Grafico.this,
+	                        "Errore nel recupero delle statistiche.");
+	                return;
+	            }
+	            long count = Math.round(stats[0]);
+	            boolean noNumeri = (Double.isNaN(stats[1]) && Double.isNaN(stats[2]) && Double.isNaN(stats[3]));
+	            if (count <= 0 || noNumeri) {
+	                JOptionPane.showMessageDialog(Grafico.this,
+	                        "Nessuna raccolta per Lotto " + idlotto + " e " + varieta);
+	                return;
+	            }
+
+	            //preparo il dataset per JFreeChart
+	            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+	            String serie = varieta;                   // riga/serie (legenda)
+	            dataset.addValue(count,     serie, "Totale raccolte");
+	            dataset.addValue(stats[1],  serie, "Media");
+	            dataset.addValue(stats[2],  serie, "Min");
+	            dataset.addValue(stats[3],  serie, "Max");
+
+	            //creo e mostro il grafico
+	            String titolo = "Lotto " + idlotto + " - " + varieta;
+	            JFreeChart chart = ChartFactory.createBarChart(
+	                    titolo,
+	                    "Statistiche",
+	                    "Quantità",
+	                    dataset,
+	                    PlotOrientation.HORIZONTAL,
+	                    true,   // legenda
+	                    true,   // tooltips
+	                    false   // urls
+	            );
+
+	            JFrame chartFrame = new JFrame("Grafico");
+	            chartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	            chartFrame.setSize(700, 500);
+	            chartFrame.add(new ChartPanel(chart));
+	            chartFrame.setLocationRelativeTo(Grafico.this);
+	            chartFrame.setVisible(true);
+	        }
+	    });
+	    contentPane.add(ButtonReport, "cell 1 4,alignx center");
 	    
 	    //controlla la ComboLotto
 	    if (selectedLotto != null) {

@@ -55,6 +55,8 @@ public class VisualizzaProgetti extends JFrame {
     JComboBox<String> ComboProgetto = new JComboBox<>();
     JComboBox<String> ComboLotto = new JComboBox<>();
     
+    JComboBox<String> ComboListaColture = new JComboBox<>();
+    
     //stati attivita
     JRadioButton RadioPianificata = new JRadioButton("pianificata");
     JRadioButton RadioInCorso = new JRadioButton("in corso");
@@ -85,8 +87,7 @@ public class VisualizzaProgetti extends JFrame {
 	    @SuppressWarnings("unused")
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", 
-	    									"[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][][][grow][grow][][grow][][grow][][][][][][grow][grow][][][grow][][][grow][grow][grow][grow][grow]", "[grow][grow][][grow][grow][grow][][grow][][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    JLabel LabelVisualizza = new JLabel("Visualizza i tuoi progetti!");
 	    LabelVisualizza.setFont(new Font("Tahoma", Font.BOLD, 17));
@@ -96,7 +97,7 @@ public class VisualizzaProgetti extends JFrame {
 	    // Pulsante freccia indietro
 	    BasicArrowButton ButtonIndietro = new BasicArrowButton(BasicArrowButton.WEST);
 	    ButtonIndietro.setPreferredSize(new Dimension(40, 40));
-	    contentPane.add(ButtonIndietro, "cell 13 0,alignx right,aligny center");
+	    contentPane.add(ButtonIndietro, "cell 27 0,alignx right,aligny center");
 	    ButtonIndietro.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
@@ -104,101 +105,84 @@ public class VisualizzaProgetti extends JFrame {
 			}
 		});
 	    
-	    JLabel LabelProgetto = new JLabel("Progetto");
-	    contentPane.add(LabelProgetto, "cell 0 2,alignx trailing");
+	    ComboLotto.setEnabled(false);//bloccati per indirizzare l utente 
+	    ComboListaColture.setEnabled(false);    
 	    
-	    
-	    contentPane.add(ComboProgetto, "cell 1 2,growx");
-	    ComboProgetto.setPreferredSize(new Dimension(150, 20));
-	
-	 
-	    
-	    JButton ButtonGrafici = new JButton("Visualizza Grafici");
-	    ButtonGrafici.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		VisualizzaProgetti.this.setVisible(false);
-	    		String selectedLotto = (String) ComboLotto.getSelectedItem();
+	        JButton ButtonGrafici = new JButton("Visualizza Grafici");
+	        ButtonGrafici.addActionListener(new ActionListener() {
+	        	public void actionPerformed(ActionEvent e) {
+	        		VisualizzaProgetti.this.setVisible(false);
+	        		String selectedLotto = (String) ComboLotto.getSelectedItem();
                 Grafico grafico = new Grafico(selectedLotto);
-	    		grafico.setVisible(true);
-	    	}
-	    });
-	    contentPane.add(ButtonGrafici, "cell 10 2");
-	    ButtonGrafici.setPreferredSize(new Dimension(150, 20));
+	        		grafico.setVisible(true);
+	        	}
+	        });
+	        contentPane.add(ButtonGrafici, "cell 6 1");
+	        ButtonGrafici.setPreferredSize(new Dimension(150, 20));
+	    
+	    JLabel LabelProgetto = new JLabel("Progetto");
+	    contentPane.add(LabelProgetto, "cell 0 3,alignx trailing");
+	    
+	    
+	    contentPane.add(ComboProgetto, "cell 1 3,growx");
+	    ComboProgetto.setPreferredSize(new Dimension(150, 20));
+	    
+	    JLabel LabelTipologia = new JLabel("Tipologia coltura");
+	    contentPane.add(LabelTipologia, "cell 5 3,alignx trailing");
+	    
+	    
+	    ComboListaColture.setSelectedIndex(-1);
+	    ComboListaColture.setPreferredSize(new Dimension(150, 20));
+	    contentPane.add(ComboListaColture, "cell 6 3,growx");
 	    
 	    JLabel LabelDataIP = new JLabel("Data Inizio");
-	    contentPane.add(LabelDataIP, "cell 0 3,alignx right,aligny center");
+	    contentPane.add(LabelDataIP, "cell 0 4,alignx right,aligny center");
 	    
 	    FieldDataIP = new JTextField(); //field data inizio progetto
-	    contentPane.add(FieldDataIP, "cell 1 3,growx");
+	    contentPane.add(FieldDataIP, "cell 1 4,growx");
 	    FieldDataIP.setColumns(10);
-	    FieldDataIP.setEditable(false); //blocca il textfield
+	    FieldDataIP.setEditable(false);
 	    
 	    JLabel LabelDataFP = new JLabel("Data Fine");
-	    contentPane.add(LabelDataFP, "cell 0 4,alignx right,aligny center");
+	    contentPane.add(LabelDataFP, "cell 0 5,alignx right,aligny center");
 	    
 	    FieldDataFP = new JTextField(); //field data fine progetto
-	    contentPane.add(FieldDataFP, "cell 1 4,growx");
+	    contentPane.add(FieldDataFP, "cell 1 5,growx");
 	    FieldDataFP.setColumns(10);
 	    FieldDataFP.setEditable(false); //blocca il textfield
 	    
 	    ButtonGroup gruppoStato = new ButtonGroup(); 
 	    
 	    JLabel LabelStima = new JLabel("Stima raccolto");
-	    contentPane.add(LabelStima, "cell 9 6,alignx trailing");
+	    contentPane.add(LabelStima, "cell 5 6,alignx trailing");
 	    
 	    FieldStima = new JTextField();
-	    contentPane.add(FieldStima, "cell 10 6,growx");
+	    contentPane.add(FieldStima, "cell 6 6,growx");
 	    FieldStima.setColumns(10);
 	    FieldStima.setEditable(false); //blocca il textfield
 	    
 	    JLabel LabelEffettivo = new JLabel("Raccolto effettivo");
-	    contentPane.add(LabelEffettivo, "cell 9 7,alignx trailing");
+	    contentPane.add(LabelEffettivo, "cell 5 7,alignx trailing");
 	    
 	    FieldEffettivo = new JTextField();
-	    contentPane.add(FieldEffettivo, "cell 10 7,growx");
+	    contentPane.add(FieldEffettivo, "cell 6 7,growx");
 	    FieldEffettivo.setColumns(10);
 	    FieldEffettivo.setEditable(false); //blocca il textfield
 	    	    
 	    	    
 	    JLabel LabelLotto = new JLabel("Lotto");
-	    contentPane.add(LabelLotto, "cell 0 8,alignx trailing");
+	    contentPane.add(LabelLotto, "cell 0 11,alignx trailing");
 	    
 	    
-	    contentPane.add(ComboLotto, "cell 1 8,growx");
+	    contentPane.add(ComboLotto, "cell 1 11,growx");
 	    ComboLotto.setPreferredSize(new Dimension(150, 20));
 	    
 	    JLabel LabelAttivita = new JLabel("Ultima Attività");
-	    contentPane.add(LabelAttivita, "cell 0 10,alignx trailing");
+	    contentPane.add(LabelAttivita, "cell 0 13,alignx trailing");
 	    
 	    
-	    contentPane.add(ComboAttivita, "cell 1 10,growx");
+	    contentPane.add(ComboAttivita, "cell 1 13,growx");
 	    ComboAttivita.setPreferredSize(new Dimension(150, 20));
-	    
-	    
-	    
-	    contentPane.add(RadioPianificata, "cell 3 10");
-	    RadioPianificata.setOpaque(false);
-	    gruppoStato.add(RadioPianificata);
-	    
-	    
-	    contentPane.add(RadioInCorso, "cell 6 10");
-	    RadioInCorso.setOpaque(false);
-	    gruppoStato.add(RadioInCorso);
-	    
-	    
-	    contentPane.add(RadioCompletata, "cell 9 10");
-	    RadioCompletata.setOpaque(false);
-	    gruppoStato.add(RadioCompletata);
-	    
-	    
-	    
-	    JLabel LabelDataIA = new JLabel("Data Inizio");
-	    contentPane.add(LabelDataIA, "cell 0 11,alignx trailing");
-	    
-	    FieldDataIA = new JTextField(); //field data inizio attività
-	    contentPane.add(FieldDataIA, "cell 1 11,growx");
-	    FieldDataIA.setColumns(10);
-	    FieldDataIA.setEditable(false); //blocca il textfield
 	    
 	    
 	    
@@ -227,13 +211,39 @@ public class VisualizzaProgetti extends JFrame {
 		            }	      
 	    	}
 	    });
-	    contentPane.add(ButtonModificaAttivita, "cell 6 11");
+	    
+	    
+	    
+	    contentPane.add(RadioPianificata, "cell 3 13");
+	    RadioPianificata.setOpaque(false);
+	    gruppoStato.add(RadioPianificata);
+	    
+	    
+	    contentPane.add(RadioInCorso, "cell 4 13");
+	    RadioInCorso.setOpaque(false);
+	    gruppoStato.add(RadioInCorso);
+	    
+	    
+	    contentPane.add(RadioCompletata, "cell 5 13");
+	    RadioCompletata.setOpaque(false);
+	    gruppoStato.add(RadioCompletata);
+	    contentPane.add(ButtonModificaAttivita, "cell 6 13");
+	    
+	    
+	    
+	    JLabel LabelDataIA = new JLabel("Data Inizio");
+	    contentPane.add(LabelDataIA, "cell 0 14,alignx trailing");
+	    
+	    FieldDataIA = new JTextField(); //field data inizio attività
+	    contentPane.add(FieldDataIA, "cell 1 14,growx");
+	    FieldDataIA.setColumns(10);
+	    FieldDataIA.setEditable(false); //blocca il textfield
 	    
 	    JLabel LabelDataFA = new JLabel("Data Fine");
-	    contentPane.add(LabelDataFA, "cell 0 12,alignx trailing");
+	    contentPane.add(LabelDataFA, "cell 0 15,alignx trailing");
 	    
 	    FieldDataFA = new JTextField(); //field data fine attività
-	    contentPane.add(FieldDataFA, "cell 1 12,growx");
+	    contentPane.add(FieldDataFA, "cell 1 15,growx");
 	    FieldDataFA.setColumns(10);
 	    FieldDataFA.setEditable(false); //blocca il textfield
 	    
@@ -242,20 +252,45 @@ public class VisualizzaProgetti extends JFrame {
 	    
         popolaComboProgetto();
         popolaComboLotto();
-     
+       // popolaComboListaColture();
         
         ComboProgetto.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	
               try {
 	                String selectedProgetto = (String) ComboProgetto.getSelectedItem();
-	                controller.popolaDatiProgetto(selectedProgetto, FieldStima, FieldEffettivo, FieldDataIP, FieldDataFP); // Popola i campi progetto
+	                controller.popolaDatiProgetto(selectedProgetto, FieldStima, 
+	                								FieldDataIP, FieldDataFP); // Popola i campi progetto
+	                ComboLotto.setEnabled(true);
+	                popolaComboListaColture();
+	                
                 }catch (NullPointerException ex) {
-            		JOptionPane.showMessageDialog(VisualizzaProgetti.this, "Seleziona un progetto valido", "Errore", JOptionPane.ERROR_MESSAGE);
+            		JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
+            		"Seleziona un progetto valido", "Errore", JOptionPane.ERROR_MESSAGE);
             	}
             }
         });
         
- 
+        ComboLotto.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	
+            	ComboListaColture.setEnabled(true);
+                popolaComboListaColture();}   });
+        
+        ComboListaColture.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              try {
+            	  	String selectedProgetto = (String) ComboProgetto.getSelectedItem();
+            	  	String selectedLotto = (String) ComboLotto.getSelectedItem();
+	                controller.getColtureByLotto(selectedProgetto, selectedLotto);
+	                String selectedColtura = (String) ComboListaColture.getSelectedItem();
+	                controller.mostraRaccolto(selectedProgetto, selectedLotto, selectedColtura, FieldEffettivo);
+                }catch (NullPointerException ex) {
+            		JOptionPane.showMessageDialog(VisualizzaProgetti.this, "Seleziona una coltura valida!", "Errore", JOptionPane.ERROR_MESSAGE);
+            	}
+            }
+        });
+        
         
         // ActionListener per ComboAttivita: recupera stato e seleziona radio button
         ComboAttivita.addActionListener(new ActionListener() {
@@ -280,13 +315,9 @@ public class VisualizzaProgetti extends JFrame {
                 	}catch (NullPointerException ex) {
                 		JOptionPane.showMessageDialog(VisualizzaProgetti.this, "Seleziona un'attività valida", "Errore", JOptionPane.ERROR_MESSAGE);
                 	}
-                	
-                }
-                  
-        }); 
-        
+                }                 
+        });       
 	}
-	
 	
 	
 	 // Popola ComboProgetto 
@@ -305,6 +336,24 @@ public class VisualizzaProgetti extends JFrame {
             ComboLotto.addItem(lotto); //popola la combobox con l'id progetto
         }
         ComboLotto.setSelectedIndex(-1);
+    }
+    
+    // Popola ComboListaColture 
+    private void popolaComboListaColture() {
+    	String selectedProgetto = (String) ComboProgetto.getSelectedItem();
+	  	String selectedLotto = (String) ComboLotto.getSelectedItem();
+	  
+	  	if (selectedProgetto == null || selectedLotto == null || 
+	  		    selectedProgetto.isEmpty() || selectedLotto.isEmpty()) {
+	  		    ComboListaColture.removeAllItems(); 
+	  		    return;
+	  		}
+	  	
+    	List<String> listaColture = controller.getColtureByLotto( selectedLotto,selectedProgetto);
+        for (String coltura : listaColture) {
+        	ComboListaColture.addItem(coltura); //popola la combobox con l'id progetto
+        }
+        ComboListaColture.setSelectedIndex(-1);
     }
     
 	

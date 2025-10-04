@@ -3,21 +3,50 @@ package dao;
 import database.Connessione;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+//import java.time.format.DateTimeFormatter;
+//import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 public class daoCreaP {
 //GUI: Crea Progetto
 	
 	//Registrazione dei dati del progetto
+	
+	// controlla se esiste la coltura gia su un lotto !!AGGIUNTO!!
+	public static boolean checkColtura(String idLotto, String[] coltureArray) {
+//	    String sql = "SELECT 1 FROM coltivatoreview " +
+//	                 "WHERE id_lotto = ? AND varietà = ANY(?) " +
+//	                 "LIMIT 1";
+		
+		String sql = "SELECT 1 FROM controllocolture " +
+                "WHERE id_lotto = ? AND varietà = ANY(?) " +
+                "LIMIT 1";
+	    
+	    try (Connection conn = Connessione.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(sql)) {
+	        
+	        
+	        
+	        stmt.setInt(1, Integer.parseInt(idLotto));
+	        stmt.setArray(2, conn.createArrayOf("VARCHAR", coltureArray));
+	        
+	        ResultSet rs = stmt.executeQuery();
+	        return rs.next(); // true se trova ALMENO una corrispondenza
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	
+	
 	public static boolean registraProgetto(String titolo, String idLottoStr, String stimaRaccoltoStr, 
-										   String descrizione, Date dataIP, Date dataFP) {
-	    int idLotto = Integer.parseInt(idLottoStr);  //converte l'ID del lotto nella combo box in un intero
-	    double stimaRaccolto = Double.parseDouble(stimaRaccoltoStr); //converte la stringa della stima del raccolto in un double
+										   String[] coltureArray, String descrizione, Date dataIP, Date dataFP) {
+	    int idLotto = Integer.parseInt(idLottoStr);  //converte l'ID del lotto nella combo box in un intero//converte la stringa della stima del raccolto in un double
 	    
 	    Connection conn = null;
 	    PreparedStatement stmt = null;
@@ -26,17 +55,45 @@ public class daoCreaP {
 	    try {
 	        conn = Connessione.getConnection();
 	        
+	        //controlla se esiste almeno 1 progetto di coltivazione all'interno di un determinato lotto
+	        
+	        String sql = "SELECT EXISTS (  " +
+	        		" SELECT 1 " +
+	        	    " FROM Progetto_Coltivazione " +
+	        	    " WHERE id_lotto = ? " +
+	        	    " ); ";
+	        
+	        stmt = conn.prepareStatement(sql);
+	        stmt.setInt(1, idLotto);
+	        risultato = stmt.executeQuery();
+	        
+	        
+	        boolean esiste = false;
+	        if(risultato.next()) {
+	        	esiste = risultato.getBoolean("exists");
+	        }
+	        risultato.close();
+	        stmt.close();
+	        
+	        if(esiste==true) {
+	        	 return false;
+	        }else {
+	        	
 	        //inserisce tutte le informazioni dei textfield dentro progetto coltivazione
-	        String sql1 = "INSERT INTO Progetto_Coltivazione (titolo, descrizione, stima_raccolto, data_inizio, data_fine) VALUES (?, ?, ?, ?, ?) RETURNING id_progetto";
+	        String sql1 = "INSERT INTO Progetto_Coltivazione (titolo, descrizione, stima_raccolto, data_inizio, data_fine, id_lotto) "
+	        		+ "VALUES (?, ?, ?, ?, ?, ?) RETURNING id_progetto";
 	        stmt = conn.prepareStatement(sql1);
 	        stmt.setString(1, titolo);
 	        stmt.setString(2, descrizione);
-	        stmt.setDouble(3, stimaRaccolto);
+	        stmt.setDouble(3, Double.parseDouble(stimaRaccoltoStr));
 	        stmt.setDate(4, dataIP);
 	        stmt.setDate(5, dataFP);
+	        stmt.setInt(6, idLotto);
+	        
+	        
 	        risultato = stmt.executeQuery();
 	        
-	        int idProgetto = 0; //ottiene l'id del progetto così da collegarlo al lotto di appartenenza
+	        int idProgetto = 0;
 	        if (risultato.next()) {
 	            idProgetto = risultato.getInt("id_progetto");
 	        }
@@ -44,18 +101,54 @@ public class daoCreaP {
 	        risultato.close();
 	        stmt.close();
 	        
-	      //inserisce l'id lotto e l'id del progetto nella tabella ponte
-	        String sql2 = "INSERT INTO Ospita_Lotto_Progetto (id_progetto, id_lotto) VALUES (?, ?)";
-	        stmt = conn.prepareStatement(sql2);
-	        stmt.setInt(1, idProgetto);
-	        stmt.setInt(2, idLotto);
-	        int rows = stmt.executeUpdate();
 	        
-	        if (rows == 1) {
-	            return true;
-	        } else {
-	            return false;
+	        
+	      //inserisce l'id lotto e l'id del progetto nella tabella ponte
+//	        String sql2 = "INSERT INTO Ospita_Lotto_Progetto (id_progetto, id_lotto) VALUES (?, ?)";
+//	        
+//	        stmt = conn.prepareStatement(sql2);
+//	        stmt.setInt(1, idProgetto);
+//	        stmt.setInt(2, idLotto);
+//	        int rows = stmt.executeUpdate();
+//	        
+//	        stmt.close();
+	        
+	        
+	        
+	     // 2. CREA LE N COLTURE (NUOVO)
+//	        if (coltureArray != null && coltureArray.length > 0) {
+//	            for (String coltura : coltureArray) {
+//	                String colturaPulita = coltura.trim();
+//	                
+//	                if (!colturaPulita.isEmpty()) {
+//	                    // Crea o recupera coltura
+//	                    int colturaId = getOrCreateColtura(conn, colturaPulita);
+//	                    
+//	                    // Associa coltura al lotto
+//	                    associaColturaALotto(conn, idLotto, colturaId, idProgetto);
+//	                }
+//	            }
+//	        }
+	        //prova
+	        if (coltureArray != null && coltureArray.length > 0) {
+	            for (int i = 0; i < coltureArray.length; i++) {
+	                String coltura = coltureArray[i];
+	                String colturaPulita = coltura.trim();
+	                
+	                if (!colturaPulita.isEmpty()) {
+	                    // Crea o recupera coltura
+	                    int colturaId = getOrCreateColtura(conn, colturaPulita);
+	                    
+	                    // Associa coltura al lotto
+	                    associaColturaALotto(conn, idLotto, colturaId, idProgetto);
+	                }
+	            }
 	        }
+	        
+	        
+	        return true;
+	        
+	      }
 	        
 	    } catch(SQLException | NumberFormatException ex) {
 	        ex.printStackTrace();
@@ -66,113 +159,193 @@ public class daoCreaP {
 	        try { if (conn != null) conn.close(); } catch (Exception e) {}
 	    }
 	}
-	
-	//Registrazione dei dati dell'attività
-	public static boolean registraAttivita(String tipoAttivita, Date dataIA, Date dataFA, String tipoIrrigazione, String tipoSemina) {
-	    Connection conn = null;
-	    PreparedStatement stmt = null;
-	    ResultSet risultato = null;
-	    String sql = null;
+			
+	// Aggiungi questi metodi helper nello stesso DAO
+	private static int getOrCreateColtura(Connection conn, String nomeColtura) throws SQLException {
+	    String selectSql = "SELECT id_coltura FROM Coltura WHERE varietà = ?";
+	    PreparedStatement stmt = conn.prepareStatement(selectSql);
+	    stmt.setString(1, nomeColtura);
+	    ResultSet rs = stmt.executeQuery();
 	    
-	    try {
-	        conn = Connessione.getConnection();
-	        
-	        //in base all'attività selezionata, fa un inserimento
-	        if ("Raccolta".equals(tipoAttivita)) {
-	        	sql = "INSERT INTO Raccolta (giorno_inizio, giorno_fine, raccolto_effettivo, id_attivita) VALUES (?,?,0, (SELECT MAX(ID_Attivita) FROM Attivita))";
-	        	stmt = conn.prepareStatement(sql);
-		        stmt.setDate(1, dataIA);
-		        stmt.setDate(2, dataFA);
-	        }
-	        
-	        if ("Semina".equals(tipoAttivita)) {
-	        	sql = "INSERT INTO Semina (giorno_inizio, giorno_fine, tipo_semina, profondita, id_attivita) VALUES (?,?,?,10, (SELECT MAX(ID_Attivita) FROM Attivita))";
-	        	stmt = conn.prepareStatement(sql);
-		        stmt.setDate(1, dataIA);
-		        stmt.setDate(2, dataFA);
-		        stmt.setString(3, tipoSemina);
-	        }
-	        
-	        if ("Irrigazione".equals(tipoAttivita)) {
-	        	sql = "INSERT INTO Irrigazione (giorno_inizio, giorno_fine, tipo_irrigazione, id_attivita) VALUES (?,?,?, (SELECT MAX(ID_Attivita) FROM Attivita))";
-	        	stmt = conn.prepareStatement(sql);
-	        	stmt.setDate(1, dataIA);
-		        stmt.setDate(2, dataFA);
-		        stmt.setString(3, tipoIrrigazione);
-	        }
-	        
-	        
-	        return stmt.executeUpdate() > 0; // Ritorna true se almeno una riga è stata aggiornata
-	        
-	    } catch(SQLException ex) {
-	        ex.printStackTrace();
-	        return false;
-	    } finally {
-	        try { if (risultato != null) risultato.close(); } catch (Exception e) {}
-	        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-	        try { if (conn != null) conn.close(); } catch (Exception e) {}
+	    if (rs.next()) {
+	        int id = rs.getInt("id_coltura");
+	        rs.close();
+	        stmt.close();
+	        return id;
 	    }
+	    rs.close();
+	    stmt.close();
+	    
+	    
+	    
+	    String insertSql = "INSERT INTO Coltura (varietà) VALUES (?) RETURNING id_coltura";
+	    stmt = conn.prepareStatement(insertSql);
+	    stmt.setString(1, nomeColtura);
+	    rs = stmt.executeQuery();
+	    
+	    if (rs.next()) {
+	        int id = rs.getInt("id_coltura");
+	        rs.close();
+	        stmt.close();
+	        return id;
+	    }
+	    
+	    throw new SQLException("Impossibile creare coltura: " + nomeColtura);
+	}
+	//!!MODIFICATO!!
+	private static void associaColturaALotto(Connection conn, int lottoId, int colturaId, int progettoId) throws SQLException {
+//	    String sql1 = "INSERT INTO Contiene (id_lotto, id_coltura) VALUES (?, ?)";
+//	    PreparedStatement stmt = conn.prepareStatement(sql1);
+//	    stmt.setInt(1, lottoId);
+//	    stmt.setInt(2, colturaId);
+//	    stmt.executeUpdate();
+//	    stmt.close();
+	    
+//	    String sql2 = "SELECT id_progetto FROM Ospita_Lotto_Progetto WHERE id_lotto = ?";
+//	    stmt = conn.prepareStatement(sql2);
+//	    stmt.setInt(1, lottoId);
+//	    ResultSet rs = stmt.executeQuery();
+//	   
+//	    int id = 0;
+//	    if (rs.next()) {
+//	        id = rs.getInt("id_progetto");
+//	    }
+//	    rs.close();
+//	    stmt.close();
+	    
+//	    String sql3 = "INSERT INTO Progetto_Coltura (id_progetto, id_coltura) VALUES (?, ?)";
+//	    PreparedStatement stmt = conn.prepareStatement(sql3);
+//	    stmt.setInt(1, progettoId);
+//	    stmt.setInt(2, colturaId);
+//	    stmt.executeUpdate();
+//	    
+//	    stmt.close();
+		
+		String checkSql = "SELECT 1 FROM Progetto_Coltura WHERE id_progetto = ? AND id_coltura = ?";
+	    PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+	    checkStmt.setInt(1, progettoId);
+	    checkStmt.setInt(2, colturaId);
+	    ResultSet rs = checkStmt.executeQuery();
+	    
+	    if (!rs.next()) {  // Inserisci solo se non esiste
+	        String sql = "INSERT INTO Progetto_Coltura (id_progetto, id_coltura) VALUES (?, ?)";
+	        PreparedStatement stmt = conn.prepareStatement(sql);
+	        stmt.setInt(1, progettoId);
+	        stmt.setInt(2, colturaId);
+	        stmt.executeUpdate();
+	        stmt.close();
+	    }
+	    
+	    rs.close();
+	    checkStmt.close();
+		
+		
+		
 	}
 	
-	//Popola i textfield relativi alla coltura
-		public void popolaColtura(JTextField FieldTipologia, JTextField FieldVarieta, String idLottoStr) {
-				int idLotto = Integer.parseInt(idLottoStr); //converte l'ID del lotto nella combo box in un intero
-				Connection conn = null;
-				PreparedStatement stmt = null;
-				ResultSet risultato = null;
-				
-				try {
-				conn = Connessione.getConnection(); 
-				String sql = "SELECT * FROM view_coltura WHERE ID_Lotto = ?"; //recupera tutti i dati della coltura tramite la view
-				
-				stmt = conn.prepareStatement(sql);   
-				stmt.setInt(1, idLotto);
-				risultato = stmt.executeQuery();
-				
-					if (risultato.next()) {
-						FieldTipologia.setText(risultato.getString("tipo")); //setta il textfield tipologia
-						FieldVarieta.setText(risultato.getString("varietà")); //setta il textfield varietà
-					}
-					
-				} catch (SQLException | NumberFormatException ex) {
-					ex.printStackTrace();
-				} finally {
-					try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
-					try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
-					try { if (conn != null) conn.close(); } catch (Exception ignored) {}
-				}
-		}
-		
-		// NB: DA TESTARE: Aggiorna tipo di semina e irrigazione inseriti nei textfield 
-		public boolean aggiornaTipo(String tipoIrrigazione, String tipoSemina) {
-			Connection conn = null;
-		    PreparedStatement stmt = null;
-		    String sql1 = null;
-		    String sql2 = null;
-		    try {
-		    	conn = Connessione.getConnection();
-		    	
-		    	//aggiorna le tabelle in base al tipo di semina o raccolta selezionata
-		    	sql1 = "UPDATE Semina SET tipo_semina = ? WHERE ID_Attivita = (SELECT MAX(ID_Attivita) FROM Attivita)"; //aggiorna lo stato di quell'attività da un id attività collegato ad un lotto
-		    	stmt = conn.prepareStatement(sql1);
-		        stmt.setString(1, tipoSemina);
-		        stmt.executeUpdate();
-		        
-		        sql2 = "UPDATE Irrigazione SET tipo_irrigazione = ? WHERE ID_Attivita = (SELECT MAX(ID_Attivita) FROM Attivita)"; //aggiorna lo stato di quell'attività da un id attività collegato ad un lotto
-		    	stmt = conn.prepareStatement(sql2);
-		        stmt.setString(1, tipoIrrigazione);
-		        stmt.executeUpdate();
+	
+	
+			
+public static boolean registraAttivita(String tipoAttivita, Date dataIA, Date dataFA, 
+	                    String tipoIrrigazione, String tipoSemina, String idLottoStr) {
+	Connection conn = null;
+	PreparedStatement stmt = null;
+	ResultSet risultato = null;
+	
+	try {
+	conn = Connessione.getConnection();
+	int idLotto = Integer.parseInt(idLottoStr);
+	
+	// FASE 1: RECUPERA COLTIVATORE DEL LOTTO
+	String coltivatore = getColtivatoreLotto(idLotto);
+	if (coltivatore == null) {
+	throw new SQLException("Nessun coltivatore assegnato al lotto " + idLotto);
+	}
+	
+	// FASE 2: INSERISCI ATTIVITA BASE
+	String sqlAttivita = "INSERT INTO Attivita (ID_Lotto, Codice_FiscaleCol, giorno_assegnazione) VALUES (?, ?, CURRENT_DATE) RETURNING ID_Attivita";
+	stmt = conn.prepareStatement(sqlAttivita);
+	stmt.setInt(1, idLotto);
+	stmt.setString(2, coltivatore);
+	risultato = stmt.executeQuery();
+	
+	int idAttivita = 0;
+	if (risultato.next()) {
+		idAttivita = risultato.getInt("ID_Attivita");
+	}
+	risultato.close();
+	stmt.close();
+	
+	// FASE 3: INSERISCI ATTIVITA SPECIFICA
+	String sql = null;
+	
+	if ("Raccolta".equals(tipoAttivita)) {
+		sql = "INSERT INTO Raccolta (giorno_inizio, giorno_fine, raccolto_effettivo, id_attivita, stato) VALUES (?, ?, 0, ?, 'pianificata')";
+		stmt = conn.prepareStatement(sql);
+		stmt.setDate(1, dataIA);
+		stmt.setDate(2, dataFA);
+		stmt.setInt(3, idAttivita);
+	}
+	else if ("Semina".equals(tipoAttivita)) {
+		sql = "INSERT INTO Semina (giorno_inizio, giorno_fine, tipo_semina, profondita, id_attivita, stato) VALUES (?, ?, ?, 10, ?, 'pianificata')";
+		stmt = conn.prepareStatement(sql);
+		stmt.setDate(1, dataIA);
+		stmt.setDate(2, dataFA);
+		stmt.setString(3, tipoSemina);
+		stmt.setInt(4, idAttivita);
+	}
+	else if ("Irrigazione".equals(tipoAttivita)) {
+		sql = "INSERT INTO Irrigazione (giorno_inizio, giorno_fine, tipo_irrigazione, id_attivita, stato) VALUES (?, ?, ?, ?, 'pianificata')";
+		stmt = conn.prepareStatement(sql);
+		stmt.setDate(1, dataIA);
+		stmt.setDate(2, dataFA);
+		stmt.setString(3, tipoIrrigazione);
+		stmt.setInt(4, idAttivita);
+	}
+	
+	return stmt.executeUpdate() > 0;
+	
+	} catch(SQLException | NumberFormatException ex) {
+		ex.printStackTrace();
+	return false;
+	} finally {
+	try { if (risultato != null) risultato.close(); } catch (Exception e) {}
+	try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+	try { if (conn != null) conn.close(); } catch (Exception e) {}
+	}
+}
 
-		        return stmt.executeUpdate() > 0; // Ritorna true se almeno una riga è stata aggiornata
-		    } catch (SQLException ex) {
-		        ex.printStackTrace();
-		        return false; 
-		    } finally {
-		        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-		        try { if (conn != null) conn.close(); } catch (Exception e) {}
-		    }
-		}
-	 
+//METODO HELPER PER RECUPERARE COLTIVATORE
+private static String getColtivatoreLotto(int idLotto) {
+	Connection conn = null;
+	PreparedStatement stmt = null;
+	ResultSet rs = null;
+	
+	try {
+		conn = Connessione.getConnection();
+		String sql = "SELECT a.Codice_FiscaleCol FROM Attivita a WHERE a.ID_Lotto = ? ORDER BY a.giorno_assegnazione DESC";;
+		stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, idLotto);
+		rs = stmt.executeQuery();
+	
+	if (rs.next()) {
+		return rs.getString("Codice_FiscaleCol");
+	}
+		return null; // Nessun coltivatore trovato per questo lotto
+	
+	} catch (SQLException ex) {
+		ex.printStackTrace();
+		return null;
+	} finally {
+	try { if (rs != null) rs.close(); } catch (Exception e) {}
+	try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+	try { if (conn != null) conn.close(); } catch (Exception e) {}
+	}
+}
+	
+	
+
+			
 	
 }
 //GUI: Crea Progetto
