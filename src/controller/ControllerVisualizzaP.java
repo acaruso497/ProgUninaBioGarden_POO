@@ -32,13 +32,13 @@ private daoVisualizzaP dao;
 //        return dao.getLottiByProprietario(username);
 //    }
     
- // Popola il field del lotto tramite l'id del progetto e codice fiscale del del proprietario
+    // Popola il field del lotto tramite l'id del progetto e codice fiscale del del proprietario
     public String getLottiByProprietario(int idProgetto, String codiceFiscaleProprietario) {
 	  return dao.getLottiByProprietario(idProgetto, codiceFiscaleProprietario);
   }
     
    
-    
+    //popola la combobox delle colture tramite l'id del lotto e l'id del progetto
     public List<String> getColtureByLotto(String idLottoStr, String idProgettoStr) {
     	return dao.getColtureByLotto(idLottoStr, idProgettoStr);
     }
@@ -46,14 +46,25 @@ private daoVisualizzaP dao;
     
     // Setta l'ID del progetto, i campi di data inizio e data fine
     public void popolaDatiProgetto(String idProgettoStr, JTextField fieldStima, 
-    								JTextField fieldDataIP, JTextField fieldDataFP) {
+    	                           JTextField fieldDataIP, JTextField fieldDataFP) {
+    	
         dao.popolaDatiProgetto(idProgettoStr, fieldStima, fieldDataIP, fieldDataFP);
     } 
      
-    
+    // Mostra il raccolto stimato e quello effettivo
     public void mostraRaccolto (String idProgettoStr, String idLottoStr, String coltura, JTextField FieldEffettivo) {
-    	
     	dao.mostraRaccolto(idProgettoStr, idLottoStr, coltura, FieldEffettivo);
+    }
+    
+    // termina il progetto di coltivazione 
+    public boolean terminaProgetto(String idProgettoStr, String idLottoStr) {
+    	return dao.terminaProgetto(idProgettoStr, idProgettoStr);
+    	
+    }
+    
+    public boolean isCompletata(String username, String idProgettoStr) {
+    	return dao.isCompletata(username, idProgettoStr);
+    	
     }
     
 }

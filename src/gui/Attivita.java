@@ -169,6 +169,7 @@ public class Attivita extends JFrame {
 	    ComboAttivita.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	            String selectedAttivita = (String) ComboAttivita.getSelectedItem();
+	            
 	            if (selectedAttivita == null || selectedAttivita.equals("-- Seleziona --")) {
 	                ComboTipoIrr.setEnabled(false);
 	                FieldTipoSemina.setEnabled(false);
@@ -192,6 +193,36 @@ public class Attivita extends JFrame {
 	            }
 	        }
 	    });
+        
+        ButtonAvanti = new JButton("HomePage");
+        ButtonAvanti.setEnabled(false); //inizialmente bloccato
+        ButtonAvanti.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		// Reset dei contatori per il nuovo ciclo di attività
+                if (creaProgettoController != null) {
+                    creaProgettoController.resetContatori();
+                    
+                    //opzione da prendere in considerazione per istanziare solo 3 attivita a progetto , 
+                    //alternativa valida quello commentato qui giu che fa inserire piu di 3 attivita e minimo 3 
+                    
+                    Attivita.this.setVisible(false);
+                    home.setVisible(true);
+                    
+              }
+               /* !!ALTERNATIVA!
+                // Disabilita nuovamente il pulsante Avanti
+                ButtonAvanti.setEnabled(false);
+                
+                // Resetta tutti i campi
+                ComboAttivita.setSelectedIndex(0);
+                FieldDataIA.setText("");
+                FieldDataFA.setText("");
+                ComboTipoIrr.setSelectedIndex(0);
+                ComboTipoIrr.setEnabled(false);
+                //FieldTipoSemina.setText("");
+                //FieldTipoSemina.setEnabled(false);*/
+        	}
+        });
         
 
         JButton ButtonSalva = new JButton("Salva");
@@ -328,37 +359,7 @@ public class Attivita extends JFrame {
 				JOptionPane.showMessageDialog(Attivita.this, "Attività creata con successo successo!");
         	}
         });
-        contentPane.add(ButtonSalva, "cell 9 7");
-        
-        ButtonAvanti = new JButton("HomePage");
-        ButtonAvanti.setEnabled(false); //inizialmente bloccato
-        ButtonAvanti.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		// Reset dei contatori per il nuovo ciclo di attività
-                if (creaProgettoController != null) {
-                    creaProgettoController.resetContatori();
-                    
-                    //opzione da prendere in considerazione per istanziare solo 3 attivita a progetto , 
-                    //alternativa valida quello commentato qui giu che fa inserire piu di 3 attivita e minimo 3 
-                    
-                    Attivita.this.setVisible(false);
-                    home.setVisible(true);
-                    
-              }
-               /* !!ALTERNATIVA!
-                // Disabilita nuovamente il pulsante Avanti
-                ButtonAvanti.setEnabled(false);
-                
-                // Resetta tutti i campi
-                ComboAttivita.setSelectedIndex(0);
-                FieldDataIA.setText("");
-                FieldDataFA.setText("");
-                ComboTipoIrr.setSelectedIndex(0);
-                ComboTipoIrr.setEnabled(false);
-                //FieldTipoSemina.setText("");
-                //FieldTipoSemina.setEnabled(false);*/
-        	}
-        });
+        contentPane.add(ButtonSalva, "cell 9 7,alignx center");
         contentPane.add(ButtonAvanti, "cell 9 9,alignx center");
 	    
 	    
@@ -423,11 +424,10 @@ public class Attivita extends JFrame {
         
         DAO dao = new DAO();
 	    creaProgettoController = new CreaProgettoController(dao);
+	    
         
 	}
 
 
-        
-	}
-	
 
+}

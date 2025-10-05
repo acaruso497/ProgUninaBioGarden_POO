@@ -173,12 +173,14 @@ public class daoVisualizzaP {
             stmt = conn.prepareStatement(sql);   
             stmt.setString(1, username);
             risultato = stmt.executeQuery();
-
+            
             while (risultato.next()) {
                 int idProgetto = risultato.getInt("ID_Progetto");
                 lista.add(String.valueOf(idProgetto));
             }
-
+            
+            
+            
 
         } catch (SQLException ex) {
         	ex.printStackTrace();
@@ -190,6 +192,43 @@ public class daoVisualizzaP {
 
         return lista;
     }
+    
+    public boolean isCompletata(String username, String idProgetto) {
+    	Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet risultato = null;
+    	
+    	try {
+    		conn = Connessione.getConnection();
+    		
+    		String sql = "SELECT pc.done " +
+                    "FROM Progetto_Coltivazione pc " +
+                    "JOIN Lotto l ON l.ID_Lotto = pc.ID_Lotto " +
+                    "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+                    "WHERE p.username = ? AND pc.ID_Progetto = ?";
+        
+        stmt = conn.prepareStatement(sql);   
+        stmt.setString(1, username);
+        stmt.setInt(2, Integer.parseInt(idProgetto));
+        risultato = stmt.executeQuery();
+
+    
+			 if (risultato.next()) {
+				 return risultato.getBoolean("done");
+		     }
+    
+		    	return false;
+    	
+    	
+    } catch (SQLException ex) {
+    	ex.printStackTrace();
+    	return false;
+    } finally {
+        try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+    }
+ }   
     
   //seleziono tutte le tipologie colture presenti in un lotto dato il suo progetto (utile per ComboListaColture)
     public List<String> getColtureByLotto(String idLottoStr, String idProgettoStr) {
@@ -332,8 +371,6 @@ public class daoVisualizzaP {
 					} 
 				
 				
-				
-				
 			}
 			
 			
@@ -381,6 +418,86 @@ public class daoVisualizzaP {
 			try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
 			try { if (conn != null) conn.close(); } catch (Exception ignored) {}
 		}
+		
+		
+	}
+	
+	
+	//!!NUOVO!! Metodo per liberare un lotto da un progetto di coltivazione e tutti i suoi riferimenti
+	public boolean terminaProgetto(String idProgettoStr, String idLottoStr) {
+		int idProgetto = Integer.parseInt(idProgettoStr);
+		int idLotto = Integer.parseInt(idLottoStr);
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet risultato = null;
+		
+		try {
+				conn = Connessione.getConnection(); 
+				int rows = 0;
+				
+				// segno il progetto come completato con la flag done
+		        String sql1 = "UPDATE Progetto_Coltivazione SET done = true WHERE id_lotto = ? AND id_progetto= ? ";
+		        stmt = conn.prepareStatement(sql1);
+		        stmt.setInt(1, idLotto);
+		        stmt.setInt(2, idProgetto);
+		        rows = stmt.executeUpdate();
+		        stmt.close();
+		        
+		        //segno l'attività come completata
+		        String sql2 = "UPDATE Attivita SET stato = 'completata' WHERE id_lotto = ? ";
+		        stmt = conn.prepareStatement(sql2);
+		        stmt.setInt(1, idLotto);
+		        rows = stmt.executeUpdate();
+		        stmt.close();
+		        
+		        //ricavo l'id dell'attività in modo da collegare le 3 attività
+		        String sqlAttivita = "SELECT id_attivita FROM Attivita WHERE id_lotto = ?";
+		        stmt = conn.prepareStatement(sqlAttivita);
+		        stmt.setInt(1, idLotto);
+		        risultato = stmt.executeQuery();
+		        
+		        int idAttivita = 0;
+		        if (risultato.next()) {
+			        idAttivita = risultato.getInt("id_attivita");
+			        risultato.close();
+			        stmt.close();
+			    }
+		        
+		        
+		        //segno semina come completata
+		        String sql3 = "UPDATE Semina SET stato = 'completata' WHERE id_attivita = ?";
+		        stmt = conn.prepareStatement(sql3);
+		        stmt.setInt(1, idAttivita);
+		        rows = stmt.executeUpdate();
+		        stmt.close();
+		        
+		       //segno irrigazione come completata
+		        String sql4 = "UPDATE Irrigazione SET stato = 'completata' WHERE id_attivita = ?";
+		        stmt = conn.prepareStatement(sql4);
+		        stmt.setInt(1, idAttivita);
+		        rows = stmt.executeUpdate();
+		        stmt.close();
+		        
+		       //segno raccolta come completata
+		        String sql5 = "UPDATE Raccolta SET stato = 'completata' WHERE id_attivita = ?";
+		        stmt = conn.prepareStatement(sql5);
+		        stmt.setInt(1, idAttivita);
+		        rows = stmt.executeUpdate();
+		        stmt.close();
+		      
+				
+				System.out.println("Progetto terminato con successo!"); //DEBUG
+				return rows > 0; // Ritorna true se almeno una riga è stata aggiornata
+		
+		}  catch (SQLException | NumberFormatException ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+			try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+			try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+		}
+	
 		
 		
 	}

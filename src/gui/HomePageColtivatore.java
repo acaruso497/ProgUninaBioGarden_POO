@@ -245,7 +245,7 @@ public class HomePageColtivatore extends JFrame {
 	    
 	    
 	    FieldIrrigazione.setEditable(false);
-	    contentPane.add(FieldIrrigazione, "cell 8 8,growx");
+	    contentPane.add(FieldIrrigazione, "cell 8 8 2 1,growx");
 	    FieldIrrigazione.setColumns(10);
 	    JLabel lblRaccoltoColture = new JLabel("Raccolto Colture");
 	    

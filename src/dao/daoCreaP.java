@@ -4,12 +4,14 @@ import database.Connessione;
 import java.sql.*;
 import java.time.LocalDate;
 //import java.time.format.DateTimeFormatter;
-//import java.util.List;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-//import java.util.ArrayList;
+
+import java.util.ArrayList;
 
 public class daoCreaP {
 //GUI: Crea Progetto
@@ -44,6 +46,7 @@ public class daoCreaP {
 	}
 	
 	
+	
 	public static boolean registraProgetto(String titolo, String idLottoStr, String stimaRaccoltoStr, 
 										   String[] coltureArray, String descrizione, Date dataIP, Date dataFP) {
 	    int idLotto = Integer.parseInt(idLottoStr);  //converte l'ID del lotto nella combo box in un intero//converte la stringa della stima del raccolto in un double
@@ -55,17 +58,18 @@ public class daoCreaP {
 	    try {
 	        conn = Connessione.getConnection();
 	        
-	        //controlla se esiste almeno 1 progetto di coltivazione all'interno di un determinato lotto
+	        //controlla se esiste almeno 1 progetto di coltivazione all'interno di un determinato lotto e se non è stato completato
 	        
 	        String sql = "SELECT EXISTS (  " +
 	        		" SELECT 1 " +
 	        	    " FROM Progetto_Coltivazione " +
-	        	    " WHERE id_lotto = ? " +
+	        	    " WHERE id_lotto = ? AND done = false" + 
 	        	    " ); ";
 	        
 	        stmt = conn.prepareStatement(sql);
 	        stmt.setInt(1, idLotto);
 	        risultato = stmt.executeQuery();
+	        
 	        
 	        
 	        boolean esiste = false;
@@ -74,6 +78,8 @@ public class daoCreaP {
 	        }
 	        risultato.close();
 	        stmt.close();
+	        
+	
 	        
 	        if(esiste==true) {
 	        	System.out.println("Esiste già un progetto in questo lotto!");
@@ -160,7 +166,52 @@ public class daoCreaP {
 	        try { if (conn != null) conn.close(); } catch (Exception e) {}
 	    }
 	}
-			
+
+//!!NUOVO!! controlla se il progetto è completato
+public boolean controlloProgettoChiuso(String idLottoStr) {
+	int idLotto = Integer.parseInt(idLottoStr);  
+    
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet risultato = null;
+
+    try {
+    	
+    	conn = Connessione.getConnection();
+    	
+    	String sql = "SELECT done FROM Progetto_Coltivazione WHERE id_lotto = ?"; //controlla se il progetto è completato tramite done
+        stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, idLotto);
+        risultato = stmt.executeQuery();
+        
+        boolean completato = false;
+        if(risultato.next()) {
+        	completato = risultato.getBoolean("done");
+        }
+        risultato.close();
+        stmt.close();
+        
+        if(completato==false) {
+        	System.out.println("Devi terminare il progetto"); //DEBUG
+        	return false;
+        }
+    	
+    	
+    	return true;
+    } catch(SQLException | NumberFormatException ex) {
+        ex.printStackTrace();
+        return false;
+    } finally {
+        try { if (risultato != null) risultato.close(); } catch (Exception e) {}
+        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+        try { if (conn != null) conn.close(); } catch (Exception e) {}
+    }
+    
+	}
+	
+	
+	
+	
 	// Aggiungi questi metodi helper nello stesso DAO
 	private static int getOrCreateColtura(Connection conn, String nomeColtura) throws SQLException {
 	    String selectSql = "SELECT id_coltura FROM Coltura WHERE varietà = ?";
@@ -248,7 +299,7 @@ public class daoCreaP {
 	
 			
 public static boolean registraAttivita(String tipoAttivita, Date dataIA, Date dataFA, 
-	                    String tipoIrrigazione, String tipoSemina, String idLottoStr) {
+	                                   String tipoIrrigazione, String tipoSemina, String idLottoStr) {
 	Connection conn = null;
 	PreparedStatement stmt = null;
 	ResultSet risultato = null;
@@ -343,8 +394,6 @@ private static String getColtivatoreLotto(int idLotto) {
 	try { if (conn != null) conn.close(); } catch (Exception e) {}
 	}
 }
-	
-	
 
 			
 	

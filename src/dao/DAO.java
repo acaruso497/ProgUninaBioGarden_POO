@@ -399,7 +399,7 @@ public List<String> popolaProgettiCB(String username) {
         conn = Connessione.getConnection(); // Ottiene la connessione al DB
 
         //String sql = "SELECT DISTINCT titolo_progetto FROM coltivatoreview WHERE username_coltivatore = ?";
-        String sql = "SELECT titolo_progetto FROM ComboProgettiColtivatore WHERE username_coltivatore = ?";
+        String sql = "SELECT titolo_progetto FROM ComboProgettiColtivatore WHERE username_coltivatore = ? AND done = false";
         // Seleziona solo i titoli dei progetti associati all'username
 
         stmt = conn.prepareStatement(sql);   
@@ -814,7 +814,7 @@ public List<String> getColtura(String username, String progetto) {
 	  
 	  while (risultato.next()) {
 //	      String tipoColtura = risultato.getString("tipo_coltura").toLowerCase();
-		  String varieta = risultato.getString("varieta_coltura").toLowerCase();
+		  String varieta = risultato.getString("varieta_coltura");
 	      //lista.add(String.valueOf(tipoColtura));
 		  lista.add(String.valueOf(varieta));
 	  }
@@ -871,16 +871,16 @@ public boolean sommaRaccolto(String raccolto, String coltura, String progetto) {
 	try {
 		
 		conn = Connessione.getConnection();
-		sql1 = "SELECT SUM(raccoltoProdotto) AS somma, id_raccolta FROM sommaRaccolti WHERE titolo_progetto = ? AND varietà = ? GROUP BY id_raccolta";
+		sql1 = "SELECT SUM(raccoltoProdotto) AS somma, id_raccolta, titolo_progetto, varietà FROM sommaRaccolti WHERE titolo_progetto = ? AND varietà = ? GROUP BY id_raccolta, titolo_progetto, varietà";
 		stmt = conn.prepareStatement(sql1);
 		stmt.setString(1, progetto);
 		stmt.setString(2, coltura);
 		risultato = stmt.executeQuery();
 		
-		double sommaRaccolti = Double.parseDouble(raccolto);
+		int sommaRaccolti = Integer.parseInt(raccolto);
 
 		if (risultato.next()) {
-            sommaRaccolti += risultato.getDouble("somma"); // SOMMA il nuovo raccolto all'esistente
+            sommaRaccolti += risultato.getInt("somma"); // SOMMA il nuovo raccolto all'esistente
             System.out.println("Nuova somma dei raccolti: " + sommaRaccolti); // Debug
         }
 		stmt.close();
@@ -888,7 +888,7 @@ public boolean sommaRaccolto(String raccolto, String coltura, String progetto) {
 		
         sql2 = "UPDATE Coltura SET raccoltoProdotto = ? WHERE varietà = ?";
         stmt = conn.prepareStatement(sql2);
-        stmt.setDouble(1, sommaRaccolti);
+        stmt.setInt(1, sommaRaccolti);
         stmt.setString(2, coltura);
         
         int rows = stmt.executeUpdate();

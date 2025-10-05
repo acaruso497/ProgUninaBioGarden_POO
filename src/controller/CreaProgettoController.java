@@ -79,6 +79,10 @@ public class CreaProgettoController {
     	return daoCreaP.checkColtura(idLotto, coltureArray);
     }
     
+    public boolean controlloProgettoChiuso(String idLottoStr) {
+    	return daoCreap.controlloProgettoChiuso(idLottoStr);
+    }
     
+  
     
 }

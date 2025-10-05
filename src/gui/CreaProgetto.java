@@ -238,14 +238,35 @@ public class CreaProgetto extends JFrame {
 				
 			    //vado a controllare se esiste già un progetto in quel lotto
 				boolean creaProgetto = creaProgettoController.creaProgetto(titolo, lotto, descrizione, stimaRaccolto, creaArr, dataIP, dataFP);
-				if(creaProgetto==true) {
-					JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo successo!");
-					ButtonAvanti.setEnabled(true);
-				}else {
-					JOptionPane.showMessageDialog(CreaProgetto.this, 
-				            "ERRORE: Questo lotto ha già un progetto di coltivazione esistente!", 
+				//vado a controllare se esiste il progetto è completato nel lotto
+				boolean controlloProgetto = creaProgettoController.controlloProgettoChiuso(lotto);
+				
+//				if(creaProgetto==true && controlloProgetto==false) {
+//					JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo successo!");
+//					ButtonAvanti.setEnabled(true);
+//				}else {
+//					JOptionPane.showMessageDialog(CreaProgetto.this, 
+//				            "ERRORE: Questo lotto ha già un progetto di coltivazione esistente!", 
+//				            "Errore", JOptionPane.ERROR_MESSAGE);
+//				}
+				
+				if (creaProgetto == true) { //se c'è un progetto segnato come completato, il lotto è libero per nuovi progetti
+					JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo!");
+				    ButtonAvanti.setEnabled(true);
+				} else {
+				    // Se creaProgetto=false, controlla SE è perché c'è un progetto completato
+				    boolean progettoCompletato = creaProgettoController.controlloProgettoChiuso(lotto);
+				    
+				    if (progettoCompletato==false) { //se il progetto non è segnato come completato, blocca la creazione
+				        JOptionPane.showMessageDialog(CreaProgetto.this, 
+				            "Questo lotto ha un progetto IN CORSO. Devi prima completare il progetto prima di crearne un altro!", 
 				            "Errore", JOptionPane.ERROR_MESSAGE);
+				    } else {
+				    	JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo!"); 
+				    }
 				}
+				
+				
 				
 				}//fine else
 			}
