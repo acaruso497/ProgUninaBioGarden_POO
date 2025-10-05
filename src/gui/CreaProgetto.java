@@ -146,6 +146,10 @@ public class CreaProgetto extends JFrame {
 	    JTextArea textArea = new JTextArea();
 	    contentPane.add(textArea, "cell 0 11 9 4,grow");
 	    
+	    JButton ButtonAvanti = new JButton("Avanti");
+	    contentPane.add(ButtonAvanti, "cell 4 15");
+	    ButtonAvanti.setEnabled(false); //inizialmente bloccato
+	    
 	    JButton ButtonSalva = new JButton("Salva");
 	    contentPane.add(ButtonSalva, "cell 1 15,alignx center");
 	    ButtonSalva.addActionListener(new ActionListener() {
@@ -231,14 +235,24 @@ public class CreaProgetto extends JFrame {
 				if(controllo== true) {
 					JOptionPane.showMessageDialog(CreaProgetto.this, "\n\nuna tra le colture inserite è gia stata piantata");
 				}else {
-				boolean creaProgetto = creaProgettoController.creaProgetto(titolo, lotto, descrizione, stimaRaccolto, creaArr, dataIP, dataFP);
 				
-				JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo successo!");}//fine else
+			    //vado a controllare se esiste già un progetto in quel lotto
+				boolean creaProgetto = creaProgettoController.creaProgetto(titolo, lotto, descrizione, stimaRaccolto, creaArr, dataIP, dataFP);
+				if(creaProgetto==true) {
+					JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo successo!");
+					ButtonAvanti.setEnabled(true);
+				}else {
+					JOptionPane.showMessageDialog(CreaProgetto.this, 
+				            "ERRORE: Questo lotto ha già un progetto di coltivazione esistente!", 
+				            "Errore", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				}//fine else
 			}
    	
 		});
 	    
-	    JButton ButtonAvanti = new JButton("Avanti");
+	    
 	    ButtonAvanti.addActionListener(new ActionListener() {
 	    	//Prima di passare alla prossima GUI, effettua dei controlli
 	    	public void actionPerformed(ActionEvent e) {
@@ -306,7 +320,7 @@ public class CreaProgetto extends JFrame {
 	    	
 	    	}
 	    });
-	    contentPane.add(ButtonAvanti, "cell 4 15");
+	    
 	    
 	    DAO dao = new DAO(); // Crea il DAO
         creaProgettoController = new CreaProgettoController(dao); // Crea il controller

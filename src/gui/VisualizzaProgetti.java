@@ -48,12 +48,13 @@ public class VisualizzaProgetti extends JFrame {
 	private JTextField FieldDataFA;
 	private ControllerVisualizzaP controller; 
     private daoVisualizzaP dao; 
+    
     private String username = ControllerLogin.getUsernameGlobale();
-
+    private String CFProprietario = ControllerLogin.getCodiceFiscaleByUsername(username);
+    
     //combobox
     JComboBox<String> ComboAttivita = new JComboBox<>();
     JComboBox<String> ComboProgetto = new JComboBox<>();
-    JComboBox<String> ComboLotto = new JComboBox<>();
     
     JComboBox<String> ComboListaColture = new JComboBox<>();
     
@@ -61,6 +62,7 @@ public class VisualizzaProgetti extends JFrame {
     JRadioButton RadioPianificata = new JRadioButton("pianificata");
     JRadioButton RadioInCorso = new JRadioButton("in corso");
     JRadioButton RadioCompletata = new JRadioButton("completata");
+    private JTextField FieldLotto;
 	
 	public VisualizzaProgetti(HomePageProprietario home) {
 		this.home = home;
@@ -87,36 +89,34 @@ public class VisualizzaProgetti extends JFrame {
 	    @SuppressWarnings("unused")
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][][][grow][grow][][grow][][grow][][][][][][grow][grow][][][grow][][][grow][grow][grow][grow][grow]", "[grow][grow][][grow][grow][grow][][grow][][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][][][grow][grow][][grow][][grow][][][][][][grow][grow][][][grow][][][grow][grow][grow][grow][grow]", "[grow][grow][][grow][grow][grow][][grow][][grow][grow][grow][][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    JLabel LabelVisualizza = new JLabel("Visualizza i tuoi progetti!");
 	    LabelVisualizza.setFont(new Font("Tahoma", Font.BOLD, 17));
 	    contentPane.add(LabelVisualizza, "cell 0 0");
-	    
-	    
-	    // Pulsante freccia indietro
-	    BasicArrowButton ButtonIndietro = new BasicArrowButton(BasicArrowButton.WEST);
-	    ButtonIndietro.setPreferredSize(new Dimension(40, 40));
-	    contentPane.add(ButtonIndietro, "cell 27 0,alignx right,aligny center");
-	    ButtonIndietro.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				home.setVisible(true);
-			}
-		});
-	    
-	    ComboLotto.setEnabled(false);//bloccati per indirizzare l utente 
 	    ComboListaColture.setEnabled(false);    
 	    
 	        JButton ButtonGrafici = new JButton("Visualizza Grafici");
 	        ButtonGrafici.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent e) {
 	        		VisualizzaProgetti.this.setVisible(false);
-	        		String selectedLotto = (String) ComboLotto.getSelectedItem();
+	        		String selectedLotto = FieldLotto.getText();
                 Grafico grafico = new Grafico(selectedLotto);
 	        		grafico.setVisible(true);
 	        	}
 	        });
+	        
+	        
+	        // Pulsante freccia indietro
+	        BasicArrowButton ButtonIndietro = new BasicArrowButton(BasicArrowButton.WEST);
+	        ButtonIndietro.setPreferredSize(new Dimension(40, 40));
+	        contentPane.add(ButtonIndietro, "cell 11 0,alignx right,aligny center");
+	        ButtonIndietro.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+				home.setVisible(true);
+			}
+		});
 	        contentPane.add(ButtonGrafici, "cell 6 1");
 	        ButtonGrafici.setPreferredSize(new Dimension(150, 20));
 	    
@@ -173,15 +173,16 @@ public class VisualizzaProgetti extends JFrame {
 	    JLabel LabelLotto = new JLabel("Lotto");
 	    contentPane.add(LabelLotto, "cell 0 11,alignx trailing");
 	    
-	    
-	    contentPane.add(ComboLotto, "cell 1 11,growx");
-	    ComboLotto.setPreferredSize(new Dimension(150, 20));
+	    FieldLotto = new JTextField();
+	    FieldLotto.setEditable(false);
+	    FieldLotto.setColumns(10);
+	    contentPane.add(FieldLotto, "cell 1 11,growx");
 	    
 	    JLabel LabelAttivita = new JLabel("Ultima Attività");
-	    contentPane.add(LabelAttivita, "cell 0 13,alignx trailing");
+	    contentPane.add(LabelAttivita, "cell 0 14,alignx trailing");
 	    
 	    
-	    contentPane.add(ComboAttivita, "cell 1 13,growx");
+	    contentPane.add(ComboAttivita, "cell 1 14,growx");
 	    ComboAttivita.setPreferredSize(new Dimension(150, 20));
 	    
 	    
@@ -190,7 +191,7 @@ public class VisualizzaProgetti extends JFrame {
 	    ButtonModificaAttivita.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) { 
 	    			String selectedProgetto = (String) ComboProgetto.getSelectedItem();
-		    	    String selectedLotto = (String) ComboLotto.getSelectedItem();
+		    	    String selectedLotto = FieldLotto.getText();
 		    	    String selectedAttivita = (String) ComboAttivita.getSelectedItem();
 		    	    if (ComboAttivita.getSelectedItem().equals("-- Seleziona --") || selectedProgetto.isEmpty() || selectedLotto.isEmpty()) {
 		                JOptionPane.showMessageDialog(VisualizzaProgetti.this, "COMPILA TUTTI I CAMPI!!", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -214,36 +215,36 @@ public class VisualizzaProgetti extends JFrame {
 	    
 	    
 	    
-	    contentPane.add(RadioPianificata, "cell 3 13");
+	    contentPane.add(RadioPianificata, "cell 3 14");
 	    RadioPianificata.setOpaque(false);
 	    gruppoStato.add(RadioPianificata);
 	    
 	    
-	    contentPane.add(RadioInCorso, "cell 4 13");
+	    contentPane.add(RadioInCorso, "cell 4 14");
 	    RadioInCorso.setOpaque(false);
 	    gruppoStato.add(RadioInCorso);
 	    
 	    
-	    contentPane.add(RadioCompletata, "cell 5 13");
+	    contentPane.add(RadioCompletata, "cell 5 14");
 	    RadioCompletata.setOpaque(false);
 	    gruppoStato.add(RadioCompletata);
-	    contentPane.add(ButtonModificaAttivita, "cell 6 13");
+	    contentPane.add(ButtonModificaAttivita, "cell 6 14");
 	    
 	    
 	    
 	    JLabel LabelDataIA = new JLabel("Data Inizio");
-	    contentPane.add(LabelDataIA, "cell 0 14,alignx trailing");
+	    contentPane.add(LabelDataIA, "cell 0 15,alignx trailing");
 	    
 	    FieldDataIA = new JTextField(); //field data inizio attività
-	    contentPane.add(FieldDataIA, "cell 1 14,growx");
+	    contentPane.add(FieldDataIA, "cell 1 15,growx");
 	    FieldDataIA.setColumns(10);
 	    FieldDataIA.setEditable(false); //blocca il textfield
 	    
 	    JLabel LabelDataFA = new JLabel("Data Fine");
-	    contentPane.add(LabelDataFA, "cell 0 15,alignx trailing");
+	    contentPane.add(LabelDataFA, "cell 0 16,alignx trailing");
 	    
 	    FieldDataFA = new JTextField(); //field data fine attività
-	    contentPane.add(FieldDataFA, "cell 1 15,growx");
+	    contentPane.add(FieldDataFA, "cell 1 16,growx");
 	    FieldDataFA.setColumns(10);
 	    FieldDataFA.setEditable(false); //blocca il textfield
 	    
@@ -251,18 +252,26 @@ public class VisualizzaProgetti extends JFrame {
         controller = new ControllerVisualizzaP(dao);
 	    
         popolaComboProgetto();
-        popolaComboLotto();
+        //popolaComboLotto();
        // popolaComboListaColture();
         
         ComboProgetto.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	
               try {
-	                String selectedProgetto = (String) ComboProgetto.getSelectedItem();
+	                String selectedProgetto = (String) ComboProgetto.getSelectedItem(); //mi prendo il progetto dalla combobox
 	                controller.popolaDatiProgetto(selectedProgetto, FieldStima, 
 	                								FieldDataIP, FieldDataFP); // Popola i campi progetto
-	                ComboLotto.setEnabled(true);
-	                popolaComboListaColture();
+	                popolaFieldLotto(); //una volta che ha trovato un progetto, popola il field del lotto
+	                String lotto = FieldLotto.getText();
+	                if (lotto != null && !lotto.isEmpty()) { //prima di popolare la combo delle colture, verifica l'esistenza di un lotto
+	                    ComboListaColture.setEnabled(true);
+	                    popolaComboListaColture(); 
+	                } else {
+	                    ComboListaColture.setEnabled(false); //non trova nulla, reset
+	                    ComboListaColture.removeAllItems();
+	                }
+	               
 	                
                 }catch (NullPointerException ex) {
             		JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
@@ -271,17 +280,11 @@ public class VisualizzaProgetti extends JFrame {
             }
         });
         
-        ComboLotto.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	
-            	ComboListaColture.setEnabled(true);
-                popolaComboListaColture();}   });
-        
         ComboListaColture.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
               try {
             	  	String selectedProgetto = (String) ComboProgetto.getSelectedItem();
-            	  	String selectedLotto = (String) ComboLotto.getSelectedItem();
+            	  	String selectedLotto = FieldLotto.getText();
 	                controller.getColtureByLotto(selectedProgetto, selectedLotto);
 	                String selectedColtura = (String) ComboListaColture.getSelectedItem();
 	                controller.mostraRaccolto(selectedProgetto, selectedLotto, selectedColtura, FieldEffettivo);
@@ -330,24 +333,58 @@ public class VisualizzaProgetti extends JFrame {
     }
 
     // Popola ComboLotto 
-    private void popolaComboLotto() {
-        String lotti = controller.getLottiByProprietario(username); // Usa usernameGlobale
+//    private void popolaComboLotto() {
+//        //String lotti = controller.getLottiByProprietario(username); // Usa usernameGlobale
+//    	String selectedProgetto = (String) ComboProgetto.getSelectedItem();
+//    	int idProgetto = Integer.parseInt(selectedProgetto);
+//        Integer lotti = controller.getLottiByProprietario(idProgetto, CFProprietario);
+//    }
+    
+    //Popola il field del lotto
+    private void popolaFieldLotto() {
+        String selectedProgetto = (String) ComboProgetto.getSelectedItem(); //mi prendo il progetto selezionato
         
-        ComboLotto.setSelectedIndex(-1);
+        // se non trovo il progetto resetta i campi
+        if (selectedProgetto == null || selectedProgetto.isEmpty()) {
+            FieldLotto.setText("");
+            FieldLotto.setEnabled(false);
+            return;
+        }
+        
+        try {
+            int idProgetto = Integer.parseInt(selectedProgetto);
+            String idLotto = controller.getLottiByProprietario(idProgetto, CFProprietario); 
+            
+            //controlla l'esistenza di un lotto
+            if (idLotto != null) { 
+                FieldLotto.setText(String.valueOf(idLotto)); //imposto l'id del lotto nel field
+                FieldLotto.setEnabled(true);
+            } else {
+                FieldLotto.setText("");
+                FieldLotto.setEnabled(false);
+                JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
+                    "Nessun lotto trovato per questo progetto di coltivazione!", 
+                    "Errore", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+            FieldLotto.setText("");
+            FieldLotto.setEnabled(false);
+        }
     }
     
     // Popola ComboListaColture 
     private void popolaComboListaColture() {
     	String selectedProgetto = (String) ComboProgetto.getSelectedItem();
-	  	String selectedLotto = (String) ComboLotto.getSelectedItem();
+	  	String selectedLotto = FieldLotto.getText();
 	  
 	  	if (selectedProgetto == null || selectedLotto == null || 
-	  		    selectedProgetto.isEmpty() || selectedLotto.isEmpty()) {
+	  		    selectedProgetto.isEmpty() || selectedLotto.isEmpty()) { //se non trova niente, reset
 	  		    ComboListaColture.removeAllItems(); 
 	  		    return;
 	  		}
 	  	
-    	List<String> listaColture = controller.getColtureByLotto( selectedLotto,selectedProgetto);
+    	List<String> listaColture = controller.getColtureByLotto(selectedLotto,selectedProgetto);
         for (String coltura : listaColture) {
         	ComboListaColture.addItem(coltura); //popola la combobox con l'id progetto
         }

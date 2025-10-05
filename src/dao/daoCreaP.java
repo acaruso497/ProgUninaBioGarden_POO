@@ -76,6 +76,7 @@ public class daoCreaP {
 	        stmt.close();
 	        
 	        if(esiste==true) {
+	        	System.out.println("Esiste già un progetto in questo lotto!");
 	        	 return false;
 	        }else {
 	        	

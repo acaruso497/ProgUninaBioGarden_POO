@@ -28,9 +28,14 @@ private daoVisualizzaP dao;
     }
 	
     // Popola ComboLotto con ID lotti del proprietario
-    public String getLottiByProprietario(String username) {
-        return dao.getLottiByProprietario(username);
-    }
+//    public String getLottiByProprietario(String username) {
+//        return dao.getLottiByProprietario(username);
+//    }
+    
+ // Popola il field del lotto tramite l'id del progetto e codice fiscale del del proprietario
+    public String getLottiByProprietario(int idProgetto, String codiceFiscaleProprietario) {
+	  return dao.getLottiByProprietario(idProgetto, codiceFiscaleProprietario);
+  }
     
    
     

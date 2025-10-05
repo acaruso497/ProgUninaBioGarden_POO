@@ -230,28 +230,42 @@ public class daoVisualizzaP {
 	
 	
 	//recupera i lotti di un proprietario (utile per popolare ComboLotti)
-		public String getLottiByProprietario(String username) {
+    //public String getLottiByProprietario(String username)
+		public String getLottiByProprietario(int idProgetto, String codiceFiscaleProprietario) {
 		    Connection conn = null;
 		    PreparedStatement stmt = null;
 		    ResultSet risultato = null;
+		    String idLotto = null;
 
 		    try {
 		        conn = Connessione.getConnection(); 
 
-		        String sql = "SELECT l.ID_Lotto " + //seleziono tutti i lotti del proprietario dato il suo username
-	                    "FROM Proprietario p " +
-	                    "JOIN Lotto l ON l.Codice_FiscalePr = p.Codice_Fiscale " +
-	                    "WHERE p.username = ? ";
+		      //seleziono tutti i lotti del proprietario dato il suo username 
+//		        String sql = "SELECT l.ID_Lotto " + 
+//	                    "FROM Proprietario p " +
+//	                    "JOIN Lotto l ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+//	                    "WHERE p.username = ? ";
+		        
+		        String sql = "SELECT l.ID_Lotto " +
+		                     "FROM Lotto l " +
+		                     "JOIN Progetto_Coltivazione pc ON l.ID_Progetto = pc.ID_Progetto " +
+		                     "WHERE pc.ID_Progetto = ? " +
+		                     "AND l.Codice_FiscalePr = ?";
 		        
 
 		        stmt = conn.prepareStatement(sql);   
-		        stmt.setString(1, username);         
+		        stmt.setInt(1, idProgetto); 
+		        stmt.setString(2, codiceFiscaleProprietario);
 		        risultato = stmt.executeQuery();
 
-		        while (risultato.next()) {
-		            int idLotto = risultato.getInt("ID_Lotto"); 
-	                String idStr = String.valueOf(idLotto); 
-	                lista.add(idStr); // Aggiunge alla lista
+//		        while (risultato.next()) {
+//		            int idLotto = risultato.getInt("ID_Lotto"); 
+//	                String idStr = String.valueOf(idLotto); 
+//	                lista.add(idStr); // Aggiunge alla lista
+//		        }
+		        
+		        if (risultato.next()) {
+		        	idLotto = String.valueOf(risultato.getInt("ID_Lotto"));
 		        }
 
 		    } catch (SQLException ex) {
@@ -262,7 +276,7 @@ public class daoVisualizzaP {
 		        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
 		    }
 
-		    return lista;
+		    return idLotto;
 		}
 	
 		
