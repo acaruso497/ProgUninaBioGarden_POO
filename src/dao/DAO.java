@@ -90,8 +90,44 @@ public class DAO {
 		        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
 		        try { if (conn != null) conn.close(); } catch (Exception e) {}
 		    }
-		}
-		// username esistente
+		}// username esistente
+
+		
+		public ArrayList<String> popolaComboProprietari() {
+			
+	        ArrayList<String> usernames = new ArrayList<>();
+	        Connection conn = null;
+	        PreparedStatement stmt = null;
+	        ResultSet rs = null;
+
+	        try {
+	            // Ottieni la connessione al database
+	            conn = Connessione.getConnection();
+
+	            // Query SQL diretta per selezionare tutti gli username dalla tabella Proprietario
+	            String sql = "SELECT username FROM Proprietario";
+	            stmt = conn.prepareStatement(sql);
+
+	            // Esegui la query
+	            rs = stmt.executeQuery();
+
+	            // Aggiungi ogni username all'ArrayList
+	            while (rs.next()) {
+	                usernames.add(rs.getString("username"));
+	            }
+	        } catch (SQLException ex) {
+	            ex.printStackTrace(); // Stampa l'errore per debugging
+	            System.out.println("Errore durante l'esecuzione della query: " + ex.getMessage());
+	        } finally {
+	            // Chiudi tutte le risorse nel blocco finally
+	            try { if (rs != null) rs.close(); } catch (Exception e) {}
+	            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+	            try { if (conn != null) conn.close(); } catch (Exception e) {}
+	        }
+
+	        return usernames; // Restituisce l'ArrayList con gli username
+	    }		
+		
 	//____________________!!!   DAO: LOGIN     !!!!____________________________________
 	
 		//Autenticazione proprietario

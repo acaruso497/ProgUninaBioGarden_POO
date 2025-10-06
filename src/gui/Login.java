@@ -42,6 +42,7 @@ public class Login extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -53,7 +54,6 @@ public class Login extends JFrame {
 			}
 		});
 	}
-
 	/**
 	 * Create the frame.
 	 */
@@ -73,7 +73,8 @@ public class Login extends JFrame {
 		    @SuppressWarnings("unused")
 		    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
+		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]",
+		    		"[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 		    
 		    
 		    ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/logo.png"));
@@ -126,8 +127,7 @@ public class Login extends JFrame {
 				
 				if (check[0] == false) {// campi non validi
 					JOptionPane.showMessageDialog(Login.this, "\n USERNAME E/O PASSWORD \n RISULTANO VUOTI O NULLI");}
-				
-				
+								
 				else if (check[0]==true && check[1]==true && check[2]==false) {// proprietario homepage
 					Login.this.setVisible(false);
 					HomePageProprietario homeP = new HomePageProprietario();
@@ -140,9 +140,8 @@ public class Login extends JFrame {
 					
 				}else if (check[0]==true && check[1]==false && check[2]==false) {// nessuno dei due
 					
-					JOptionPane.showMessageDialog(Login.this, "Username o Password errati!!");
-				}			
-				
+					JOptionPane.showMessageDialog(Login.this, " Username o Password errati!! ");
+				}							
 			
 			}				
 		   }); 

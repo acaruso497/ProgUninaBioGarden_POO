@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.List;
+import java.util.ArrayList;
 import dao.DAO;
 public class ControllerReg {
 	 public ControllerReg() {}
@@ -29,4 +31,8 @@ public class ControllerReg {
 	        // Se il ruolo non è riconosciuto, restituisce [false, false, false]
 	        return result;
 	    }
+	
+public ArrayList<String> popolaComboProprietari() {
+	return dao.popolaComboProprietari();
 	}
+}

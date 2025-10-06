@@ -11,7 +11,7 @@ import java.net.URL;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
-
+import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -49,6 +49,8 @@ public class registraUtente extends JFrame {
 	private JLabel cognomelbl;
 	private JLabel lblNome;
 	private JButton btnback;
+	private JComboBox<String> ComboProprietari;
+	private JLabel lblProprietari;
 
 	public registraUtente() {
 		setTitle("Login Schede");
@@ -66,9 +68,7 @@ public class registraUtente extends JFrame {
 		    @SuppressWarnings("unused")
 		    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow]"
-		    		+ "[grow][grow][grow][grow][grow][grow][grow][grow]", 
-		    		"[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][][grow][grow][grow][grow]"));
+		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][][grow][grow][grow][grow][grow][][grow][grow][grow][grow]"));
 		    
 		    ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/logo.png"));
 		    Image scaledImage = originalIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
@@ -107,36 +107,65 @@ public class registraUtente extends JFrame {
 		    	    				"Proprietario", 
 		    	    				"Coltivatore" }
 		    	));
+		    ComboProprietari = new JComboBox<String>();
+		    contentPane.add(ComboProprietari, "cell 7 5,growx");
+		    
+		    ComboProprietari.setEnabled(false);
+		    ControllerReg controller = new ControllerReg();
+		    
+		    
+		    comboBox.addActionListener(new ActionListener() {
+		        public void actionPerformed(ActionEvent e) {
+		        	String ruoloSelezionato = (String) comboBox.getSelectedItem();
+		            if ("Coltivatore".equals(ruoloSelezionato)) {
+		                ComboProprietari.setEnabled(true); // Abilita la ComboProprietari
+		                // Popola ComboProprietari usando il controller
+		                ArrayList<String> proprietari = controller.popolaComboProprietari(); // Cattura il risultato
+		                ComboProprietari.removeAllItems(); // Pulisci la combo
+		                ComboProprietari.addItem("--Seleziona--");
+		                for (String username : proprietari) {
+		                    ComboProprietari.addItem(username); // Aggiungi ogni username
+		                }
+		            }
+		            else {
+		                ComboProprietari.setEnabled(false); // Disabilita se non è Coltivatore
+		                ComboProprietari.removeAllItems(); // Pulisci la combo
+		            }
+		        }
+		    });
+		    lblProprietari = new JLabel("Proprietari");
+		    contentPane.add(lblProprietari, "cell 6 5,alignx center");
 		    
 		    CF = new JLabel("Codice Fiscale");
-		    contentPane.add(CF, "cell 6 5,alignx center");
+		    contentPane.add(CF, "cell 6 6,alignx center");
 		    
 		    CodFfield = new JTextField();
 		    CodFfield.setColumns(10);
-		    contentPane.add(CodFfield, "cell 7 5,growx");
+		    contentPane.add(CodFfield, "cell 7 6,growx");
 		    
 		    JLabel LabelUsername = new JLabel("Username");
-		    contentPane.add(LabelUsername, "cell 6 6,alignx center,aligny center");
+		    contentPane.add(LabelUsername, "cell 6 7,alignx center,aligny center");
 		    
 		    FieldUsername = new JTextField();
-		    contentPane.add(FieldUsername, "cell 7 6,growx");
+		    contentPane.add(FieldUsername, "cell 7 7,growx");
 		    FieldUsername.setColumns(10);
 		    
 		    JLabel LabelPassword = new JLabel("Password");
-		    contentPane.add(LabelPassword, "cell 6 7,alignx center,aligny center");
+		    contentPane.add(LabelPassword, "cell 6 8,alignx center,aligny center");
 		    
 		    FieldPassword = new JPasswordField();
-		    contentPane.add(FieldPassword, "cell 7 7,growx");
+		    contentPane.add(FieldPassword, "cell 7 8,growx");
 		    
 		    lblConfermaPassword = new JLabel("conferma Password");
-		    contentPane.add(lblConfermaPassword, "cell 6 8,alignx trailing");
+		    contentPane.add(lblConfermaPassword, "cell 6 9,alignx trailing");
 		    
 		    passwordField = new JPasswordField();
-		    contentPane.add(passwordField, "cell 7 8,growx");
+		    contentPane.add(passwordField, "cell 7 9,growx");
 		    
 		    reg = new JButton("salva profilo");
-		    contentPane.add(reg, "cell 7 10,alignx center");	    
-		   
+		    contentPane.add(reg, "cell 7 11,alignx center");	    
+		    
+		    
 		    reg.addActionListener(new ActionListener() {
 		    	public void actionPerformed(ActionEvent e) {
 		    		Login login = new Login();
@@ -149,6 +178,12 @@ public class registraUtente extends JFrame {
 		    		String pass = new String(FieldPassword.getPassword());
 		    		String confermaPass = new String(passwordField.getPassword());
 		    		boolean[] value  = new boolean[4];
+		    		
+		    		if ("Coltivatore".equals(RUOLO) && "--Seleziona--".equals(ComboProprietari.getSelectedItem())) {
+		                JOptionPane.showMessageDialog(registraUtente.this, "Selezionare il proprietario con cui si vuole collaborare", "Errore", JOptionPane.ERROR_MESSAGE);
+		                return; // Esce dal metodo se la validazione fallisce
+		            }
+		    		
 		    		//validazioni campi
 		    		if(!pass.equals(confermaPass)) {
 		    			JOptionPane.showMessageDialog(registraUtente.this, "Le password non corrispondono", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -162,15 +197,12 @@ public class registraUtente extends JFrame {
 		    		}else if (pass.length() > 8) {
 		    		     JOptionPane.showMessageDialog(contentPane,
 		    		              "La password deve essere lunga al massimo 8 caratteri.",
-		    		              "Errore", JOptionPane.ERROR_MESSAGE);           
+		    		              "Errore", JOptionPane.ERROR_MESSAGE); 
 		    		}else {	
 		    			 ControllerReg controller = new ControllerReg();
 		    			 
 		    			 value= controller.registra(nome , cognome,user, pass, cf, RUOLO.toString());
-		    		 }
-		    		
-		    		
-		    		
+		    		 }		    				    				    		
 		    	//messaggi di avviso stato registrazione	
 		    	try {	
 		    	if (value[0]==false && value[1]==false && value [2]==false && value[3]==true) {
@@ -201,9 +233,3 @@ public class registraUtente extends JFrame {
 		    });  
 	}
 }
-
-
-//result[0] = false; // non è proprietario
-//result[1] = false; // non è coltivatore
-//result[2] = false; // registrazione non riuscita
-
