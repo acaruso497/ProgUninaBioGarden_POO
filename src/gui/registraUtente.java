@@ -133,7 +133,7 @@ public class registraUtente extends JFrame {
 		            }
 		        }
 		    });
-		    lblProprietari = new JLabel("Proprietari");
+		    lblProprietari = new JLabel("collaborazione con proprietario");
 		    contentPane.add(lblProprietari, "cell 6 5,alignx center");
 		    
 		    CF = new JLabel("Codice Fiscale");
@@ -167,69 +167,58 @@ public class registraUtente extends JFrame {
 		    
 		    
 		    reg.addActionListener(new ActionListener() {
-		    	public void actionPerformed(ActionEvent e) {
-		    		Login login = new Login();
-		    		String nome = name.getText();
-		    		String cognome = surname.getText();
-		    		String RUOLO= (String) comboBox.getSelectedItem();
-		    		//System.out.println(RUOLO);
-		    		String cf = CodFfield.getText();
-		    		String user = FieldUsername.getText();
-		    		String pass = new String(FieldPassword.getPassword());
-		    		String confermaPass = new String(passwordField.getPassword());
-		    		boolean[] value  = new boolean[4];
-		    		
-		    		if ("Coltivatore".equals(RUOLO) && "--Seleziona--".equals(ComboProprietari.getSelectedItem())) {
+		        public void actionPerformed(ActionEvent e) {
+		            Login login = new Login();
+		            String nome = name.getText();
+		            String cognome = surname.getText();
+		            String RUOLO = (String) comboBox.getSelectedItem();
+		            String cf = CodFfield.getText();
+		            String user = FieldUsername.getText();
+		            String pass = new String(FieldPassword.getPassword());
+		            String confermaPass = new String(passwordField.getPassword());
+		            boolean[] value = new boolean[4];
+		            
+		            if ("Coltivatore".equals(RUOLO) && "--Seleziona--".equals(ComboProprietari.getSelectedItem())) {
 		                JOptionPane.showMessageDialog(registraUtente.this, "Selezionare il proprietario con cui si vuole collaborare", "Errore", JOptionPane.ERROR_MESSAGE);
-		                return; // Esce dal metodo se la validazione fallisce
+		                return;
 		            }
-		    		
-		    		//validazioni campi
-		    		if(!pass.equals(confermaPass)) {
-		    			JOptionPane.showMessageDialog(registraUtente.this, "Le password non corrispondono", "Errore", JOptionPane.ERROR_MESSAGE);
-		    		
-		    		}else if(nome.equals(cognome)) {
-		    			JOptionPane.showMessageDialog(registraUtente.this, "Nome e cognome devono essere diversi", "Errore", JOptionPane.ERROR_MESSAGE);
-		    		
-		    		} else if (nome.isEmpty() || cognome.isEmpty() || cf.isEmpty() || user.isEmpty() || pass.isEmpty() || confermaPass.isEmpty()|| RUOLO.equals("-- Seleziona ruolo --")) {
-		    			JOptionPane.showMessageDialog(registraUtente.this, "COMPILA TUTTI I CAMPI!!!", "Errore", JOptionPane.ERROR_MESSAGE);
-		    			
-		    		}else if (pass.length() > 8) {
-		    		     JOptionPane.showMessageDialog(contentPane,
-		    		              "La password deve essere lunga al massimo 8 caratteri.",
-		    		              "Errore", JOptionPane.ERROR_MESSAGE); 
-		    		}else {	
-		    			 ControllerReg controller = new ControllerReg();
-		    			 
-		    			 value= controller.registra(nome , cognome,user, pass, cf, RUOLO.toString());
-		    		 }		    				    				    		
-		    	//messaggi di avviso stato registrazione	
-		    	try {	
-		    	if (value[0]==false && value[1]==false && value [2]==false && value[3]==true) {
-		    			JOptionPane.showMessageDialog(registraUtente.this, 
-				    			"USERNAME ESISTENTE ", "Errore", JOptionPane.ERROR_MESSAGE);
-		    		}
-		    		
-		    	else if (value [0]==true && value [2]==true) {		    	
-		    			JOptionPane.showMessageDialog(registraUtente.this, 
-		    			"Registrazione proprietario avvenuta con successo", "ESITO POSITIVO", JOptionPane.INFORMATION_MESSAGE);
-		    			dispose();			    			
-		    			registraUtente.this.setVisible(false);
-						login.setVisible(true);	
-						
-		    	}else if (value [1]==true&& value [2]==true) {
-		    		JOptionPane.showMessageDialog(registraUtente.this, 
-		    			"Registrazione coltivatore avvenuta con successo", "ESITO POSITIVO", JOptionPane.INFORMATION_MESSAGE);
-		    		registraUtente.this.setVisible(false);
-		    		login.setVisible(true);	
-		    	}else if (value[2]==false) {
-		    		JOptionPane.showMessageDialog(registraUtente.this, 
-		    			"Registrazione non riuscita", "Errore", JOptionPane.ERROR_MESSAGE);
-		    	}
-		    	}catch (Exception ex) {
-		    			ex.printStackTrace();
-		    	}
-		    	}
-		    });  
+		            
+		            // Validazioni campi
+		            if (!pass.equals(confermaPass)) {
+		                JOptionPane.showMessageDialog(registraUtente.this, "Le password non corrispondono", "Errore", JOptionPane.ERROR_MESSAGE);
+		            } else if (nome.equals(cognome)) {
+		                JOptionPane.showMessageDialog(registraUtente.this, "Nome e cognome devono essere diversi", "Errore", JOptionPane.ERROR_MESSAGE);
+		            } else if (nome.isEmpty() || cognome.isEmpty() || cf.isEmpty() || user.isEmpty() || pass.isEmpty() || confermaPass.isEmpty() || RUOLO.equals("-- Seleziona ruolo --")) {
+		                JOptionPane.showMessageDialog(registraUtente.this, "COMPILA TUTTI I CAMPI!!!", "Errore", JOptionPane.ERROR_MESSAGE);
+		            } else if (pass.length() > 8) {
+		                JOptionPane.showMessageDialog(contentPane, "La password deve essere lunga al massimo 8 caratteri.", "Errore", JOptionPane.ERROR_MESSAGE);
+		            } else {
+		                ControllerReg controller = new ControllerReg();
+		                String usernameProprietario = "Coltivatore".equals(RUOLO) ? (String) ComboProprietari.getSelectedItem() : null;
+		                value = controller.registra(nome, cognome, user, pass, cf, RUOLO.toString(), usernameProprietario);
+		            }
+		            
+		            // Messaggi di avviso stato registrazione
+		            try {
+		                if (value[0] == false && value[1] == false && value[2] == false && value[3] == true) {
+		                    JOptionPane.showMessageDialog(registraUtente.this, "USERNAME ESISTENTE ", "Errore", JOptionPane.ERROR_MESSAGE);
+		                } else if (value[0] == true && value[2] == true) {
+		                    JOptionPane.showMessageDialog(registraUtente.this, "Registrazione proprietario avvenuta con successo", "ESITO POSITIVO", JOptionPane.INFORMATION_MESSAGE);
+		                    dispose();
+		                    registraUtente.this.setVisible(false);
+		                    login.setVisible(true);
+		                } else if (value[1] == true && value[2] == true) {
+		                    JOptionPane.showMessageDialog(registraUtente.this, "Registrazione coltivatore avvenuta con successo", "ESITO POSITIVO", JOptionPane.INFORMATION_MESSAGE);
+		                    dispose();
+		                    registraUtente.this.setVisible(false);
+		                    login.setVisible(true);
+		                } else if (value[2] == false) {
+		                    JOptionPane.showMessageDialog(registraUtente.this, "Registrazione non riuscita", "Errore", JOptionPane.ERROR_MESSAGE);
+		                }
+		            } catch (Exception ex) {
+		                ex.printStackTrace();
+		            }
+		        }
+		    });
 	}
 }

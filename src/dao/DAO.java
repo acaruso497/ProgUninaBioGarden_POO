@@ -126,8 +126,60 @@ public class DAO {
 	        }
 
 	        return usernames; // Restituisce l'ArrayList con gli username
-	    }		
+	    }	
 		
+		// Metodo per recuperare i lotti di un proprietario dato l'username
+	    public ArrayList<Integer> getLottiByProprietarioUsername(String usernameProprietario) {
+	        ArrayList<Integer> lotti = new ArrayList<>();
+	        Connection conn = null;
+	        PreparedStatement stmt = null;
+	        ResultSet rs = null;
+	        try {
+	            conn = Connessione.getConnection();
+	            String sql = "SELECT l.ID_Lotto " +
+	                         "FROM Lotto l " +
+	                         "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+	                         "WHERE p.username = ?";
+	            stmt = conn.prepareStatement(sql);
+	            stmt.setString(1, usernameProprietario);
+	            rs = stmt.executeQuery();
+	            while (rs.next()) {
+	                lotti.add(rs.getInt("ID_Lotto"));
+	            }
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        } finally {
+	            try { if (rs != null) rs.close(); } catch (Exception e) {}
+	            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+	            try { if (conn != null) conn.close(); } catch (Exception e) {}
+	        }
+	        return lotti;
+	    }
+	    
+	 // Metodo per associare un coltivatore a un lotto
+	    public static boolean associaColtivatoreLotto(String codiceFiscaleColtivatore, int idLotto) {
+	        Connection conn = null;
+	        PreparedStatement stmt = null;
+	        try {
+	            conn = Connessione.getConnection();
+	            // Inserimento in Attivita con ID_Attivita generato automaticamente (assumiamo autoincrement)
+	            String sql = "INSERT INTO Attivita (Codice_FiscaleCol, ID_Lotto, stato) VALUES (?, ?, 'pianificata')";
+	            stmt = conn.prepareStatement(sql);
+	            stmt.setString(1, codiceFiscaleColtivatore);
+	            stmt.setInt(2, idLotto);
+	            int rows = stmt.executeUpdate();
+	            return rows == 1;
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	            return false;
+	        } finally {
+	            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+	            try { if (conn != null) conn.close(); } catch (Exception e) {}
+	        }
+	    }
+
+	 // ______________registrazione____________
+
 	//____________________!!!   DAO: LOGIN     !!!!____________________________________
 	
 		//Autenticazione proprietario
