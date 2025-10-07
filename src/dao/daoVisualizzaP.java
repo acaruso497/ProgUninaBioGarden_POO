@@ -502,6 +502,42 @@ public class daoVisualizzaP {
 		
 	}
 	
+	public String getRaccoltoProdotto(String username, int idLotto) {
+	    String raccolto = "";
+	    Connection conn = null;
+	    PreparedStatement stmt = null;
+	    ResultSet risultato = null;
+	    
+	    try {
+	        conn = Connessione.getConnection();
+	        String sql = "SELECT c.raccoltoProdotto " +
+	                     "FROM Coltura c " +
+	                     "JOIN Progetto_Coltura pc ON c.ID_Coltura = pc.ID_Coltura " +
+	                     "JOIN Progetto_Coltivazione pcol ON pc.ID_Progetto = pcol.ID_Progetto " +
+	                     "JOIN Lotto l ON pcol.ID_Lotto = l.ID_Lotto " +
+	                     "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+	                     "WHERE p.username = ? AND l.ID_Lotto = ?";
+	        
+	        stmt = conn.prepareStatement(sql);
+	        stmt.setString(1, username);
+	        stmt.setInt(2, idLotto);
+	        risultato = stmt.executeQuery();
+	        
+	        if (risultato.next()) {
+	            raccolto = risultato.getString("raccoltoProdotto");
+	        }
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	    } finally {
+	        try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+	        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+	        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+	    }
+	    return raccolto;
+	}	
+	
+	
+	
 	
 }   
 	

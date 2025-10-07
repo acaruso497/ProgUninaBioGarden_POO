@@ -51,7 +51,7 @@ public class VisualizzaProgetti extends JFrame {
     
     private String username = ControllerLogin.getUsernameGlobale();
     private String CFProprietario = ControllerLogin.getCodiceFiscaleByUsername(username);
-    
+    static String idLotto = null;
     //combobox
     JComboBox<String> ComboAttivita = new JComboBox<>();
     JComboBox<String> ComboProgetto = new JComboBox<>();
@@ -63,6 +63,7 @@ public class VisualizzaProgetti extends JFrame {
     JRadioButton RadioInCorso = new JRadioButton("in corso");
     JRadioButton RadioCompletata = new JRadioButton("completata");
     private JTextField FieldLotto;
+    private JTextField textField;
 	
 	public VisualizzaProgetti(HomePageProprietario home) {
 		this.home = home;
@@ -89,7 +90,7 @@ public class VisualizzaProgetti extends JFrame {
 	    @SuppressWarnings("unused")
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][][][grow][grow][][][grow][][grow][][][][][][grow][grow][][][grow][][][grow][grow][grow][grow][grow]", "[grow][grow][][grow][grow][grow][][grow][][grow][grow][grow][][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][][][grow][grow][][][grow][][grow][][][][][][grow][grow][][][grow][][][grow][grow][grow][grow][grow]", "[grow][grow][][grow][grow][grow][][grow][][][][grow][grow][grow][][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    JLabel LabelVisualizza = new JLabel("Visualizza i tuoi progetti!");
 	    LabelVisualizza.setFont(new Font("Tahoma", Font.BOLD, 17));
@@ -185,6 +186,15 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldStima.setColumns(10);
 	    FieldStima.setEditable(false); //blocca il textfield
 	    
+	    
+	    JLabel LabelLotto = new JLabel("Lotto");
+	    contentPane.add(LabelLotto, "cell 0 7,alignx trailing");
+	    
+	    FieldLotto = new JTextField();
+	    FieldLotto.setEditable(false);
+	    FieldLotto.setColumns(10);
+	    contentPane.add(FieldLotto, "cell 1 7,growx");
+	    
 	    JLabel LabelEffettivo = new JLabel("Raccolto effettivo");
 	    contentPane.add(LabelEffettivo, "cell 5 7,alignx trailing");
 	    
@@ -192,21 +202,28 @@ public class VisualizzaProgetti extends JFrame {
 	    contentPane.add(FieldEffettivo, "cell 6 7,growx");
 	    FieldEffettivo.setColumns(10);
 	    FieldEffettivo.setEditable(false); //blocca il textfield
-	    	    
-	    	    
-	    JLabel LabelLotto = new JLabel("Lotto");
-	    contentPane.add(LabelLotto, "cell 0 11,alignx trailing");
 	    
-	    FieldLotto = new JTextField();
-	    FieldLotto.setEditable(false);
-	    FieldLotto.setColumns(10);
-	    contentPane.add(FieldLotto, "cell 1 11,growx");
+	    JLabel lblRaccoltoColtura = new JLabel("Raccolto coltura");
+	    contentPane.add(lblRaccoltoColtura, "cell 2 9,alignx center,aligny center");
+	    
+	    JLabel ColtureRaccolte = new JLabel("Colture");
+	    contentPane.add(ColtureRaccolte, "cell 0 10,alignx trailing");
+	    
+	    JComboBox<String> ComboColtureRacc = new JComboBox<String>();
+	    ComboColtureRacc.setSelectedIndex(-1);
+	    ComboColtureRacc.setPreferredSize(new Dimension(150, 20));
+	    contentPane.add(ComboColtureRacc, "cell 1 10,growx");
+	    
+	    textField = new JTextField();
+	    textField.setEditable(false);
+	    textField.setColumns(10);
+	    contentPane.add(textField, "cell 2 10,growx");
 	    
 	    JLabel LabelAttivita = new JLabel("Ultima Attività");
-	    contentPane.add(LabelAttivita, "cell 0 14,alignx trailing");
+	    contentPane.add(LabelAttivita, "cell 0 16,alignx trailing");
 	    
 	    
-	    contentPane.add(ComboAttivita, "cell 1 14,growx");
+	    contentPane.add(ComboAttivita, "cell 1 16,growx");
 	    ComboAttivita.setPreferredSize(new Dimension(150, 20));
 	    
 	    
@@ -239,36 +256,36 @@ public class VisualizzaProgetti extends JFrame {
 	    
 	    
 	    
-	    contentPane.add(RadioPianificata, "cell 3 14");
+	    contentPane.add(RadioPianificata, "cell 3 16");
 	    RadioPianificata.setOpaque(false);
 	    gruppoStato.add(RadioPianificata);
 	    
 	    
-	    contentPane.add(RadioInCorso, "cell 4 14");
+	    contentPane.add(RadioInCorso, "cell 4 16");
 	    RadioInCorso.setOpaque(false);
 	    gruppoStato.add(RadioInCorso);
 	    
 	    
-	    contentPane.add(RadioCompletata, "cell 5 14");
+	    contentPane.add(RadioCompletata, "cell 5 16");
 	    RadioCompletata.setOpaque(false);
 	    gruppoStato.add(RadioCompletata);
-	    contentPane.add(ButtonModificaAttivita, "cell 6 14");
+	    contentPane.add(ButtonModificaAttivita, "cell 6 16");
 	    
 	    
 	    
 	    JLabel LabelDataIA = new JLabel("Data Inizio");
-	    contentPane.add(LabelDataIA, "cell 0 15,alignx trailing");
+	    contentPane.add(LabelDataIA, "cell 0 17,alignx trailing");
 	    
 	    FieldDataIA = new JTextField(); //field data inizio attività
-	    contentPane.add(FieldDataIA, "cell 1 15,growx");
+	    contentPane.add(FieldDataIA, "cell 1 17,growx");
 	    FieldDataIA.setColumns(10);
 	    FieldDataIA.setEditable(false); //blocca il textfield
 	    
 	    JLabel LabelDataFA = new JLabel("Data Fine");
-	    contentPane.add(LabelDataFA, "cell 0 16,alignx trailing");
+	    contentPane.add(LabelDataFA, "cell 0 18,alignx trailing");
 	    
 	    FieldDataFA = new JTextField(); //field data fine attività
-	    contentPane.add(FieldDataFA, "cell 1 16,growx");
+	    contentPane.add(FieldDataFA, "cell 1 18,growx");
 	    FieldDataFA.setColumns(10);
 	    FieldDataFA.setEditable(false); //blocca il textfield
 	    
@@ -313,8 +330,7 @@ public class VisualizzaProgetti extends JFrame {
 	                    ComboListaColture.removeAllItems();
 	                    
 	                }
-	                
-	    
+	                	    
 	                
                 }catch (NullPointerException ex) {
             		JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
@@ -376,13 +392,7 @@ public class VisualizzaProgetti extends JFrame {
         ComboProgetto.setSelectedIndex(-1);
     }
 
-    // Popola ComboLotto 
-//    private void popolaComboLotto() {
-//        //String lotti = controller.getLottiByProprietario(username); // Usa usernameGlobale
-//    	String selectedProgetto = (String) ComboProgetto.getSelectedItem();
-//    	int idProgetto = Integer.parseInt(selectedProgetto);
-//        Integer lotti = controller.getLottiByProprietario(idProgetto, CFProprietario);
-//    }
+
     
     //Popola il field del lotto
     private void popolaFieldLotto() {
@@ -397,7 +407,7 @@ public class VisualizzaProgetti extends JFrame {
         
         try {
             int idProgetto = Integer.parseInt(selectedProgetto);
-            String idLotto = controller.getLottiByProprietario(idProgetto, CFProprietario); 
+             idLotto = controller.getLottiByProprietario(idProgetto, CFProprietario); 
             
             //controlla l'esistenza di un lotto
             if (idLotto != null) { 

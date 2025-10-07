@@ -66,5 +66,8 @@ private daoVisualizzaP dao;
     	return dao.isCompletata(username, idProgettoStr);
     	
     }
+    public String getRaccoltoProdotto(String username, int idLotto) {
+    	return dao.getRaccoltoProdotto(username, idLotto);
+    }
     
 }
