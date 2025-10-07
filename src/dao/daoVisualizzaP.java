@@ -278,13 +278,7 @@ public class daoVisualizzaP {
 
 		    try {
 		        conn = Connessione.getConnection(); 
-
-		      //seleziono tutti i lotti del proprietario dato il suo username 
-//		        String sql = "SELECT l.ID_Lotto " + 
-//	                    "FROM Proprietario p " +
-//	                    "JOIN Lotto l ON l.Codice_FiscalePr = p.Codice_Fiscale " +
-//	                    "WHERE p.username = ? ";
-		        
+	        
 		        String sql = "SELECT l.ID_Lotto " +
 		                     "FROM Lotto l " +
 		                     "JOIN Progetto_Coltivazione pc ON l.ID_Progetto = pc.ID_Progetto " +
@@ -297,12 +291,6 @@ public class daoVisualizzaP {
 		        stmt.setString(2, codiceFiscaleProprietario);
 		        risultato = stmt.executeQuery();
 
-//		        while (risultato.next()) {
-//		            int idLotto = risultato.getInt("ID_Lotto"); 
-//	                String idStr = String.valueOf(idLotto); 
-//	                lista.add(idStr); // Aggiunge alla lista
-//		        }
-		        
 		        if (risultato.next()) {
 		        	idLotto = String.valueOf(risultato.getInt("ID_Lotto"));
 		        }
@@ -497,10 +485,10 @@ public class daoVisualizzaP {
 			try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
 			try { if (conn != null) conn.close(); } catch (Exception ignored) {}
 		}
-	
-		
-		
+				
 	}
+	//raccolta del prodotto selezionato nella drop
+
 	
 	public String getRaccoltoProdotto(String username, int idLotto) {
 	    String raccolto = "";
@@ -536,7 +524,39 @@ public class daoVisualizzaP {
 	    return raccolto;
 	}	
 	
-	
+	public ArrayList<String> getColtureProprietario(String CF, String progettoId) {
+	    ArrayList<String> listaC = new ArrayList<>();
+	    Connection conn = null;
+	    PreparedStatement stmt = null;
+	    ResultSet risultato = null;
+	    
+	    try {
+	        conn = Connessione.getConnection();
+	        String sql = "SELECT DISTINCT c.varietà " +
+	                     "FROM Coltura c " +
+	                     "JOIN Progetto_Coltura pc ON c.ID_Coltura = pc.ID_Coltura " +
+	                     "JOIN Progetto_Coltivazione pcol ON pc.ID_Progetto = pcol.ID_Progetto " +
+	                     "JOIN Lotto l ON pcol.ID_Lotto = l.ID_Lotto " +
+	                     "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+	                     "WHERE p.codice_fiscale = ? AND pcol.ID_Progetto = ?";
+	        
+	        stmt = conn.prepareStatement(sql);
+	        stmt.setString(1, CF);
+	        stmt.setInt(2, Integer.parseInt(progettoId));
+	        risultato = stmt.executeQuery();
+	        
+	        while (risultato.next()) {
+	            listaC.add(risultato.getString("varietà"));
+	        }
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	    } finally {
+	        try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+	        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+	        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+	    }
+	    return listaC;
+	}
 	
 	
 }   

@@ -1,7 +1,7 @@
 package controller;
 import dao.daoVisualizzaP;
 import java.util.List;
-
+import java.util.ArrayList;
 import javax.swing.JTextField;
 
 public class ControllerVisualizzaP {
@@ -66,6 +66,11 @@ private daoVisualizzaP dao;
     	return dao.isCompletata(username, idProgettoStr);
     	
     }
+    public ArrayList<String> getColtureProprietario(String CF, String progetto) {
+    	
+    	return dao.getColtureProprietario(CF, progetto);
+	}
+    
     public String getRaccoltoProdotto(String username, int idLotto) {
     	return dao.getRaccoltoProdotto(username, idLotto);
     }

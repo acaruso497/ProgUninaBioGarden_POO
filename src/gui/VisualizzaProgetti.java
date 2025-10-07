@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-
+import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -48,14 +48,14 @@ public class VisualizzaProgetti extends JFrame {
 	private JTextField FieldDataFA;
 	private ControllerVisualizzaP controller; 
     private daoVisualizzaP dao; 
-    
+    private String selectedProgetto = null;
     private String username = ControllerLogin.getUsernameGlobale();
     private String CFProprietario = ControllerLogin.getCodiceFiscaleByUsername(username);
     static String idLotto = null;
     //combobox
     JComboBox<String> ComboAttivita = new JComboBox<>();
     JComboBox<String> ComboProgetto = new JComboBox<>();
-    
+    ArrayList<String> colture= new ArrayList<String>();
     JComboBox<String> ComboListaColture = new JComboBox<>();
     
     //stati attivita
@@ -63,7 +63,7 @@ public class VisualizzaProgetti extends JFrame {
     JRadioButton RadioInCorso = new JRadioButton("in corso");
     JRadioButton RadioCompletata = new JRadioButton("completata");
     private JTextField FieldLotto;
-    private JTextField textField;
+    private JTextField VisualRaccolto;
 	
 	public VisualizzaProgetti(HomePageProprietario home) {
 		this.home = home;
@@ -132,7 +132,7 @@ public class VisualizzaProgetti extends JFrame {
 	    contentPane.add(ButtonTermina, "cell 2 3,aligny center");
 	    ButtonTermina.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		String selectedProgetto = (String) ComboProgetto.getSelectedItem();
+	    		selectedProgetto = (String) ComboProgetto.getSelectedItem();
 	    		String lotto = FieldLotto.getText();
 	    		
 	    		if(selectedProgetto == null || lotto.isEmpty()) {
@@ -210,14 +210,16 @@ public class VisualizzaProgetti extends JFrame {
 	    contentPane.add(ColtureRaccolte, "cell 0 10,alignx trailing");
 	    
 	    JComboBox<String> ComboColtureRacc = new JComboBox<String>();
+	    dao = new daoVisualizzaP();
+	    controller = new ControllerVisualizzaP(dao);
 	    ComboColtureRacc.setSelectedIndex(-1);
 	    ComboColtureRacc.setPreferredSize(new Dimension(150, 20));
 	    contentPane.add(ComboColtureRacc, "cell 1 10,growx");
-	    
-	    textField = new JTextField();
-	    textField.setEditable(false);
-	    textField.setColumns(10);
-	    contentPane.add(textField, "cell 2 10,growx");
+	   
+	    VisualRaccolto = new JTextField();
+	    VisualRaccolto.setEditable(false);
+	    VisualRaccolto.setColumns(10);
+	    contentPane.add(VisualRaccolto, "cell 2 10,growx");
 	    
 	    JLabel LabelAttivita = new JLabel("Ultima Attività");
 	    contentPane.add(LabelAttivita, "cell 0 16,alignx trailing");
@@ -293,8 +295,6 @@ public class VisualizzaProgetti extends JFrame {
         controller = new ControllerVisualizzaP(dao);
 	    
         popolaComboProgetto();
-        //popolaComboLotto();
-       // popolaComboListaColture();
         
         ComboProgetto.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -324,7 +324,13 @@ public class VisualizzaProgetti extends JFrame {
 	                
 	                if (lotto != null && !lotto.isEmpty()) { //prima di popolare la combo delle colture, verifica l'esistenza di un lotto
 	                    ComboListaColture.setEnabled(true);
-	                    popolaComboListaColture(); 
+	                    
+	            	    colture = controller.getColtureProprietario(Login.CFProprietario, selectedProgetto );
+	            	    ComboColtureRacc.removeAllItems();
+	            	    ComboColtureRacc.addItem("--Seleziona coltura--");
+	            	    for (String coltura : colture) {
+	            	        ComboColtureRacc.addItem(coltura);
+	            	    }
 	                } else {
 	                    ComboListaColture.setEnabled(false); //non trova nulla, reset
 	                    ComboListaColture.removeAllItems();
