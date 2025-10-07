@@ -74,5 +74,9 @@ private daoVisualizzaP dao;
     public String getRaccoltoProdotto(String username, int idLotto) {
     	return dao.getRaccoltoProdotto(username, idLotto);
     }
+    public String getRaccoltoProdotto(String username, int idLotto, String coltura){
+    	
+    	return dao.getRaccoltoProdotto(username, idLotto, coltura);
+	}
     
 }

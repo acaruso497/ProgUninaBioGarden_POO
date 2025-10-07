@@ -215,7 +215,6 @@ public class VisualizzaProgetti extends JFrame {
 	    ComboColtureRacc.setSelectedIndex(-1);
 	    ComboColtureRacc.setPreferredSize(new Dimension(150, 20));
 	    contentPane.add(ComboColtureRacc, "cell 1 10,growx");
-	   
 	    VisualRaccolto = new JTextField();
 	    VisualRaccolto.setEditable(false);
 	    VisualRaccolto.setColumns(10);
@@ -223,12 +222,36 @@ public class VisualizzaProgetti extends JFrame {
 	    
 	    JLabel LabelAttivita = new JLabel("Ultima Attività");
 	    contentPane.add(LabelAttivita, "cell 0 16,alignx trailing");
-	    
-	    
+	 // Aggiungi l'ActionListener per popolare VisualRaccolto
+	    ComboColtureRacc.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            try {
+	                String selectedColtura = (String) ComboColtureRacc.getSelectedItem();
+	                if (selectedColtura != null && !selectedColtura.equals("--Seleziona coltura--")) {
+	                    String lottoText = FieldLotto.getText();
+	                    if (lottoText != null && !lottoText.isEmpty()) {
+	                        int idLotto = Integer.parseInt(lottoText);
+	                        String raccolto = controller.getRaccoltoProdotto(username, idLotto, selectedColtura);
+	                        VisualRaccolto.setText(raccolto);
+	                    } else {
+	                        VisualRaccolto.setText("no dati"); // Default se il lotto non è valido
+	                    }
+	                } else {
+	                    VisualRaccolto.setText("..."); // Reset se non c'è selezione valida
+	                }
+	            } catch (NumberFormatException ex) {
+	                JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
+	                    "Errore nel formato del lotto", "Errore", JOptionPane.ERROR_MESSAGE);
+	                VisualRaccolto.setText("error");
+	            } catch (NullPointerException ex) {
+	                JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
+	                    "Seleziona una coltura valida", "Errore", JOptionPane.ERROR_MESSAGE);
+	                VisualRaccolto.setText("ponterN");
+	            }
+	        }
+	    });	    
 	    contentPane.add(ComboAttivita, "cell 1 16,growx");
 	    ComboAttivita.setPreferredSize(new Dimension(150, 20));
-	    
-	    
 	    
 	    JButton ButtonModificaAttivita = new JButton("Modifica");
 	    ButtonModificaAttivita.addActionListener(new ActionListener() {
@@ -434,22 +457,22 @@ public class VisualizzaProgetti extends JFrame {
     }
     
     // Popola ComboListaColture 
-    private void popolaComboListaColture() {
-    	String selectedProgetto = (String) ComboProgetto.getSelectedItem();
-	  	String selectedLotto = FieldLotto.getText();
-	  
-	  	if (selectedProgetto == null || selectedLotto == null || 
-	  		    selectedProgetto.isEmpty() || selectedLotto.isEmpty()) { //se non trova niente, reset
-	  		    ComboListaColture.removeAllItems(); 
-	  		    return;
-	  		}
-	  	
-    	List<String> listaColture = controller.getColtureByLotto(selectedLotto,selectedProgetto);
-        for (String coltura : listaColture) {
-        	ComboListaColture.addItem(coltura); //popola la combobox con l'id progetto
-        }
-        ComboListaColture.setSelectedIndex(-1);
-    }
+//    private void popolaComboListaColture() {
+//    	String selectedProgetto = (String) ComboProgetto.getSelectedItem();
+//	  	String selectedLotto = FieldLotto.getText();
+//	  
+//	  	if (selectedProgetto == null || selectedLotto == null || 
+//	  		    selectedProgetto.isEmpty() || selectedLotto.isEmpty()) { //se non trova niente, reset
+//	  		    ComboListaColture.removeAllItems(); 
+//	  		    return;
+//	  		}
+//	  	
+//    	List<String> listaColture = controller.getColtureByLotto(selectedLotto,selectedProgetto);
+//        for (String coltura : listaColture) {
+//        	ComboListaColture.addItem(coltura); //popola la combobox con l'id progetto
+//        }
+//        ComboListaColture.setSelectedIndex(-1);
+//    }
     
 	
 
