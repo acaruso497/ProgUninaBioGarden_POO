@@ -39,9 +39,9 @@ private daoVisualizzaP dao;
     
    
     //popola la combobox delle colture tramite l'id del lotto e l'id del progetto
-    public List<String> getColtureByLotto(String idLottoStr, String idProgettoStr) {
-    	return dao.getColtureByLotto(idLottoStr, idProgettoStr);
-    }
+//    public List<String> getColtureByLotto(String idLottoStr, String idProgettoStr) {
+//    	return dao.getColtureByLotto(idLottoStr, idProgettoStr);
+//    }
     
     
     // Setta l'ID del progetto, i campi di data inizio e data fine

@@ -277,25 +277,25 @@ public class HomePageColtivatore extends JFrame {
 	    
 	    ButtonSalva.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		ControllerColtivatore controller = new ControllerColtivatore();
-	    		String selectedProgetto = (String) ComboProgetti.getSelectedItem();
-	    		String selectedColtura = (String) ComboTipologia.getSelectedItem();
-	    		String raccoltoColture = FieldRaccoltoColture.getText();
-	    		if (selectedColtura == null || selectedColtura.isEmpty() || raccoltoColture == null || raccoltoColture.isEmpty()) {
-				    JOptionPane.showMessageDialog(HomePageColtivatore.this, "COMPILA TUTTI I CAMPI !!", "Errore", JOptionPane.ERROR_MESSAGE);
-				    return; 
-	    		}
-	    		
 	    		try {
-	                //double raccoltoNumerico = Double.parseDouble(raccoltoColture); //converte il raccolto in double
-	                
+	    			ControllerColtivatore controller = new ControllerColtivatore();
+		    		String selectedProgetto = (String) ComboProgetti.getSelectedItem();
+		    		String selectedColtura = (String) ComboTipologia.getSelectedItem();
+		    		String raccoltoColture = FieldRaccoltoColture.getText();
+		    		
+	    			if (selectedColtura == null || selectedColtura.isEmpty() || raccoltoColture == null || raccoltoColture.isEmpty()) {
+					    JOptionPane.showMessageDialog(HomePageColtivatore.this, "COMPILA TUTTI I CAMPI !!", "Errore", JOptionPane.ERROR_MESSAGE);
+					    return; 
+		    		}
+	    			
+	    			boolean sommaRaccolto = controller.sommaRaccolto(raccoltoColture, selectedColtura, selectedProgetto);
+	    			
 	            } catch (NumberFormatException ex) {
 	                JOptionPane.showMessageDialog(HomePageColtivatore.this, "Il raccolto deve essere un numero valido!", "Errore", JOptionPane.ERROR_MESSAGE);
 	                FieldRaccoltoColture.setBackground(Color.RED);
 	                return;
 	            }
 	    		
-	    		boolean sommaRaccolto = controller.sommaRaccolto(raccoltoColture, selectedColtura, selectedProgetto);
 	    		
 	    		JOptionPane.showMessageDialog(HomePageColtivatore.this, "Il raccolto è stato aggiornato con successo!");
 	    	}

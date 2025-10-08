@@ -308,6 +308,7 @@ public static boolean registraAttivita(String tipoAttivita, Date dataIA, Date da
 	conn = Connessione.getConnection();
 	int idLotto = Integer.parseInt(idLottoStr);
 	
+	
 	// FASE 1: RECUPERA COLTIVATORE DEL LOTTO
 	String coltivatore = getColtivatoreLotto(idLotto);
 	if (coltivatore == null) {
@@ -315,7 +316,7 @@ public static boolean registraAttivita(String tipoAttivita, Date dataIA, Date da
 	}
 	
 	// FASE 2: INSERISCI ATTIVITA BASE
-	String sqlAttivita = "INSERT INTO Attivita (ID_Lotto, Codice_FiscaleCol, giorno_assegnazione) VALUES (?, ?, CURRENT_DATE) RETURNING ID_Attivita";
+	String sqlAttivita = "INSERT INTO Attivita (ID_Lotto, Codice_FiscaleCol, giorno_assegnazione, stato) VALUES (?, ?, CURRENT_DATE, 'pianificata') RETURNING ID_Attivita";
 	stmt = conn.prepareStatement(sqlAttivita);
 	stmt.setInt(1, idLotto);
 	stmt.setString(2, coltivatore);

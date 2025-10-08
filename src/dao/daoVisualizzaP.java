@@ -29,46 +29,52 @@ public class daoVisualizzaP {
 	        conn = Connessione.getConnection();
 	      
 	        if ("Raccolta".equals(tipoAttivita)) {
-//	            sql = "SELECT r.id_attivita, r.stato, r.giorno_inizio, r.giorno_fine " +
-//	                    "FROM Raccolta r " +
-//	                    "JOIN Attivita a ON r.id_attivita = a.id_attivita " +
-//	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
-//	                    "WHERE o.id_progetto = ?";
 
-	        	sql="SELECT r.id_attivita, r.stato, r.giorno_inizio, r.giorno_fine " +
-	        			" FROM Raccolta r " +
-	        		    " JOIN Attivita a ON r.id_attivita = a.id_attivita " +
-	        			" JOIN Lotto l ON l.id_lotto = a.id_lotto " +
-	        			" JOIN Progetto_Coltivazione pc ON pc.id_progetto=l.id_progetto " +
-	        			" WHERE pc.id_progetto = ?";
+			sql = "SELECT r.id_attivita, r.stato, r.giorno_inizio, r.giorno_fine "
+			  		+ "FROM Progetto_Coltivazione pc "
+			  		+ "JOIN Lotto l      ON l.id_lotto = pc.id_lotto "
+			  		+ "JOIN Attivita a   ON a.id_lotto = l.id_lotto "
+			  		+ "JOIN Raccolta r   ON r.id_attivita = a.id_attivita "
+			  		+ "WHERE pc.id_progetto = ? "
+			  		+ "  AND ( "
+			  		+ "       r.giorno_inizio BETWEEN pc.data_inizio AND pc.data_fine "
+			  		+ "    OR r.giorno_fine   BETWEEN pc.data_inizio AND pc.data_fine "
+			  		+ "    OR pc.data_inizio  BETWEEN r.giorno_inizio AND r.giorno_fine "
+			  		+ "  ) "
+			  		+ "ORDER BY r.giorno_inizio DESC, r.giorno_fine DESC "
+			  		+ "LIMIT 1 ";
 	                    
 	          } else if ("Irrigazione".equals(tipoAttivita)) {
-//	              sql = "SELECT i.id_attivita, i.stato, i.giorno_inizio, i.giorno_fine " +
-//	                    "FROM Irrigazione i " +
-//	                    "JOIN Attivita a ON i.id_attivita = a.id_attivita " +
-//	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
-//	                    "WHERE o.id_progetto = ?";
+	        	 sql = " SELECT i.id_attivita, i.stato, i.giorno_inizio, i.giorno_fine " +
+	        	  "FROM Progetto_Coltivazione pc " +
+	        	  "JOIN Lotto l       ON l.id_lotto = pc.id_lotto " +
+	        	  "JOIN Attivita a    ON a.id_lotto = l.id_lotto " +
+	        	  "JOIN Irrigazione i ON i.id_attivita = a.id_attivita " +
+	        	  "WHERE pc.id_progetto = ? " +
+	        	    "AND (  " +
+	        	         "i.giorno_inizio BETWEEN pc.data_inizio AND pc.data_fine " +
+	        	      "OR i.giorno_fine   BETWEEN pc.data_inizio AND pc.data_fine " +
+	        	      "OR pc.data_inizio  BETWEEN i.giorno_inizio AND i.giorno_fine " +
+	        	    ") " +
+	        	  "ORDER BY i.giorno_inizio DESC, i.giorno_fine DESC " +
+	        	  "LIMIT 1 ";
 	        	  
-	        	  sql="SELECT i.id_attivita, i.stato, i.giorno_inizio, i.giorno_fine " +
-		        			" FROM Irrigazione i " +
-		        		    " JOIN Attivita a ON i.id_attivita = a.id_attivita " +
-		        			" JOIN Lotto l ON l.id_lotto = a.id_lotto " +
-		        			" JOIN Progetto_Coltivazione pc ON pc.id_progetto=l.id_progetto " +
-		        			" WHERE pc.id_progetto = ?";
-	        	  
+	        	  		 
 	                    
 	          } else if ("Semina".equals(tipoAttivita)) {
-//	              sql = "SELECT s.id_attivita, s.stato, s.giorno_inizio, s.giorno_fine " +
-//	                    "FROM Semina s " +
-//	                    "JOIN Attivita a ON s.id_attivita = a.id_attivita " +
-//	                    "JOIN Ospita_Lotto_Progetto o ON a.id_lotto = o.id_lotto " +
-//	                    "WHERE o.id_progetto = ?";
-	        	  sql="SELECT s.id_attivita, s.stato, s.giorno_inizio, s.giorno_fine " +
-		        			" FROM Semina s " +
-		        		    " JOIN Attivita a ON s.id_attivita = a.id_attivita " +
-		        			" JOIN Lotto l ON l.id_lotto = a.id_lotto " +
-		        			" JOIN Progetto_Coltivazione pc ON pc.id_progetto=l.id_progetto " +
-		        			" WHERE pc.id_progetto = ?";
+	        	  sql = "SELECT s.id_attivita, s.stato, s.giorno_inizio, s.giorno_fine " +
+	        			  "FROM Progetto_Coltivazione pc " +
+	        			  "JOIN Lotto l      ON l.id_lotto = pc.id_lotto " +
+	        			  "JOIN Attivita a   ON a.id_lotto = l.id_lotto " +
+	        			  "JOIN Semina s     ON s.id_attivita = a.id_attivita " +
+	        			  "WHERE pc.id_progetto = ? " +
+	        			    "AND ( " +
+	        			         "s.giorno_inizio BETWEEN pc.data_inizio AND pc.data_fine " +
+	        			      "OR s.giorno_fine   BETWEEN pc.data_inizio AND pc.data_fine " +
+	        			      "OR pc.data_inizio  BETWEEN s.giorno_inizio AND s.giorno_fine " +
+	        			    ") " +
+	        			  "ORDER BY s.giorno_inizio DESC, s.giorno_fine DESC " +
+	        			  "LIMIT 1 ";
 	        	  
 	          }
 
@@ -163,12 +169,12 @@ public class daoVisualizzaP {
 //                        "WHERE p.username = ? " +
 //                        "ORDER BY pc.ID_Progetto";
 
-          String sql = "SELECT pc.ID_Progetto " + 
-          "FROM Progetto_Coltivazione pc " +
-          "JOIN Lotto l ON l.ID_Lotto = pc.ID_Lotto " +
-          "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
-          "WHERE p.username = ? " +
-          "ORDER BY pc.ID_Progetto";
+          String sql = "SELECT pc.ID_Progetto " +
+        		  "FROM Progetto_Coltivazione pc " +
+        		  "JOIN Lotto l ON l.ID_Lotto = pc.ID_Lotto " +
+        		  "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+        		  "WHERE p.username = ? " +
+        		  "ORDER BY pc.ID_Progetto ";
             
             stmt = conn.prepareStatement(sql);   
             stmt.setString(1, username);
@@ -231,41 +237,41 @@ public class daoVisualizzaP {
  }   
     
   //seleziono tutte le tipologie colture presenti in un lotto dato il suo progetto (utile per ComboListaColture)
-    public List<String> getColtureByLotto(String idLottoStr, String idProgettoStr) {
-    	int idLotto= Integer.parseInt(idLottoStr);
-    	int idProgetto= Integer.parseInt(idProgettoStr);
-    	
-        List<String> lista = new ArrayList<>();
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet risultato = null;
-
-        try {
-            conn = Connessione.getConnection(); 
-            //String sql = "SELECT DISTINCT varietà FROM coltivatoreview WHERE id_progetto = ? AND id_lotto = ?";
-            String sql = "SELECT varietà FROM ComboListaColture WHERE id_progetto = ? AND id_lotto = ?";
-            
-            stmt = conn.prepareStatement(sql);   
-            stmt.setInt(1, idProgetto);
-            stmt.setInt(2, idLotto);
-            risultato = stmt.executeQuery();
-
-            while (risultato.next()) {
-                String coltura = risultato.getString("varietà");
-                lista.add(coltura);
-            }
-
-
-        } catch (SQLException | NumberFormatException ex) {
-        	ex.printStackTrace();
-        } finally {
-            try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
-            try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
-            try { if (conn != null) conn.close(); } catch (Exception ignored) {}
-        }
-
-        return lista;
-    }
+//    public List<String> getColtureByLotto(String idLottoStr, String idProgettoStr) {
+//    	int idLotto= Integer.parseInt(idLottoStr);
+//    	int idProgetto= Integer.parseInt(idProgettoStr);
+//    	
+//        List<String> lista = new ArrayList<>();
+//        Connection conn = null;
+//        PreparedStatement stmt = null;
+//        ResultSet risultato = null;
+//
+//        try {
+//            conn = Connessione.getConnection(); 
+//            //String sql = "SELECT DISTINCT varietà FROM coltivatoreview WHERE id_progetto = ? AND id_lotto = ?";
+//            String sql = "SELECT varietà FROM ComboListaColture WHERE id_progetto = ? AND id_lotto = ?";
+//            
+//            stmt = conn.prepareStatement(sql);   
+//            stmt.setInt(1, idProgetto);
+//            stmt.setInt(2, idLotto);
+//            risultato = stmt.executeQuery();
+//
+//            while (risultato.next()) {
+//                String coltura = risultato.getString("varietà");
+//                lista.add(coltura);
+//            }
+//
+//
+//        } catch (SQLException | NumberFormatException ex) {
+//        	ex.printStackTrace();
+//        } finally {
+//            try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+//            try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+//            try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+//        }
+//
+//        return lista;
+//    }
 	
 	
 	//recupera i lotti di un proprietario (utile per popolare ComboLotti)
@@ -279,11 +285,17 @@ public class daoVisualizzaP {
 		    try {
 		        conn = Connessione.getConnection(); 
 	        
+//		        String sql = "SELECT l.ID_Lotto " +
+//		                     "FROM Lotto l " +
+//		                     "JOIN Progetto_Coltivazione pc ON l.ID_Progetto = pc.ID_Progetto " +
+//		                     "WHERE pc.ID_Progetto = ? " +
+//		                     "AND l.Codice_FiscalePr = ?";
+		        
 		        String sql = "SELECT l.ID_Lotto " +
-		                     "FROM Lotto l " +
-		                     "JOIN Progetto_Coltivazione pc ON l.ID_Progetto = pc.ID_Progetto " +
-		                     "WHERE pc.ID_Progetto = ? " +
-		                     "AND l.Codice_FiscalePr = ?";
+	                     "FROM Lotto l " +
+	                     "JOIN Progetto_Coltivazione pc ON l.ID_Lotto = pc.ID_Lotto " +  // CORRETTO
+	                     "WHERE pc.ID_Progetto = ? " +
+	                     "AND l.Codice_FiscalePr = ?";
 		        
 
 		        stmt = conn.prepareStatement(sql);   

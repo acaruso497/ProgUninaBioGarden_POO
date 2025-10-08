@@ -56,7 +56,6 @@ public class VisualizzaProgetti extends JFrame {
     JComboBox<String> ComboAttivita = new JComboBox<>();
     JComboBox<String> ComboProgetto = new JComboBox<>();
     ArrayList<String> colture= new ArrayList<String>();
-    JComboBox<String> ComboListaColture = new JComboBox<>();
     
     //stati attivita
     JRadioButton RadioPianificata = new JRadioButton("pianificata");
@@ -95,7 +94,6 @@ public class VisualizzaProgetti extends JFrame {
 	    JLabel LabelVisualizza = new JLabel("Visualizza i tuoi progetti!");
 	    LabelVisualizza.setFont(new Font("Tahoma", Font.BOLD, 17));
 	    contentPane.add(LabelVisualizza, "cell 0 0");
-	    ComboListaColture.setEnabled(false);    
 	    
 	        JButton ButtonGrafici = new JButton("Visualizza Grafici");
 	        ButtonGrafici.addActionListener(new ActionListener() {
@@ -150,15 +148,6 @@ public class VisualizzaProgetti extends JFrame {
 	    		
 	    	}
 	    });
-	    
-	    
-	    JLabel LabelTipologia = new JLabel("Tipologia coltura");
-	    contentPane.add(LabelTipologia, "cell 5 3,alignx trailing");
-	    
-	    
-	    ComboListaColture.setSelectedIndex(-1);
-	    ComboListaColture.setPreferredSize(new Dimension(150, 20));
-	    contentPane.add(ComboListaColture, "cell 6 3,growx");
 	    
 	    JLabel LabelDataIP = new JLabel("Data Inizio");
 	    contentPane.add(LabelDataIP, "cell 0 4,alignx right,aligny center");
@@ -346,7 +335,7 @@ public class VisualizzaProgetti extends JFrame {
 	                
 	                
 	                if (lotto != null && !lotto.isEmpty()) { //prima di popolare la combo delle colture, verifica l'esistenza di un lotto
-	                    ComboListaColture.setEnabled(true);
+	                    
 	                    
 	            	    colture = controller.getColtureProprietario(Login.CFProprietario, selectedProgetto );
 	            	    ComboColtureRacc.removeAllItems();
@@ -355,8 +344,8 @@ public class VisualizzaProgetti extends JFrame {
 	            	        ComboColtureRacc.addItem(coltura);
 	            	    }
 	                } else {
-	                    ComboListaColture.setEnabled(false); //non trova nulla, reset
-	                    ComboListaColture.removeAllItems();
+	                	ComboColtureRacc.setEnabled(false); //non trova nulla, reset
+	                	ComboColtureRacc.removeAllItems();
 	                    
 	                }
 	                	    
@@ -364,20 +353,6 @@ public class VisualizzaProgetti extends JFrame {
                 }catch (NullPointerException ex) {
             		JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
             		"Seleziona un progetto valido", "Errore", JOptionPane.ERROR_MESSAGE);
-            	}
-            }
-        });
-        
-        ComboListaColture.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-              try {
-            	  	String selectedProgetto = (String) ComboProgetto.getSelectedItem();
-            	  	String selectedLotto = FieldLotto.getText();
-	                controller.getColtureByLotto(selectedProgetto, selectedLotto);
-	                String selectedColtura = (String) ComboListaColture.getSelectedItem();
-	                controller.mostraRaccolto(selectedProgetto, selectedLotto, selectedColtura, FieldEffettivo);
-                }catch (NullPointerException ex) {
-            		JOptionPane.showMessageDialog(VisualizzaProgetti.this, "Seleziona una coltura valida!", "Errore", JOptionPane.ERROR_MESSAGE);
             	}
             }
         });
