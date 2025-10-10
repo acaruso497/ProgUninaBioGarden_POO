@@ -65,6 +65,7 @@ public class CreaNotifica extends JFrame {
 		    LabelNotifica.setFont(new Font("Tahoma", Font.BOLD, 17));
 		    contentPane.add(LabelNotifica, "cell 0 0");
 		    
+		    JTextArea TxtDescrizione = new JTextArea();
 		    
 		    // Pulsante freccia indietro
 		    BasicArrowButton ButtonIndietro = new BasicArrowButton(BasicArrowButton.WEST);
@@ -74,6 +75,12 @@ public class CreaNotifica extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					setVisible(false);
 					home.setVisible(true);
+					//reset dei campi quando viene cliccato il pulsante per andare indietro
+					FieldData.setText("");
+					FieldUsernameC.setText("");
+					FieldTitolo.setText("");
+					TxtDescrizione.setText("");
+					tutti = false;
 				}
 			});
 		    
@@ -121,7 +128,7 @@ public class CreaNotifica extends JFrame {
 		    JLabel LabelDescrizione = new JLabel("Descrizione");
 		    contentPane.add(LabelDescrizione, "cell 0 9,alignx right");
 		    
-		    JTextArea TxtDescrizione = new JTextArea();
+		    
 		    contentPane.add(TxtDescrizione, "cell 1 9 5 4,grow");
 		    //wrapping : andare a capo automaticamente e non spezza le parole
 		    TxtDescrizione.setLineWrap(true);

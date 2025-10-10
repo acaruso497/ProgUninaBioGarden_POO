@@ -27,21 +27,11 @@ private daoVisualizzaP dao;
         return dao.getProgettiByProprietario(username);  
     }
 	
-    // Popola ComboLotto con ID lotti del proprietario
-//    public String getLottiByProprietario(String username) {
-//        return dao.getLottiByProprietario(username);
-//    }
     
     // Popola il field del lotto tramite l'id del progetto e codice fiscale del del proprietario
     public String getLottiByProprietario(int idProgetto, String codiceFiscaleProprietario) {
 	  return dao.getLottiByProprietario(idProgetto, codiceFiscaleProprietario);
   }
-    
-   
-    //popola la combobox delle colture tramite l'id del lotto e l'id del progetto
-//    public List<String> getColtureByLotto(String idLottoStr, String idProgettoStr) {
-//    	return dao.getColtureByLotto(idLottoStr, idProgettoStr);
-//    }
     
     
     // Setta l'ID del progetto, i campi di data inizio e data fine
@@ -58,7 +48,7 @@ private daoVisualizzaP dao;
     
     // termina il progetto di coltivazione 
     public boolean terminaProgetto(String idProgettoStr, String idLottoStr) {
-    	return dao.terminaProgetto(idProgettoStr, idProgettoStr);
+    	return dao.terminaProgetto(idProgettoStr, idLottoStr);
     	
     }
     

@@ -350,13 +350,20 @@ public class Attivita extends JFrame {
 				
 				if (creaProgettoController.puoAvanzare()) {
                     ButtonAvanti.setEnabled(true);
+                    ButtonSalva.setEnabled(false);
                     System.out.println("DEBUG: Bottone Avanti abilitato");
                 } else {
                 	System.out.println("DEBUG: Bottone Avanti non abilitato");
                 }
 				
-				
+			
 				JOptionPane.showMessageDialog(Attivita.this, "Attività creata con successo successo!");
+				
+				ComboAttivita.removeItem(attivita);
+				ComboAttivita.setSelectedIndex(0);
+				FieldDataIA.setText("");
+				FieldDataFA.setText("");
+				
         	}
         });
         contentPane.add(ButtonSalva, "cell 9 7,alignx center");

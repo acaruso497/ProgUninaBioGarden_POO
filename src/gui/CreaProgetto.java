@@ -76,6 +76,8 @@ public class CreaProgetto extends JFrame {
 	    LabelProgetto.setFont(new Font("Tahoma", Font.BOLD, 17));
 	    contentPane.add(LabelProgetto, "cell 0 0");
 	    
+	    JTextArea textArea = new JTextArea();
+	    
 	    // Pulsante freccia indietro
 	    BasicArrowButton ButtonIndietro = new BasicArrowButton(BasicArrowButton.WEST);
 	    ButtonIndietro.setPreferredSize(new Dimension(40, 40));
@@ -84,6 +86,14 @@ public class CreaProgetto extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
 				home.setVisible(true);
+				//resetta i campi quando viene cliccato il pulsante indietro
+				textArea.setText("");
+				FieldDataFP.setText("");
+				FieldDataIP.setText("");
+				FieldTipologiaColtura.setText("");
+				FieldStimaRaccolto.setText("");
+				ComboLotto.setSelectedIndex(-1);
+				FieldTitolo.setText("");
 			}
 		});
 	    
@@ -143,7 +153,7 @@ public class CreaProgetto extends JFrame {
 	     contentPane.add(LabelDescrizione, "cell 0 10");
 	    
 	    	    
-	    JTextArea textArea = new JTextArea();
+	    
 	    contentPane.add(textArea, "cell 0 11 9 4,grow");
 	    
 	    JButton ButtonAvanti = new JButton("Avanti");
@@ -236,10 +246,14 @@ public class CreaProgetto extends JFrame {
 					JOptionPane.showMessageDialog(CreaProgetto.this, "\n\nuna tra le colture inserite è gia stata piantata");
 				}else {
 				
-			    //vado a controllare se esiste già un progetto in quel lotto
-				boolean creaProgetto = creaProgettoController.creaProgetto(titolo, lotto, descrizione, stimaRaccolto, creaArr, dataIP, dataFP);
 				//vado a controllare se esiste il progetto è completato nel lotto
 				boolean controlloProgetto = creaProgettoController.controlloProgettoChiuso(lotto);
+					
+				boolean progettoCompletato = creaProgettoController.controlloProgettoChiuso(lotto);
+					
+			    //vado a controllare se esiste già un progetto in quel lotto
+				boolean creaProgetto = creaProgettoController.creaProgetto(titolo, lotto, descrizione, stimaRaccolto, creaArr, dataIP, dataFP);
+				
 				
 //				if(creaProgetto==true && controlloProgetto==false) {
 //					JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo successo!");
@@ -250,25 +264,19 @@ public class CreaProgetto extends JFrame {
 //				            "Errore", JOptionPane.ERROR_MESSAGE);
 //				}
 				
-				if (creaProgetto == true) { //se c'è un progetto segnato come completato, il lotto è libero per nuovi progetti
-					JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo!");
-				    ButtonAvanti.setEnabled(true);
-				} else {
-				    // Se creaProgetto=false, controlla SE è perché c'è un progetto completato
-				    boolean progettoCompletato = creaProgettoController.controlloProgettoChiuso(lotto);
-				    
-				    if (progettoCompletato==false) { //se il progetto non è segnato come completato, blocca la creazione
-				        JOptionPane.showMessageDialog(CreaProgetto.this, 
-				            "Questo lotto ha un progetto IN CORSO. Devi prima completare il progetto prima di crearne un altro!", 
-				            "Errore", JOptionPane.ERROR_MESSAGE);
-				    } else {
-				    	JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo!"); 
-				    }
+				if (progettoCompletato==false) { //se il progetto non è segnato come completato, blocca la creazione
+			        JOptionPane.showMessageDialog(CreaProgetto.this, 
+			            "Questo lotto ha un progetto IN CORSO. Devi prima completare il progetto prima di crearne un altro!", 
+			            "Errore", JOptionPane.ERROR_MESSAGE);
+			    } else {
+					if (creaProgetto == true) { //se c'è un progetto segnato come completato, il lotto è libero per nuovi progetti
+						JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo!");
+					    ButtonAvanti.setEnabled(true);
+					    ButtonSalva.setEnabled(false);
+					}
+				
+				  }
 				}
-				
-				
-				
-				}//fine else
 			}
    	
 		});

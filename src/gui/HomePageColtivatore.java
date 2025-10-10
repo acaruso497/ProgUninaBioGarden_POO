@@ -406,11 +406,19 @@ public class HomePageColtivatore extends JFrame {
 	            FieldRaccoltoColture.setEnabled(false); //disabilita il field
 	            FieldRaccoltoColture.setEditable(false);
 	            FieldRaccoltoColture.setText("");
+	            ComboTipologia.setEnabled(false);
 	            ButtonSalva.setEnabled(false);  //disabilita il bottone
 	        } else if (selectedAttivita.startsWith("Raccolta-")) {  //controlla se l'attività selezionata inizia per Raccolta-
 	            FieldRaccoltoColture.setEnabled(true); //attiva il field
 	            FieldRaccoltoColture.setEditable(true);
 	            ButtonSalva.setEnabled(true); //attiva il bottone
+	            ComboTipologia.setEnabled(true);
+	        }else {
+	        	FieldRaccoltoColture.setEnabled(false);
+	            FieldRaccoltoColture.setEditable(false);
+	            FieldRaccoltoColture.setText("");
+	            ButtonSalva.setEnabled(false);
+	            ComboTipologia.setEnabled(false);
 	        }
 	        
 	    });

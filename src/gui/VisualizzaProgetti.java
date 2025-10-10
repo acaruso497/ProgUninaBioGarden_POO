@@ -48,6 +48,7 @@ public class VisualizzaProgetti extends JFrame {
 	private JTextField FieldDataFA;
 	private ControllerVisualizzaP controller; 
     private daoVisualizzaP dao; 
+    private ButtonGroup gruppoStato;
     private String selectedProgetto = null;
     private String username = ControllerLogin.getUsernameGlobale();
     private String CFProprietario = ControllerLogin.getCodiceFiscaleByUsername(username);
@@ -56,6 +57,7 @@ public class VisualizzaProgetti extends JFrame {
     JComboBox<String> ComboAttivita = new JComboBox<>();
     JComboBox<String> ComboProgetto = new JComboBox<>();
     ArrayList<String> colture= new ArrayList<String>();
+    JComboBox<String> ComboColtureRacc = new JComboBox<String>();
     
     //stati attivita
     JRadioButton RadioPianificata = new JRadioButton("pianificata");
@@ -63,6 +65,8 @@ public class VisualizzaProgetti extends JFrame {
     JRadioButton RadioCompletata = new JRadioButton("completata");
     private JTextField FieldLotto;
     private JTextField VisualRaccolto;
+    private JButton ButtonTermina;
+    private JButton ButtonModificaAttivita;
 	
 	public VisualizzaProgetti(HomePageProprietario home) {
 		this.home = home;
@@ -89,7 +93,7 @@ public class VisualizzaProgetti extends JFrame {
 	    @SuppressWarnings("unused")
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][][][grow][grow][][][grow][][grow][][][][][][grow][grow][][][grow][][][grow][grow][grow][grow][grow]", "[grow][grow][][grow][grow][grow][][grow][][][][grow][grow][grow][][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][][][grow][grow][][][grow][][grow][][][][][][grow][grow][][][grow][][][grow][grow][grow][grow][grow]", "[grow][grow][][grow][grow][grow][][grow][][][][][grow][grow][grow][][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    JLabel LabelVisualizza = new JLabel("Visualizza i tuoi progetti!");
 	    LabelVisualizza.setFont(new Font("Tahoma", Font.BOLD, 17));
@@ -105,18 +109,22 @@ public class VisualizzaProgetti extends JFrame {
 	        	}
 	        });
 	        
+	        ButtonTermina = new JButton("Termina");
+	        ButtonModificaAttivita = new JButton("Modifica");
 	        
 	        // Pulsante freccia indietro
 	        BasicArrowButton ButtonIndietro = new BasicArrowButton(BasicArrowButton.WEST);
 	        ButtonIndietro.setPreferredSize(new Dimension(40, 40));
-	        contentPane.add(ButtonIndietro, "cell 6 0,alignx right,aligny center");
+	        contentPane.add(ButtonIndietro, "cell 5 0,alignx right,aligny center");
 	        ButtonIndietro.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				resetCampi();
 				setVisible(false);
 				home.setVisible(true);
+				
 			}
 		});
-	        contentPane.add(ButtonGrafici, "cell 6 1");
+	        contentPane.add(ButtonGrafici, "cell 5 1");
 	        ButtonGrafici.setPreferredSize(new Dimension(150, 20));
 	    
 	    JLabel LabelProgetto = new JLabel("Progetto");
@@ -126,7 +134,7 @@ public class VisualizzaProgetti extends JFrame {
 	    contentPane.add(ComboProgetto, "cell 1 3,growx");
 	    ComboProgetto.setPreferredSize(new Dimension(150, 20));
 	    
-	    JButton ButtonTermina = new JButton("Termina");
+	    
 	    contentPane.add(ButtonTermina, "cell 2 3,aligny center");
 	    ButtonTermina.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -138,16 +146,32 @@ public class VisualizzaProgetti extends JFrame {
 	                return;
 	            }
 	            	 
+	    		 System.out.println("DEBUG - selectedProgetto: " + selectedProgetto);
+	    	     System.out.println("DEBUG - lotto: " + lotto);
+	    		
 	    		boolean termina = controller.terminaProgetto(selectedProgetto, lotto);
 	    		
 	    		if(termina==true) {
 	    			JOptionPane.showMessageDialog(VisualizzaProgetti.this, "Progetto terminato con successo!");
+	    			ButtonTermina.setEnabled(false);
+	    			ButtonModificaAttivita.setEnabled(false);
+	    			RadioPianificata.setEnabled(false);
+                	RadioInCorso.setEnabled(false);
+                	RadioCompletata.setEnabled(false);
 	    		}
 	            
 	    		
 	    		
 	    	}
 	    });
+	    
+	    JLabel LabelStima = new JLabel("Stima raccolto");
+	    contentPane.add(LabelStima, "cell 4 3,alignx trailing");
+	    
+	    FieldStima = new JTextField();
+	    contentPane.add(FieldStima, "cell 5 3,growx");
+	    FieldStima.setColumns(10);
+	    FieldStima.setEditable(false); //blocca il textfield
 	    
 	    JLabel LabelDataIP = new JLabel("Data Inizio");
 	    contentPane.add(LabelDataIP, "cell 0 4,alignx right,aligny center");
@@ -157,6 +181,14 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldDataIP.setColumns(10);
 	    FieldDataIP.setEditable(false);
 	    
+	    JLabel LabelEffettivo = new JLabel("Raccolto effettivo");
+	    contentPane.add(LabelEffettivo, "cell 4 4,alignx trailing");
+	    
+	    FieldEffettivo = new JTextField();
+	    contentPane.add(FieldEffettivo, "cell 5 4,growx");
+	    FieldEffettivo.setColumns(10);
+	    FieldEffettivo.setEditable(false); //blocca il textfield
+	    
 	    JLabel LabelDataFP = new JLabel("Data Fine");
 	    contentPane.add(LabelDataFP, "cell 0 5,alignx right,aligny center");
 	    
@@ -165,15 +197,7 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldDataFP.setColumns(10);
 	    FieldDataFP.setEditable(false); //blocca il textfield
 	    
-	    ButtonGroup gruppoStato = new ButtonGroup(); 
-	    
-	    JLabel LabelStima = new JLabel("Stima raccolto");
-	    contentPane.add(LabelStima, "cell 5 6,alignx trailing");
-	    
-	    FieldStima = new JTextField();
-	    contentPane.add(FieldStima, "cell 6 6,growx");
-	    FieldStima.setColumns(10);
-	    FieldStima.setEditable(false); //blocca il textfield
+	    gruppoStato = new ButtonGroup(); 
 	    
 	    
 	    JLabel LabelLotto = new JLabel("Lotto");
@@ -184,33 +208,25 @@ public class VisualizzaProgetti extends JFrame {
 	    FieldLotto.setColumns(10);
 	    contentPane.add(FieldLotto, "cell 1 7,growx");
 	    
-	    JLabel LabelEffettivo = new JLabel("Raccolto effettivo");
-	    contentPane.add(LabelEffettivo, "cell 5 7,alignx trailing");
-	    
-	    FieldEffettivo = new JTextField();
-	    contentPane.add(FieldEffettivo, "cell 6 7,growx");
-	    FieldEffettivo.setColumns(10);
-	    FieldEffettivo.setEditable(false); //blocca il textfield
-	    
 	    JLabel lblRaccoltoColtura = new JLabel("Raccolto coltura");
-	    contentPane.add(lblRaccoltoColtura, "cell 2 9,alignx center,aligny center");
+	    contentPane.add(lblRaccoltoColtura, "cell 2 10,alignx center,aligny center");
 	    
 	    JLabel ColtureRaccolte = new JLabel("Colture");
-	    contentPane.add(ColtureRaccolte, "cell 0 10,alignx trailing");
+	    contentPane.add(ColtureRaccolte, "cell 0 11,alignx trailing");
 	    
-	    JComboBox<String> ComboColtureRacc = new JComboBox<String>();
+	    
 	    dao = new daoVisualizzaP();
 	    controller = new ControllerVisualizzaP(dao);
 	    ComboColtureRacc.setSelectedIndex(-1);
 	    ComboColtureRacc.setPreferredSize(new Dimension(150, 20));
-	    contentPane.add(ComboColtureRacc, "cell 1 10,growx");
+	    contentPane.add(ComboColtureRacc, "cell 1 11,growx");
 	    VisualRaccolto = new JTextField();
 	    VisualRaccolto.setEditable(false);
 	    VisualRaccolto.setColumns(10);
-	    contentPane.add(VisualRaccolto, "cell 2 10,growx");
+	    contentPane.add(VisualRaccolto, "cell 2 11,growx");
 	    
 	    JLabel LabelAttivita = new JLabel("Ultima Attività");
-	    contentPane.add(LabelAttivita, "cell 0 16,alignx trailing");
+	    contentPane.add(LabelAttivita, "cell 0 17,alignx trailing");
 	 // Aggiungi l'ActionListener per popolare VisualRaccolto
 	    ComboColtureRacc.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
@@ -239,10 +255,44 @@ public class VisualizzaProgetti extends JFrame {
 	            }
 	        }
 	    });	    
-	    contentPane.add(ComboAttivita, "cell 1 16,growx");
+	    contentPane.add(ComboAttivita, "cell 1 17,growx");
 	    ComboAttivita.setPreferredSize(new Dimension(150, 20));
 	    
-	    JButton ButtonModificaAttivita = new JButton("Modifica");
+	    
+	    
+	    contentPane.add(RadioPianificata, "cell 3 17");
+	    RadioPianificata.setOpaque(false);
+	    gruppoStato.add(RadioPianificata);
+	    
+	    
+	    contentPane.add(RadioInCorso, "cell 4 17");
+	    RadioInCorso.setOpaque(false);
+	    gruppoStato.add(RadioInCorso);
+	    
+	    
+	    contentPane.add(RadioCompletata, "flowx,cell 5 17");
+	    RadioCompletata.setOpaque(false);
+	    gruppoStato.add(RadioCompletata);
+	    
+	    
+	    
+	    JLabel LabelDataIA = new JLabel("Data Inizio");
+	    contentPane.add(LabelDataIA, "cell 0 18,alignx trailing");
+	    
+	    FieldDataIA = new JTextField(); //field data inizio attività
+	    contentPane.add(FieldDataIA, "cell 1 18,growx");
+	    FieldDataIA.setColumns(10);
+	    FieldDataIA.setEditable(false); //blocca il textfield
+	    
+	    JLabel LabelDataFA = new JLabel("Data Fine");
+	    contentPane.add(LabelDataFA, "cell 0 19,alignx trailing");
+	    
+	    FieldDataFA = new JTextField(); //field data fine attività
+	    contentPane.add(FieldDataFA, "cell 1 19,growx");
+	    FieldDataFA.setColumns(10);
+	    FieldDataFA.setEditable(false); //blocca il textfield
+	    
+	    
 	    ButtonModificaAttivita.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) { 
 	    			String selectedProgetto = (String) ComboProgetto.getSelectedItem();
@@ -251,7 +301,7 @@ public class VisualizzaProgetti extends JFrame {
 		    	    if (ComboAttivita.getSelectedItem().equals("-- Seleziona --") || selectedProgetto.isEmpty() || selectedLotto.isEmpty()) {
 		                JOptionPane.showMessageDialog(VisualizzaProgetti.this, "COMPILA TUTTI I CAMPI!!", "Errore", JOptionPane.ERROR_MESSAGE);
 		            } else {
-		            	String selectedStato;
+		            	String selectedStato = "";
 			    	    // setta i pallini del radiobutton
 					    if (RadioPianificata.isSelected()) {
 					    	  selectedStato = RadioPianificata.getText(); // Restituisce "pianificata"
@@ -263,45 +313,17 @@ public class VisualizzaProgetti extends JFrame {
 					    	   selectedStato = RadioCompletata.getText(); // Restituisce "completata"
 					    	   controller.aggiornaStato(selectedStato, selectedAttivita, selectedLotto);
 					     } 
-			    	    JOptionPane.showMessageDialog(VisualizzaProgetti.this, "Attività aggiornate con successo!");
+					    
+					   
+					    
+				            JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
+				                "Attività aggiornata con successo!");
+				           
+			    	    
 		            }	      
 	    	}
 	    });
-	    
-	    
-	    
-	    contentPane.add(RadioPianificata, "cell 3 16");
-	    RadioPianificata.setOpaque(false);
-	    gruppoStato.add(RadioPianificata);
-	    
-	    
-	    contentPane.add(RadioInCorso, "cell 4 16");
-	    RadioInCorso.setOpaque(false);
-	    gruppoStato.add(RadioInCorso);
-	    
-	    
-	    contentPane.add(RadioCompletata, "cell 5 16");
-	    RadioCompletata.setOpaque(false);
-	    gruppoStato.add(RadioCompletata);
-	    contentPane.add(ButtonModificaAttivita, "cell 6 16");
-	    
-	    
-	    
-	    JLabel LabelDataIA = new JLabel("Data Inizio");
-	    contentPane.add(LabelDataIA, "cell 0 17,alignx trailing");
-	    
-	    FieldDataIA = new JTextField(); //field data inizio attività
-	    contentPane.add(FieldDataIA, "cell 1 17,growx");
-	    FieldDataIA.setColumns(10);
-	    FieldDataIA.setEditable(false); //blocca il textfield
-	    
-	    JLabel LabelDataFA = new JLabel("Data Fine");
-	    contentPane.add(LabelDataFA, "cell 0 18,alignx trailing");
-	    
-	    FieldDataFA = new JTextField(); //field data fine attività
-	    contentPane.add(FieldDataFA, "cell 1 18,growx");
-	    FieldDataFA.setColumns(10);
-	    FieldDataFA.setEditable(false); //blocca il textfield
+	    contentPane.add(ButtonModificaAttivita, "cell 5 17");
 	    
 	    dao = new daoVisualizzaP();
         controller = new ControllerVisualizzaP(dao);
@@ -310,9 +332,25 @@ public class VisualizzaProgetti extends JFrame {
         
         ComboProgetto.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	ComboAttivita.setSelectedIndex(0);
+                ComboColtureRacc.setSelectedIndex(-1);
+                FieldStima.setText("");
+                FieldEffettivo.setText("");
+                FieldDataIP.setText("");
+                FieldDataFP.setText("");
+                FieldDataIA.setText("");
+                FieldDataFA.setText("");
+                FieldLotto.setText("");
+                VisualRaccolto.setText("");
+                gruppoStato.clearSelection();
             	
               try {
 	                String selectedProgetto = (String) ComboProgetto.getSelectedItem(); //mi prendo il progetto dalla combobox
+	                if (selectedProgetto == null || selectedProgetto.equals("") || ComboProgetto.getSelectedIndex() == -1) {
+	                    resetCampi();
+	                    return;
+	                }
+	                
 	                controller.popolaDatiProgetto(selectedProgetto, FieldStima, 
 	                								FieldDataIP, FieldDataFP); // Popola i campi progetto
 	                popolaFieldLotto(); //una volta che ha trovato un progetto, popola il field del lotto
@@ -353,6 +391,7 @@ public class VisualizzaProgetti extends JFrame {
                 }catch (NullPointerException ex) {
             		JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
             		"Seleziona un progetto valido", "Errore", JOptionPane.ERROR_MESSAGE);
+            		resetCampi();
             	}
             }
         });
@@ -364,6 +403,16 @@ public class VisualizzaProgetti extends JFrame {
               try {
             	  	String selectedAttivita = (String) ComboAttivita.getSelectedItem(); //converto il tipo di attività selezionata in una stringa
                     Object selectedProgetto = ComboProgetto.getSelectedItem(); //estraggo l'id del progetto selezionato dalla combobox
+                    
+                    if (selectedAttivita == null || selectedAttivita.equals("-- Seleziona --") || 
+                            selectedProgetto == null || ComboProgetto.getSelectedIndex() == -1) {
+                            // Resetta i campi relativi all'attività
+                            FieldDataIA.setText("");
+                            FieldDataFA.setText("");
+                            gruppoStato.clearSelection();
+                            return;
+                        }
+                    
                     String idProgettoStr = selectedProgetto.toString(); //converto l'id del progetto selezionato in una stringa
                     
                     // Chiamata al controller per ottenere lo stato e popolare data inizio e data fine
@@ -431,25 +480,26 @@ public class VisualizzaProgetti extends JFrame {
         }
     }
     
-    // Popola ComboListaColture 
-//    private void popolaComboListaColture() {
-//    	String selectedProgetto = (String) ComboProgetto.getSelectedItem();
-//	  	String selectedLotto = FieldLotto.getText();
-//	  
-//	  	if (selectedProgetto == null || selectedLotto == null || 
-//	  		    selectedProgetto.isEmpty() || selectedLotto.isEmpty()) { //se non trova niente, reset
-//	  		    ComboListaColture.removeAllItems(); 
-//	  		    return;
-//	  		}
-//	  	
-//    	List<String> listaColture = controller.getColtureByLotto(selectedLotto,selectedProgetto);
-//        for (String coltura : listaColture) {
-//        	ComboListaColture.addItem(coltura); //popola la combobox con l'id progetto
-//        }
-//        ComboListaColture.setSelectedIndex(-1);
-//    }
     
-	
+    private void resetCampi() {
+        ComboAttivita.setSelectedIndex(0);
+        ComboColtureRacc.setSelectedIndex(-1);
+        ComboProgetto.setSelectedIndex(-1);
+        FieldStima.setText("");
+        FieldEffettivo.setText("");
+        FieldDataIP.setText("");
+        FieldDataFP.setText("");
+        FieldDataIA.setText("");
+        FieldDataFA.setText("");
+        FieldLotto.setText("");
+        VisualRaccolto.setText("");
+        gruppoStato.clearSelection();
+        ButtonTermina.setEnabled(true);
+        ButtonModificaAttivita.setEnabled(true);
+        RadioPianificata.setEnabled(true);
+        RadioInCorso.setEnabled(true);
+        RadioCompletata.setEnabled(true);
+    }
 
 }
 

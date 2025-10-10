@@ -236,6 +236,45 @@ public class DAO {
 			   }
 			
 		}
+		
+		
+		//!!da pulire tutte le system out interne di debug!!
+		public static String getCodiceFiscaleByUsername(String username) {
+		    String codiceFiscale = null;
+		    Connection conn = null;
+		    PreparedStatement stmt = null;
+		    ResultSet rs = null;
+
+		    try {
+		        // Ottieni la connessione al database (assumo che Connessione sia una classe di utilità)
+		        conn = Connessione.getConnection();
+
+		        // Query SQL diretta sulla tabella Proprietario
+		        String sql = "SELECT Codice_Fiscale FROM Proprietario WHERE username = ?";
+		        stmt = conn.prepareStatement(sql);
+		        stmt.setString(1, username); // Imposta il parametro username
+
+		        // Esegui la query
+		        rs = stmt.executeQuery();
+
+		        // Recupera il risultato
+		        if (rs.next()) {
+		            codiceFiscale = rs.getString("Codice_Fiscale"); // Recupera il Codice_Fiscale
+		        } else {
+		            System.out.println("Nessun proprietario trovato con username: " + username);
+		        }
+		    } catch (SQLException ex) {
+		        ex.printStackTrace(); // Stampa l'errore per debugging
+		        System.out.println("Errore durante l'esecuzione della query: " + ex.getMessage());
+		    } finally {
+		        // Chiudi tutte le risorse nel blocco finally
+		        try { if (rs != null) rs.close(); } catch (Exception e) {}
+		        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+		        try { if (conn != null) conn.close(); } catch (Exception e) {}
+		    }
+
+		    return codiceFiscale; // Restituisce il Codice_Fiscale o null se non trovato
+		}
 // GUI: CREA PROGETTO	!!!METODO NON ADTATTATO AL SINGLETON!!!
 	//recupera i lotti di un proprietario (utile per popolare ComboLotti)
 	public List<String> getLottiByProprietario(String username) {
@@ -574,8 +613,13 @@ public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username
                 "     WHEN ID_Irrigazione IS NOT NULL THEN 'Irrigazione' " +
                 "     WHEN ID_Raccolta IS NOT NULL THEN 'Raccolta' END AS tipo_attivita " +
                 "FROM AttivitaColtivatore " +
-                "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
+                "WHERE username_coltivatore = ? AND titolo_progetto = ? "  +
                 "ORDER BY data_inizio_attivita";
+        
+//        String sql = "SELECT tipo_attivita, id_attivita " +
+//                "FROM DateAttivitaColtivatore " +
+//                "WHERE username = ? AND titolo = ? AND done = false" +
+//                "ORDER BY giorno_inizio";
        
         
         stmt = conn.prepareStatement(sql);
@@ -585,11 +629,9 @@ public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username
 
         while (rs.next()) {
             String tipo = rs.getString("tipo_attivita");
-            String id = rs.getString("ID_Attivita");
-            if (tipo != null) {
-                tipi.add(tipo);
-                idList.add(id);
-            }
+            String id = rs.getString("id_attivita");
+            tipi.add(tipo);
+            idList.add(id);
         }
     } catch (SQLException ex) {
         ex.printStackTrace();
@@ -601,6 +643,7 @@ public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username
 
     return tipi;
 }
+
 
 public String[] getDateByAttivitaId(String idAttivita, String tipoAttivita) {
     String[] date = new String[2];
@@ -619,15 +662,15 @@ public String[] getDateByAttivitaId(String idAttivita, String tipoAttivita) {
         switch(tipoAttivita) {
             case "Semina":
                 //sql = "SELECT data_inizio_semina, data_fine_semina FROM coltivatoreview WHERE ID_Attivita = ?";
-            	sql = "SELECT giorno_inizio, giorno_fine FROM DateAttivitaColtivatore WHERE id_attivita = ? AND done = false AND tipo_attivita = 'Semina'";
+            	sql = "SELECT giorno_inizio, giorno_fine FROM DateAttivitaColtivatore WHERE id_attivita = ? AND done=false AND tipo_attivita = 'Semina'";
                 break;
             case "Irrigazione":
                 //sql = "SELECT data_inizio_irrigazione, data_fine_irrigazione FROM coltivatoreview WHERE ID_Attivita = ?";
-            	sql = "SELECT giorno_inizio, giorno_fine FROM DateAttivitaColtivatore WHERE id_attivita = ? AND done = false AND tipo_attivita = 'Irrigazione'";
+            	sql = "SELECT giorno_inizio, giorno_fine FROM DateAttivitaColtivatore WHERE id_attivita = ? AND done=false AND tipo_attivita = 'Irrigazione'";
                 break;
             case "Raccolta":
                 //sql = "SELECT data_inizio_raccolta, data_fine_raccolta FROM coltivatoreview WHERE ID_Attivita = ?";
-            	sql = "SELECT giorno_inizio, giorno_fine FROM DateAttivitaColtivatore WHERE id_attivita = ? AND done = false AND tipo_attivita = 'Raccolta'";
+            	sql = "SELECT giorno_inizio, giorno_fine FROM DateAttivitaColtivatore WHERE id_attivita = ? AND done=false AND tipo_attivita = 'Raccolta'";
                 break;
             default:
                 return date;
@@ -703,45 +746,39 @@ public List<String> getIdAttivitaColtivatore(String username, String progetto) {
 
 
 //SECONDA FUNZIONE: Restituisce i tipi per indice
+
 public List<String> getTipiAttivitaColtivatore(String username, String progetto) {
     List<String> tipoList = new ArrayList<>();
-    
-//    try (Connection conn = Connessione.getConnection();
-//         PreparedStatement stmt = conn.prepareStatement(
-//             "SELECT id_semina, id_irrigazione, id_raccolta " +
-//             "FROM coltivatoreview " +
-//             "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
-//             "ORDER BY giorno_assegnazione")) {
-    
-    try  { 
-    	Connection conn = Connessione.getConnection();
-              String sql = "SELECT id_semina, id_irrigazione, id_raccolta " +
-                "FROM tipi_attivita_coltivatore " +
-                "WHERE username_coltivatore = ? AND titolo_progetto = ? " +
-                "ORDER BY giorno_assegnazione";
-              
-              PreparedStatement stmt = conn.prepareStatement(sql);
+
+    String sql = "SELECT tipo_attivita " +
+                 "FROM DateAttivitaColtivatore " +
+                 "WHERE username = ? AND titolo = ? AND done = false " +
+                 "ORDER BY " +
+                 "CASE tipo_attivita " +
+                 "    WHEN 'Semina' THEN 1 " +
+                 "    WHEN 'Irrigazione' THEN 2 " +
+                 "    WHEN 'Raccolta' THEN 3 " +
+                 "END";
+
+    try (Connection conn = Connessione.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
         
         stmt.setString(1, username);
         stmt.setString(2, progetto);
-        ResultSet rs = stmt.executeQuery();
-
-        while (rs.next()) {
-            if (rs.getObject("id_semina") != null) {
-                tipoList.add("Semina");
-            }
-            if (rs.getObject("id_irrigazione") != null) {
-                tipoList.add("Irrigazione");
-            }
-            if (rs.getObject("id_raccolta") != null) {
-                tipoList.add("Raccolta");
+        
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                tipoList.add(rs.getString("tipo_attivita"));
             }
         }
+        
     } catch (SQLException ex) {
         ex.printStackTrace();
     }
+    
     return tipoList;
 }
+
 
 
 public String getLottoEPosizione(String progetto, String username) {
@@ -843,8 +880,8 @@ public String getTipologia(String username, String progetto) {
         
     try (Connection conn = Connessione.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
-                "SELECT tipo_semina FROM tipologia_seminaColtivatore " +
-                "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+            		"SELECT tipo_semina FROM tipologia_seminaColtivatore " +
+                    "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
     
         stmt.setString(1, username);
         stmt.setString(2, progetto);
@@ -873,8 +910,8 @@ public String getIrrigazione(String username, String progetto) {
     
     try (Connection conn = Connessione.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
-                "SELECT tipo_irrigazione FROM irrigazione_coltivatore " +
-                "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+            		"SELECT DISTINCT tipo_irrigazione FROM irrigazione_coltivatore " +
+                    "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
         
         stmt.setString(1, username);
         stmt.setString(2, progetto);
@@ -944,7 +981,7 @@ public String getTipoSemina(String idSemina) {
     
     try (Connection conn = Connessione.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
-                "SELECT tipo_semina FROM Semina WHERE id_semina = ?")) {
+                "SELECT tipo_semina FROM Semina WHERE id_attivita = ?")) {
         
         stmt.setInt(1, Integer.parseInt(idSemina));
         ResultSet rs = stmt.executeQuery();
@@ -960,7 +997,7 @@ public String getTipoSemina(String idSemina) {
     return tipoSemina != null ? tipoSemina : "";
 }
 
-// !!NON ANCORA USATO!!
+
 public boolean sommaRaccolto(String raccolto, String coltura, String progetto) {
 	
 	Connection conn = null;
@@ -1009,43 +1046,7 @@ public boolean sommaRaccolto(String raccolto, String coltura, String progetto) {
 	
 }
 
-//!!da pulire tutte le system out interne di debug!!
-public static String getCodiceFiscaleByUsername(String username) {
-    String codiceFiscale = null;
-    Connection conn = null;
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
 
-    try {
-        // Ottieni la connessione al database (assumo che Connessione sia una classe di utilità)
-        conn = Connessione.getConnection();
-
-        // Query SQL diretta sulla tabella Proprietario
-        String sql = "SELECT Codice_Fiscale FROM Proprietario WHERE username = ?";
-        stmt = conn.prepareStatement(sql);
-        stmt.setString(1, username); // Imposta il parametro username
-
-        // Esegui la query
-        rs = stmt.executeQuery();
-
-        // Recupera il risultato
-        if (rs.next()) {
-            codiceFiscale = rs.getString("Codice_Fiscale"); // Recupera il Codice_Fiscale
-        } else {
-            System.out.println("Nessun proprietario trovato con username: " + username);
-        }
-    } catch (SQLException ex) {
-        ex.printStackTrace(); // Stampa l'errore per debugging
-        System.out.println("Errore durante l'esecuzione della query: " + ex.getMessage());
-    } finally {
-        // Chiudi tutte le risorse nel blocco finally
-        try { if (rs != null) rs.close(); } catch (Exception e) {}
-        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-        try { if (conn != null) conn.close(); } catch (Exception e) {}
-    }
-
-    return codiceFiscale; // Restituisce il Codice_Fiscale o null se non trovato
-}
 
 
 

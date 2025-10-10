@@ -296,95 +296,107 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
 	}
 	
 	
-	
-			
 public static boolean registraAttivita(String tipoAttivita, Date dataIA, Date dataFA, 
-	                                   String tipoIrrigazione, String tipoSemina, String idLottoStr) {
-	Connection conn = null;
-	PreparedStatement stmt = null;
-	ResultSet risultato = null;
-	
-	try {
-	conn = Connessione.getConnection();
-	int idLotto = Integer.parseInt(idLottoStr);
-	
-	
-	// FASE 1: RECUPERA COLTIVATORE DEL LOTTO
-	String coltivatore = getColtivatoreLotto(idLotto);
-	if (coltivatore == null) {
-	throw new SQLException("Nessun coltivatore assegnato al lotto " + idLotto);
-	}
-	
-	// FASE 2: INSERISCI ATTIVITA BASE
-	String sqlAttivita = "INSERT INTO Attivita (ID_Lotto, Codice_FiscaleCol, giorno_assegnazione, stato) VALUES (?, ?, CURRENT_DATE, 'pianificata') RETURNING ID_Attivita";
-	stmt = conn.prepareStatement(sqlAttivita);
-	stmt.setInt(1, idLotto);
-	stmt.setString(2, coltivatore);
-	risultato = stmt.executeQuery();
-	
-	int idAttivita = 0;
-	if (risultato.next()) {
+		            					String tipoIrrigazione, String tipoSemina, String idLottoStr) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet risultato = null;
+		boolean success = true;
+		
+		try {
+		conn = Connessione.getConnection();
+		int idLotto = Integer.parseInt(idLottoStr);
+		
+		// FASE 1: RECUPERA TUTTI I COLTIVATORI DEL LOTTO
+		List<String> coltivatori = getColtivatoriLotto(idLotto);
+		if (coltivatori.isEmpty()) {
+		throw new SQLException("Nessun coltivatore assegnato al lotto " + idLotto);
+		}
+		
+		// FASE 2: PER OGNI COLTIVATORE, CREA UN'ATTIVITÀ COMPLETA
+		for (String coltivatore : coltivatori) {
+		// INSERISCI ATTIVITA BASE
+		String sqlAttivita = "INSERT INTO Attivita (ID_Lotto, Codice_FiscaleCol, giorno_assegnazione, stato) VALUES (?, ?, CURRENT_DATE, 'pianificata') RETURNING ID_Attivita";
+		stmt = conn.prepareStatement(sqlAttivita);
+		stmt.setInt(1, idLotto);
+		stmt.setString(2, coltivatore);
+		risultato = stmt.executeQuery();
+		
+		int idAttivita = 0;
+		if (risultato.next()) {
 		idAttivita = risultato.getInt("ID_Attivita");
-	}
-	risultato.close();
-	stmt.close();
-	
-	// FASE 3: INSERISCI ATTIVITA SPECIFICA
-	String sql = null;
-	
-	if ("Raccolta".equals(tipoAttivita)) {
+		}
+		risultato.close();
+		stmt.close();
+		
+		// INSERISCI ATTIVITA SPECIFICA PER OGNI COLTIVATORE
+		String sql = null;
+		
+		if ("Raccolta".equals(tipoAttivita)) {
 		sql = "INSERT INTO Raccolta (giorno_inizio, giorno_fine, raccolto_effettivo, id_attivita, stato) VALUES (?, ?, 0, ?, 'pianificata')";
 		stmt = conn.prepareStatement(sql);
 		stmt.setDate(1, dataIA);
 		stmt.setDate(2, dataFA);
 		stmt.setInt(3, idAttivita);
-	}
-	else if ("Semina".equals(tipoAttivita)) {
+		}
+		else if ("Semina".equals(tipoAttivita)) {
 		sql = "INSERT INTO Semina (giorno_inizio, giorno_fine, tipo_semina, profondita, id_attivita, stato) VALUES (?, ?, ?, 10, ?, 'pianificata')";
 		stmt = conn.prepareStatement(sql);
 		stmt.setDate(1, dataIA);
 		stmt.setDate(2, dataFA);
 		stmt.setString(3, tipoSemina);
 		stmt.setInt(4, idAttivita);
-	}
-	else if ("Irrigazione".equals(tipoAttivita)) {
+		}
+		else if ("Irrigazione".equals(tipoAttivita)) {
 		sql = "INSERT INTO Irrigazione (giorno_inizio, giorno_fine, tipo_irrigazione, id_attivita, stato) VALUES (?, ?, ?, ?, 'pianificata')";
 		stmt = conn.prepareStatement(sql);
 		stmt.setDate(1, dataIA);
 		stmt.setDate(2, dataFA);
 		stmt.setString(3, tipoIrrigazione);
 		stmt.setInt(4, idAttivita);
-	}
-	
-	return stmt.executeUpdate() > 0;
-	
-	} catch(SQLException | NumberFormatException ex) {
+		}
+		
+		int rowsAffected = stmt.executeUpdate();
+		if (rowsAffected <= 0) {
+		success = false;
+		}
+		stmt.close();
+		}
+		
+		return success;
+		
+		} catch(SQLException | NumberFormatException ex) {
 		ex.printStackTrace();
-	return false;
-	} finally {
-	try { if (risultato != null) risultato.close(); } catch (Exception e) {}
-	try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-	try { if (conn != null) conn.close(); } catch (Exception e) {}
-	}
-}
+		return false;
+		} finally {
+		try { if (risultato != null) risultato.close(); } catch (Exception e) {}
+		try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+		try { if (conn != null) conn.close(); } catch (Exception e) {}
+		}
+		}
+
+	
 
 //METODO HELPER PER RECUPERARE COLTIVATORE
-private static String getColtivatoreLotto(int idLotto) {
+private static List<String> getColtivatoriLotto(int idLotto) {
 	Connection conn = null;
 	PreparedStatement stmt = null;
 	ResultSet rs = null;
+	List<String> coltivatori = new ArrayList<>();
 	
 	try {
 		conn = Connessione.getConnection();
-		String sql = "SELECT a.Codice_FiscaleCol FROM Attivita a WHERE a.ID_Lotto = ? ORDER BY a.giorno_assegnazione DESC";;
+		String sql = "SELECT DISTINCT a.Codice_FiscaleCol FROM Attivita a WHERE a.ID_Lotto = ? ";;
+
 		stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, idLotto);
 		rs = stmt.executeQuery();
 	
-	if (rs.next()) {
-		return rs.getString("Codice_FiscaleCol");
+	while (rs.next()) {
+		//return rs.getString("Codice_FiscaleCol");
+		coltivatori.add(rs.getString("Codice_FiscaleCol"));
 	}
-		return null; // Nessun coltivatore trovato per questo lotto
+		return coltivatori; 
 	
 	} catch (SQLException ex) {
 		ex.printStackTrace();
