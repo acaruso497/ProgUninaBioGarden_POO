@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import java.awt.Dimension;
 import javax.swing.JButton;
+import javax.swing.plaf.basic.BasicArrowButton;
 
 public class Grafico extends JFrame {
 
@@ -35,6 +36,8 @@ public class Grafico extends JFrame {
 	private String username = ControllerLogin.getUsernameGlobale();
 	CreaProgettoController creaProgettoController;
 	ControllerGrafico controllerGrafico;
+	VisualizzaProgetti visualizzaProgetti;
+	HomePageProprietario home;
 	JComboBox<String> ComboLotto = new JComboBox<String>();
 	JComboBox<String> ComboColtura = new JComboBox<String>();
 
@@ -42,6 +45,9 @@ public class Grafico extends JFrame {
 	 * Create the frame.
 	 */
 	public Grafico(String selectedLotto) {
+		home = new HomePageProprietario();
+		visualizzaProgetti = new VisualizzaProgetti(home);
+		
 		setTitle("Grafico");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 884, 553);
@@ -57,6 +63,20 @@ public class Grafico extends JFrame {
 
 	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", 
 	    										"[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
+	    
+	    BasicArrowButton ButtonIndietro = new BasicArrowButton(7);
+	    ButtonIndietro.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Grafico.this.setVisible(false);
+	    		visualizzaProgetti.setVisible(true);
+	    		
+	    		//reset campi
+	    		ComboLotto.setSelectedIndex(-1);
+	    		ComboColtura.setSelectedIndex(-1);
+	    	}
+	    });
+	    ButtonIndietro.setPreferredSize(new Dimension(40, 40));
+	    contentPane.add(ButtonIndietro, "cell 12 0");
 	    
 	    JLabel LabelLotto = new JLabel("Lotto");
 	    contentPane.add(LabelLotto, "cell 0 1,alignx trailing");
@@ -139,7 +159,7 @@ public class Grafico extends JFrame {
 	            JFrame chartFrame = new JFrame("Grafico");
 	            chartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	            chartFrame.setSize(700, 500);
-	            chartFrame.add(new ChartPanel(chart));
+	            chartFrame.getContentPane().add(new ChartPanel(chart));
 	            chartFrame.setLocationRelativeTo(Grafico.this);
 	            chartFrame.setVisible(true);
 	        }

@@ -53,19 +53,19 @@ public class daoGrafico {
 
     // AVG
     public double getMediaRaccolto(int idLotto, String varieta) {
-        Number n = queryAggregato("AVG(r.raccolto_effettivo)", idLotto, varieta);
+    	Number n = queryAggregato("AVG(c.raccoltoprodotto)", idLotto, varieta);
         return n != null ? n.doubleValue() : 0.0;
     }
 
     // MIN
     public double getMinRaccolto(int idLotto, String varieta) {
-        Number n = queryAggregato("MIN(r.raccolto_effettivo)", idLotto, varieta);
+    	Number n = queryAggregato("MIN(c.raccoltoprodotto)", idLotto, varieta);
         return n != null ? n.doubleValue() : 0.0;
     }
 
     // MAX
     public double getMaxRaccolto(int idLotto, String varieta) {
-        Number n = queryAggregato("MAX(r.raccolto_effettivo)", idLotto, varieta);
+    	Number n = queryAggregato("MAX(c.raccoltoprodotto)", idLotto, varieta);
         return n != null ? n.doubleValue() : 0.0;
     }
 
@@ -78,27 +78,18 @@ public class daoGrafico {
             conn = Connessione.getConnection();
 
             
-//            String sql =
-//                "SELECT " + expr + " AS val " +
-//                "FROM raccolta r " +
-//                "JOIN attivita a   ON a.id_attivita = r.id_attivita " +
-//                "JOIN contiene ct  ON ct.id_lotto   = a.id_lotto " +
-//                "JOIN coltura  c   ON c.id_coltura  = ct.id_coltura " +
-//                "WHERE a.id_lotto = ? " +
-//                "  AND lower(trim(c.\"varietà\")) = lower(trim(?)) " +
-//                "  AND r.stato IN ('completata')"; 
-            
-            
-          String sql =
-          "SELECT " + expr + " AS val " +
-          "FROM raccolta r " +
-          "JOIN attivita a   ON a.id_attivita = r.id_attivita " +
-          "JOIN Progetto_Coltivazione pc  ON pc.id_lotto= a.id_lotto " +
-          "JOIN Progetto_Coltura pcol ON pcol.id_progetto=pc.id_progetto " +
-          "JOIN coltura  c   ON c.id_coltura  = pcol.id_coltura " +
-          "WHERE a.id_lotto = ? " +
-          "  AND lower(trim(c.\"varietà\")) = lower(trim(?)) " +
-          "  AND r.stato IN ('completata')"; 
+            String sql =
+            "SELECT " + expr + " AS val " +
+            "FROM Coltura AS c " +
+          	"JOIN Progetto_Coltura AS pcol ON pcol.id_coltura=c.id_coltura " +
+          	"JOIN Progetto_Coltivazione AS pc ON pc.id_progetto=pcol.id_progetto " +
+          	"JOIN Lotto AS l ON l.id_lotto = pc.id_lotto " +
+          	"JOIN Attivita AS a ON a.id_lotto = l.id_lotto " +
+          	"JOIN Raccolta AS r ON r.id_attivita = a.id_attivita " +
+          	 "WHERE a.id_lotto = ? " +
+             "  AND lower(trim(c.\"varietà\")) = lower(trim(?)) " +
+             "  AND r.stato IN ('completata')"; 
+                   
 
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, idLotto);

@@ -42,8 +42,8 @@ private daoVisualizzaP dao;
     } 
      
     // Mostra il raccolto stimato e quello effettivo
-    public void mostraRaccolto (String idProgettoStr, String idLottoStr, String coltura, JTextField FieldEffettivo) {
-    	dao.mostraRaccolto(idProgettoStr, idLottoStr, coltura, FieldEffettivo);
+    public void mostraRaccolto (String idProgettoStr, String idLottoStr, String coltura) {
+    	dao.mostraRaccolto(idProgettoStr, idLottoStr, coltura);
     }
     
     // termina il progetto di coltivazione 
@@ -52,18 +52,18 @@ private daoVisualizzaP dao;
     	
     }
     
+    //controlla se il progetto è completato
     public boolean isCompletata(String username, String idProgettoStr) {
     	return dao.isCompletata(username, idProgettoStr);
     	
     }
+    
+    //restituisce le colture presenti nel lotto del progetto di coltivazione in riferimento al proprietario
     public ArrayList<String> getColtureProprietario(String CF, String progetto) {
-    	
     	return dao.getColtureProprietario(CF, progetto);
 	}
     
-    public String getRaccoltoProdotto(String username, int idLotto) {
-    	return dao.getRaccoltoProdotto(username, idLotto);
-    }
+    //restituisce il raccolto prodotto della coltura
     public String getRaccoltoProdotto(String username, int idLotto, String coltura){
     	
     	return dao.getRaccoltoProdotto(username, idLotto, coltura);

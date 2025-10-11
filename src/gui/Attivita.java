@@ -364,6 +364,9 @@ public class Attivita extends JFrame {
 				FieldDataIA.setText("");
 				FieldDataFA.setText("");
 				
+				FieldDataIA.setBackground(Color.WHITE);
+		        FieldDataFA.setBackground(Color.WHITE);
+				
         	}
         });
         contentPane.add(ButtonSalva, "cell 9 7,alignx center");

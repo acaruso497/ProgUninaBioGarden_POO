@@ -28,6 +28,7 @@ public class daoVisualizzaP {
 	    try {
 	        conn = Connessione.getConnection();
 	      
+	        //per ogni attività, verifica se il giorno inizio e fine sono comprese tra la data inizio e fine del progetto di coltivazione
 	        if ("Raccolta".equals(tipoAttivita)) {
 
 			sql = "SELECT r.id_attivita, r.stato, r.giorno_inizio, r.giorno_fine "
@@ -137,7 +138,7 @@ public class daoVisualizzaP {
 	        int idAttivita = 0;
 	        int rows = 0;
 	        
-	        // CORREZIONE: Seleziona l'ID attività più recente per il lotto e tipo di attività
+	        // seleziona l'ID attività più recente per il lotto e tipo di attività
 	        if ("Raccolta".equals(tipoAttivita)) {
 	            sql1 = "SELECT r.id_attivita " +
 	                   "FROM Raccolta r " +
@@ -235,6 +236,7 @@ public class daoVisualizzaP {
         return lista;
     }
     
+  //controlla se il progetto è completato
     public boolean isCompletata(String username, String idProgetto) {
     	Connection conn = null;
         PreparedStatement stmt = null;
@@ -244,15 +246,15 @@ public class daoVisualizzaP {
     		conn = Connessione.getConnection();
     		
     		String sql = "SELECT pc.done " +
-                    "FROM Progetto_Coltivazione pc " +
-                    "JOIN Lotto l ON l.ID_Lotto = pc.ID_Lotto " +
-                    "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
-                    "WHERE p.username = ? AND pc.ID_Progetto = ?";
+	                    "FROM Progetto_Coltivazione pc " +
+	                    "JOIN Lotto l ON l.ID_Lotto = pc.ID_Lotto " +
+	                    "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+	                    "WHERE p.username = ? AND pc.ID_Progetto = ?";
         
-        stmt = conn.prepareStatement(sql);   
-        stmt.setString(1, username);
-        stmt.setInt(2, Integer.parseInt(idProgetto));
-        risultato = stmt.executeQuery();
+			 stmt = conn.prepareStatement(sql);   
+			 stmt.setString(1, username);
+			 stmt.setInt(2, Integer.parseInt(idProgetto));
+			 risultato = stmt.executeQuery();
 
     
 			 if (risultato.next()) {
@@ -286,10 +288,10 @@ public class daoVisualizzaP {
 	        
 		        
 		        String sql = "SELECT l.ID_Lotto " +
-	                     "FROM Lotto l " +
-	                     "JOIN Progetto_Coltivazione pc ON l.ID_Lotto = pc.ID_Lotto " +  
-	                     "WHERE pc.ID_Progetto = ? " +
-	                     "AND l.Codice_FiscalePr = ?";
+		                     "FROM Lotto l " +
+		                     "JOIN Progetto_Coltivazione pc ON l.ID_Lotto = pc.ID_Lotto " +  
+		                     "WHERE pc.ID_Progetto = ? " +
+		                     "AND l.Codice_FiscalePr = ?";
 		        
 
 		        stmt = conn.prepareStatement(sql);   
@@ -337,23 +339,16 @@ public class daoVisualizzaP {
 	                fieldStima.setText("");
 	            }
 	            
-	            // Setta raccolto effettivo
-//	            String effettivo = risultato.getString("raccolto_effettivo");
-//	            if (effettivo != null) {
-//	                fieldEffettivo.setText(effettivo + " kg");
-//	            } else {
-//	                fieldEffettivo.setText("");
-//	            }
 			
 			// Converte date SQL in stringa semplice in modo da popolare il field
 			java.sql.Date sqlDataInizio = risultato.getDate("data_inizio");
 			if (sqlDataInizio != null) {
-			 LocalDate dataInizio = sqlDataInizio.toLocalDate();
-			 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			 fieldDataIP.setText(dataInizio.format(formatter));
-				} else {
-				 fieldDataIP.setText("");
-				} 
+				 LocalDate dataInizio = sqlDataInizio.toLocalDate();
+				 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				 fieldDataIP.setText(dataInizio.format(formatter));
+				  } else {
+					 fieldDataIP.setText("");
+				  } 
 			
 				java.sql.Date sqlDataFine = risultato.getDate("data_fine");
 				if (sqlDataFine != null) {
@@ -380,8 +375,8 @@ public class daoVisualizzaP {
 	
 	
 		
-	
-	public void mostraRaccolto(String idProgettoStr, String idLottoStr, String coltura, JTextField FieldEffettivo) {
+	//mostra il raccolto prodotto per ogni coltura selezionata
+	public void mostraRaccolto(String idProgettoStr, String idLottoStr, String coltura) {
 		int idProgetto = Integer.parseInt(idProgettoStr);
 		int idLotto = Integer.parseInt(idLottoStr);
 		Connection conn = null;
@@ -397,12 +392,6 @@ public class daoVisualizzaP {
 				stmt.setInt(3, idProgetto);
 				risultato = stmt.executeQuery();
 			
-				if(risultato.next()) {
-					int raccolto = risultato.getInt("raccoltoprodotto");
-					FieldEffettivo.setText(raccolto + " kg");
-		         } else {
-		        	 FieldEffettivo.setText("");
-		         }
 			
 			
 		}  catch (SQLException | NumberFormatException ex) {
@@ -460,6 +449,7 @@ public class daoVisualizzaP {
 		        risultato.close();
 		        stmt.close();
 		        
+		        //per ogni id dell'attività, segna ogni attività come completata
 		        for (int idAttivita : idAttivitaList) {
 		            // Segna semina come completata
 		            String sql3 = "UPDATE Semina SET stato = 'completata' WHERE id_attivita = ?";
@@ -499,12 +489,7 @@ public class daoVisualizzaP {
 	
 	
 	
-	
-	
-	
-	
-	//raccolta del prodotto selezionato nella drop
-
+	//restituisce la raccolta del prodotto selezionato nella drop
 	public String getRaccoltoProdotto(String username, int idLotto) {
 	    String raccolto = "";
 	    Connection conn = null;
@@ -539,6 +524,7 @@ public class daoVisualizzaP {
 	    return raccolto;
 	}	
 	
+	//restituisce le colture presenti nel lotto del progetto di coltivazione in riferimento al proprietario
 	public ArrayList<String> getColtureProprietario(String CF, String progettoId) {
 	    ArrayList<String> listaC = new ArrayList<>();
 	    Connection conn = null;
@@ -575,7 +561,7 @@ public class daoVisualizzaP {
 	
 	
   
-	
+//restituisce il raccolto prodotto della coltura	
 public String getRaccoltoProdotto(String username, int idLotto, String coltura) {
     String raccolto = "";
     Connection conn = null;

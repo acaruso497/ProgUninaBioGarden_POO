@@ -702,35 +702,18 @@ public String[] getDateByAttivitaId(String idAttivita, String tipoAttivita) {
 public List<String> getIdAttivitaColtivatore(String username, String progetto) {
     List<String> idList = new ArrayList<>();
     
-    
-//    try (Connection conn = Connessione.getConnection();
-//            PreparedStatement stmt = conn.prepareStatement(
-//                "SELECT id_semina, id_irrigazione, id_raccolta " +
-//                "FROM ComboAttivitaColtivatore " +
-//                "WHERE username_coltivatore = ? AND titolo_progetto = ? AND done=false "
-//                )) {
         
     try (Connection conn = Connessione.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
                 "SELECT tipo_attivita, id_attivita " +
                 "FROM DateAttivitaColtivatore " +
-                "WHERE username = ? AND titolo = ? AND done = false " +
+                "WHERE username = ? AND titolo = ? AND done = false AND stato IN ('pianificata', 'in corso')" +
                 "ORDER BY giorno_inizio")) {
     
         stmt.setString(1, username);
         stmt.setString(2, progetto);
         ResultSet rs = stmt.executeQuery();
 
-//        while (rs.next()) {
-//            if (rs.getObject("id_semina") != null) {
-//                idList.add("Semina-" + rs.getInt("id_semina"));
-//            }
-//            if (rs.getObject("id_irrigazione") != null) {
-//                idList.add("Irrigazione-" + rs.getInt("id_irrigazione"));
-//            }
-//            if (rs.getObject("id_raccolta") != null) {
-//                idList.add("Raccolta-" + rs.getInt("id_raccolta"));
-//            }
         
         while (rs.next()) {
             String tipoAttivita = rs.getString("tipo_attivita");
@@ -746,7 +729,6 @@ public List<String> getIdAttivitaColtivatore(String username, String progetto) {
 
 
 //SECONDA FUNZIONE: Restituisce i tipi per indice
-
 public List<String> getTipiAttivitaColtivatore(String username, String progetto) {
     List<String> tipoList = new ArrayList<>();
 
@@ -845,14 +827,10 @@ public String getEsperienzaColtivatore(String username) {
 
 public String getStimaRaccolto(String username, String progetto) {
     String stima = "";
-//    try (Connection conn = Connessione.getConnection();
-//         PreparedStatement stmt = conn.prepareStatement(
-//             "SELECT raccolto_effettivo FROM coltivatoreview " +
-//             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
         
     try (Connection conn = Connessione.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
-                "SELECT raccolto_effettivo FROM stima_raccoltoColtivatore " +
+                "SELECT stima_raccolto FROM stima_raccoltoColtivatore " +
                 "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
     
         stmt.setString(1, username);
@@ -860,7 +838,7 @@ public String getStimaRaccolto(String username, String progetto) {
         ResultSet rs = stmt.executeQuery();
         
         if (rs.next()) {
-            stima = rs.getString("raccolto_effettivo");
+            stima = rs.getString("stima_raccolto");
         }
     } catch (SQLException ex) {
         ex.printStackTrace();

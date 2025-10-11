@@ -55,7 +55,7 @@ public class HomePageColtivatore extends JFrame {
 	public HomePageColtivatore() {
 		setTitle("HomePageColtivatore");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    setBounds(100, 100, 843, 564);
+	    setBounds(100, 100, 893, 564);
 	    
 	    URL imageUrl = getClass().getResource("/img/sfondoschede.PNG");
 	    contentPane = new BackgroundPanel(imageUrl);
@@ -68,7 +68,7 @@ public class HomePageColtivatore extends JFrame {
 	    
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][][][grow][][][][grow][grow][grow][grow][grow][grow][grow][][][][]", "[grow][grow][grow][grow][grow][grow][grow][][][][][grow][grow][][][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][][][grow][][][][][][][][grow][grow][grow][grow][grow][grow][grow][][][][]", "[grow][grow][grow][grow][grow][grow][grow][][][][][grow][grow][][][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    JLabel LabelBenvenuto = new JLabel("Benvenuto sei un coltivatore!");
 	    contentPane.add(LabelBenvenuto, "cell 0 0");
@@ -76,7 +76,7 @@ public class HomePageColtivatore extends JFrame {
 	    //inzio sezione notifiche
 	    
 	    JToggleButton TButtonNotifiche = new JToggleButton("");
-	    contentPane.add(TButtonNotifiche, "cell 22 0,alignx center,aligny center");
+	    contentPane.add(TButtonNotifiche, "cell 23 0,alignx center,aligny center");
 	    TButtonNotifiche.setBorderPainted(false);
 	    TButtonNotifiche.setContentAreaFilled(false);
 	    TButtonNotifiche.setFocusPainted(false);
@@ -119,7 +119,7 @@ public class HomePageColtivatore extends JFrame {
 	    FieldEsperienza.setEditable(false);
 	    contentPane.add(FieldEsperienza, "cell 8 1,growx");
 	    FieldEsperienza.setColumns(10);
-	    contentPane.add(scrollNotifiche, "cell 18 1 1 4,grow");
+	    contentPane.add(scrollNotifiche, "cell 22 1 2 4,grow");
 	    //popola esperienza
 	    ControllerColtivatore controllerEsperienza = new ControllerColtivatore();
 	    String esperienza = controllerEsperienza.getEsperienzaColtivatore(ControllerLogin.getUsernameGlobale());
@@ -185,7 +185,7 @@ public class HomePageColtivatore extends JFrame {
 	    
 	   
 	    FieldStima.setEditable(false);
-	    contentPane.add(FieldStima, "cell 8 3,growx");
+	    contentPane.add(FieldStima, "flowx,cell 8 3,growx");
 	    FieldStima.setColumns(10);
 	    JLabel kg = new JLabel("KG");
 	    
@@ -227,7 +227,7 @@ public class HomePageColtivatore extends JFrame {
 	    FieldDataIP.setColumns(10);
 	    
 	    
-	    contentPane.add(ComboTipologia, "cell 8 6 4 1,growx");
+	    contentPane.add(ComboTipologia, "cell 8 6 8 1,growx");
 	    
 	    
 	    contentPane.add(lblTipoSemina, "cell 1 7,alignx trailing");
@@ -245,7 +245,7 @@ public class HomePageColtivatore extends JFrame {
 	    
 	    
 	    FieldIrrigazione.setEditable(false);
-	    contentPane.add(FieldIrrigazione, "cell 8 8 2 1,growx");
+	    contentPane.add(FieldIrrigazione, "cell 8 8 6 1,growx");
 	    FieldIrrigazione.setColumns(10);
 	    JLabel lblRaccoltoColture = new JLabel("Raccolto Colture");
 	    
@@ -254,11 +254,11 @@ public class HomePageColtivatore extends JFrame {
 	    FieldRaccoltoColture = new JTextField();
 	    
 	    FieldRaccoltoColture.setColumns(10);
-	    contentPane.add(FieldRaccoltoColture, "cell 8 10,growx");
+	    contentPane.add(FieldRaccoltoColture, "flowx,cell 8 10,growx");
 	    FieldRaccoltoColture.setEnabled(false); //blocca il textfield
 	    JLabel kgColtura = new JLabel("KG");
 	    
-	    contentPane.add(kgColtura, "cell 10 10");
+	    contentPane.add(kgColtura, "cell 9 10");
 	    JLabel LabelLotti = new JLabel("Lotto assegnato");
 	    
 	    
@@ -288,16 +288,32 @@ public class HomePageColtivatore extends JFrame {
 					    return; 
 		    		}
 	    			
-	    			boolean sommaRaccolto = controller.sommaRaccolto(raccoltoColture, selectedColtura, selectedProgetto);
+	    			
+	    			//controlla se è stato inserito un raccolto minore o pari a 0
+	    			int raccolto = Integer.parseInt(raccoltoColture);
+	    			if (raccolto <= 0) {
+		    			JOptionPane.showMessageDialog(HomePageColtivatore.this, 
+		    					"Il raccolto deve essere maggiore di 0!", "Errore", 
+		    					JOptionPane.ERROR_MESSAGE);
+		    			FieldRaccoltoColture.setBackground(Color.RED);
+		    			return;
+	    			}else {
+	    				boolean sommaRaccolto = controller.sommaRaccolto(raccoltoColture, selectedColtura, selectedProgetto);
+	    				JOptionPane.showMessageDialog(HomePageColtivatore.this, "Il raccolto è stato aggiornato con successo!");
+	    			}
+	    			
 	    			
 	            } catch (NumberFormatException ex) {
-	                JOptionPane.showMessageDialog(HomePageColtivatore.this, "Il raccolto deve essere un numero valido!", "Errore", JOptionPane.ERROR_MESSAGE);
+	                JOptionPane.showMessageDialog(HomePageColtivatore.this, 
+	                			"Il raccolto deve essere un numero valido!", 
+	                			"Errore", JOptionPane.ERROR_MESSAGE);
 	                FieldRaccoltoColture.setBackground(Color.RED);
 	                return;
 	            }
 	    		
 	    		
-	    		JOptionPane.showMessageDialog(HomePageColtivatore.this, "Il raccolto è stato aggiornato con successo!");
+	    		FieldRaccoltoColture.setText(""); //pulisce il field
+	    		FieldRaccoltoColture.setBackground(Color.WHITE);
 	    	}
 	    });
 	    JLabel LabelPosizioneLotto = new JLabel("Posizione lotto");

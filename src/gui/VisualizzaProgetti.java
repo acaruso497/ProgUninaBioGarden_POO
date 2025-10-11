@@ -41,7 +41,6 @@ public class VisualizzaProgetti extends JFrame {
 	HomePageProprietario home;
 	Grafico grafico;
 	private JTextField FieldStima;
-	private JTextField FieldEffettivo;
 	private JTextField FieldDataIP;
 	private JTextField FieldDataFP;
 	private JTextField FieldDataIA;
@@ -102,10 +101,22 @@ public class VisualizzaProgetti extends JFrame {
 	        JButton ButtonGrafici = new JButton("Visualizza Grafici");
 	        ButtonGrafici.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent e) {
-	        		VisualizzaProgetti.this.setVisible(false);
 	        		String selectedLotto = FieldLotto.getText();
-                Grafico grafico = new Grafico(selectedLotto);
-	        		grafico.setVisible(true);
+	        		//verifica prima se è stato selezionato un progetto
+	        		if(selectedLotto.isEmpty()) {
+	        			JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
+	                    		"Seleziona un progetto valido", "Errore", JOptionPane.ERROR_MESSAGE);
+	        		} else {
+	                    try {
+	                        Integer.parseInt(selectedLotto);  // Early validation to ensure it's a number
+	                        Grafico grafico = new Grafico(selectedLotto);
+	                        VisualizzaProgetti.this.setVisible(false);
+	                        grafico.setVisible(true);
+	                    } catch (NumberFormatException ex) {
+	                        JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
+	                                "ID lotto non valido (deve essere un numero)", "Errore", JOptionPane.ERROR_MESSAGE);
+	                    }
+	                }
 	        	}
 	        });
 	        
@@ -180,14 +191,6 @@ public class VisualizzaProgetti extends JFrame {
 	    contentPane.add(FieldDataIP, "cell 1 4,growx");
 	    FieldDataIP.setColumns(10);
 	    FieldDataIP.setEditable(false);
-	    
-	    JLabel LabelEffettivo = new JLabel("Raccolto effettivo");
-	    contentPane.add(LabelEffettivo, "cell 4 4,alignx trailing");
-	    
-	    FieldEffettivo = new JTextField();
-	    contentPane.add(FieldEffettivo, "cell 5 4,growx");
-	    FieldEffettivo.setColumns(10);
-	    FieldEffettivo.setEditable(false); //blocca il textfield
 	    
 	    JLabel LabelDataFP = new JLabel("Data Fine");
 	    contentPane.add(LabelDataFP, "cell 0 5,alignx right,aligny center");
@@ -335,7 +338,6 @@ public class VisualizzaProgetti extends JFrame {
             	ComboAttivita.setSelectedIndex(0);
                 ComboColtureRacc.setSelectedIndex(-1);
                 FieldStima.setText("");
-                FieldEffettivo.setText("");
                 FieldDataIP.setText("");
                 FieldDataFP.setText("");
                 FieldDataIA.setText("");
@@ -486,7 +488,6 @@ public class VisualizzaProgetti extends JFrame {
         ComboColtureRacc.setSelectedIndex(-1);
         ComboProgetto.setSelectedIndex(-1);
         FieldStima.setText("");
-        FieldEffettivo.setText("");
         FieldDataIP.setText("");
         FieldDataFP.setText("");
         FieldDataIA.setText("");
