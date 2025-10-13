@@ -37,6 +37,7 @@ public class Login extends JFrame {
 	                                      deve partire una select per prendere il codice fiscale del proprietario
 	                                        per recuperare nella GUI VisualizzaProgetti in base al progetto selezionato il lotto corrispondente (1 solo)      */
 	registraUtente registraUtente = new registraUtente();
+	ControllerLogin cl = new ControllerLogin();
 	private JButton buttonRegistra;
 	/**
 	 * Launch the application.
@@ -115,7 +116,6 @@ public class Login extends JFrame {
 		    ButtonLogin.addActionListener(new ActionListener() {
 			 public void actionPerformed(ActionEvent e) {			
 				
-				ControllerLogin cl = new ControllerLogin();
 				
 				//tramite questa variabile troveremo il codice fiscale da passare al metodo getLottiByProprietario 
 				usernameGlobale = FieldUsername.getText(); 
@@ -125,23 +125,24 @@ public class Login extends JFrame {
 				
 				boolean[] check = cl.login(usernameGlobale, psw);
 				
-				if (check[0] == false) {// campi non validi
-					JOptionPane.showMessageDialog(Login.this, "\n USERNAME E/O PASSWORD \n RISULTANO VUOTI O NULLI");}
-								
-				else if (check[0]==true && check[1]==true && check[2]==false) {// proprietario homepage
-					Login.this.setVisible(false);
-					HomePageProprietario homeP = new HomePageProprietario();
-					homeP.setVisible(true);
-				}
-				else if (check[0]==true && check[1]==false && check[2]==true) {// coltivatore homepage
-					Login.this.setVisible(false);		
-					HomePageColtivatore homeC = new HomePageColtivatore();
-					homeC.setVisible(true);
-					
-				}else if (check[0]==true && check[1]==false && check[2]==false) {// nessuno dei due
-					
-					JOptionPane.showMessageDialog(Login.this, " Username o Password errati!! ");
-				}							
+//				if (check[0] == false) {// campi non validi
+//					JOptionPane.showMessageDialog(Login.this, "\n USERNAME E/O PASSWORD \n RISULTANO VUOTI O NULLI");}
+//								
+//				else if (check[0]==true && check[1]==true && check[2]==false) {// proprietario homepage
+//					Login.this.setVisible(false);
+//					HomePageProprietario homeP = new HomePageProprietario();
+//					homeP.setVisible(true);
+//				}
+//				else if (check[0]==true && check[1]==false && check[2]==true) {// coltivatore homepage
+//					Login.this.setVisible(false);		
+//					HomePageColtivatore homeC = new HomePageColtivatore();
+//					homeC.setVisible(true);
+//					
+//				}else if (check[0]==true && check[1]==false && check[2]==false) {// nessuno dei due
+//					
+//					JOptionPane.showMessageDialog(Login.this, " Username o Password errati!! ");
+//				}		
+				cl.LoginResult(Login.this, check);
 			
 			}				
 		   }); 

@@ -1,7 +1,10 @@
 package controller;
 
 import dao.DAO;
-
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import gui.HomePageColtivatore;
+import gui.HomePageProprietario;
 public class ControllerLogin {
 	
 public static String usernameGlobale; //variabile globale, in modo che l'username della persona loggata sia visibile nelle gui
@@ -29,8 +32,27 @@ public static String usernameGlobale; //variabile globale, in modo che l'usernam
         }
         return lista;
     }
+    
+    public void LoginResult(JFrame loginFrame, boolean[] check) {
+        if (check[0]== false) {
+            JOptionPane.showMessageDialog(loginFrame, "\n USERNAME E/O PASSWORD \n RISULTANO VUOTI O NULLI");
+        } else if (check[0] && check[1] && !check[2]) {
+            loginFrame.setVisible(false);
+			HomePageProprietario homeP = new HomePageProprietario();
+			homeP.setVisible(true);
+            
+        } else if (check[0] && !check[1] && check[2]) {
+            loginFrame.setVisible(false);
+            HomePageColtivatore homeC = new HomePageColtivatore();
+            homeC.setVisible(true);
+            
+        } else if (check[0] && !check[1] && !check[2]) {
+            JOptionPane.showMessageDialog(loginFrame, " Username o Password errati!! ");
+        }
+    	
+    }
 
-
+    
 	public static String getUsernameGlobale() {
 		return usernameGlobale;
 	}
@@ -44,4 +66,5 @@ public static String usernameGlobale; //variabile globale, in modo che l'usernam
     public static String getCodiceFiscaleByUsername(String username) {
     	return DAO.getCodiceFiscaleByUsername(username);
     }
+    
 }
