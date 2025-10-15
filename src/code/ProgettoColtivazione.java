@@ -8,14 +8,18 @@ public class ProgettoColtivazione {
 	private double stimaRaccolto;
 	private String dataInizio;
 	private String dataFine;
+	private int ID_Lotto;
+	private boolean done;
 	
 	//COSTRUTTORE
-	public ProgettoColtivazione(int ID_Progetto, String titolo, String descrizione, double stimaRaccolto, String dataInizio, String dataFine) {
+	public ProgettoColtivazione(int ID_Progetto, String titolo, String descrizione, double stimaRaccolto, String dataInizio, String dataFine, int ID_Lotto, boolean done) {
 		this.ID_Progetto=ID_Progetto;
 		this.titolo=titolo;
 		this.descrizione=descrizione;
 		this.stimaRaccolto=stimaRaccolto;
 		this.dataInizio=dataInizio;
 		this.dataFine=dataFine;
+		this.ID_Lotto=ID_Lotto;
+		this.done=done;
 	}
 }

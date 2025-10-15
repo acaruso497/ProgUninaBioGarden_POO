@@ -6,6 +6,52 @@ import java.util.ArrayList;
 
 
 public class DAO {
+	//home proprietario 
+	
+	public boolean aggiungiL(String cf) {
+	    Connection conn = null;
+	    PreparedStatement stmt = null;
+	    ResultSet risultato = null;
+	    
+	    try {
+	        conn = Connessione.getConnection();
+	        //controlla l'esistenza di lotti liberi
+	        String sql1 = "SELECT ID_Lotto FROM Lotto WHERE Codice_FiscalePr IS NULL LIMIT 1";
+	        stmt = conn.prepareStatement(sql1);
+	        risultato = stmt.executeQuery();
+	        
+	        if (risultato.next()) {
+	            // quando trovo un lotto libero, ricavo l'id
+	            int idLottoLibero = risultato.getInt("ID_Lotto");
+	            
+	            // aggiungo il lotto al proprietario usando il suo codice fiscale
+	            String sql2 = "UPDATE Lotto SET Codice_FiscalePr = ? WHERE ID_Lotto = ?";
+	            stmt = conn.prepareStatement(sql2);
+	            stmt.setString(1, cf);
+	            stmt.setInt(2, idLottoLibero);
+	            
+	            int rows = stmt.executeUpdate();
+	            return rows == 1; 
+	        } else {
+	            return false;
+	        }
+	        
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	        return false;
+	    } finally {
+	        try { if (risultato != null) risultato.close(); } catch (Exception e) {}
+	        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+	        try { if (conn != null) conn.close(); } catch (Exception e) {}
+	    }
+	}
+	
+	
+	
+	//home proprietario
+	
+	
+	
 	// ______________registrazione____________
 
 		// Registrazione COLTIVATORE
@@ -341,7 +387,7 @@ public class DAO {
 
 	
 	
-		// GUI: CREA NOTIFICAArrayList<String> usernamesList
+// GUI: CREA NOTIFICA ArrayList<String> usernamesList
 		public boolean Inserisci_NotificaDB(String utentiTag,Date dataEvento, 
 											String titolo, String descrizione) {
 			Connection conn = null;
@@ -421,7 +467,7 @@ public class DAO {
 		        	    "FROM \"notifica\" " +
 		        	    "WHERE \"lettura\" = FALSE " +
 		        	    "  AND \"utenti_tag\" LIKE ?";
-
+		        
 		        stmt = conn.prepareStatement(sql);
 		        stmt.setString(1, "%" + usernameColtivatore + "%");
 
@@ -508,6 +554,46 @@ public class DAO {
 		    }
 		}
 
+		
+		public ArrayList<String> getColtivatoriByProprietario(String usernameProprietario) {
+			ArrayList<String> coltivatori = new ArrayList<>();
+			
+		    Connection conn = null;
+		    PreparedStatement stmt = null;
+		    ResultSet risultato = null;
+
+		    try {
+		        conn = Connessione.getConnection();
+
+		        // Tutti i coltivatori che lavorano su QUALSIASI lotto del proprietario indicato
+		        String sql =
+		                "SELECT DISTINCT c.username " +
+		                        "FROM proprietario p " +
+		                        "JOIN lotto l       ON l.codice_fiscalepr = p.codice_fiscale " +
+		                        "JOIN attivita a    ON a.id_lotto = l.id_lotto " +
+		                        "JOIN coltivatore c ON c.codice_fiscale = a.codice_fiscalecol " +
+		                        "WHERE p.username = ?";
+
+		        stmt = conn.prepareStatement(sql);
+		        stmt.setString(1, usernameProprietario);
+
+		        risultato = stmt.executeQuery();
+		        while (risultato.next()) {
+		            String coltivatore = risultato.getString("username");
+		            coltivatori.add(coltivatore);
+		        }
+		        
+		        return coltivatori;
+		    } catch (SQLException ex) {
+		        ex.printStackTrace();
+		    } finally {
+		        try { if (risultato != null) risultato.close(); } catch (Exception e) {}
+		        try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+		        try { if (conn != null) conn.close(); } catch (Exception e) {}
+		    }
+		    
+		    return coltivatori;
+		}
 		
 		
 		

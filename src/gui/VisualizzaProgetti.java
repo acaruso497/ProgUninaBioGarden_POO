@@ -33,6 +33,7 @@ import javax.swing.DefaultComboBoxModel;
 
 import java.awt.Font;
 import javax.swing.JTextField;
+import java.awt.Color;
 @SuppressWarnings("unused")
 public class VisualizzaProgetti extends JFrame {
 
@@ -45,6 +46,7 @@ public class VisualizzaProgetti extends JFrame {
 	private JTextField FieldDataFP;
 	private JTextField FieldDataIA;
 	private JTextField FieldDataFA;
+	private JLabel LabelProgettoTerminato;
 	private ControllerVisualizzaP controller; 
     private daoVisualizzaP dao; 
     private ButtonGroup gruppoStato;
@@ -79,7 +81,7 @@ public class VisualizzaProgetti extends JFrame {
 		
 		setTitle("Visualizza Progetti");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    setBounds(100, 100, 884, 553);
+	    setBounds(100, 100, 950, 553);
 	    
 	    URL imageUrl = getClass().getResource("/img/sfondoschede.PNG");
 	    contentPane = new BackgroundPanel(imageUrl);
@@ -121,6 +123,7 @@ public class VisualizzaProgetti extends JFrame {
 	        });
 	        
 	        ButtonTermina = new JButton("Termina");
+	        ButtonTermina.setEnabled(false);
 	        ButtonModificaAttivita = new JButton("Modifica");
 	        
 	        // Pulsante freccia indietro
@@ -137,6 +140,11 @@ public class VisualizzaProgetti extends JFrame {
 		});
 	        contentPane.add(ButtonGrafici, "cell 5 1");
 	        ButtonGrafici.setPreferredSize(new Dimension(150, 20));
+	    
+	    LabelProgettoTerminato = new JLabel("Progetto Terminato");
+	    LabelProgettoTerminato.setVisible(false);
+	    LabelProgettoTerminato.setForeground(Color.RED);
+	    contentPane.add(LabelProgettoTerminato, "cell 1 2");
 	    
 	    JLabel LabelProgetto = new JLabel("Progetto");
 	    contentPane.add(LabelProgetto, "cell 0 3,alignx trailing");
@@ -169,6 +177,7 @@ public class VisualizzaProgetti extends JFrame {
 	    			RadioPianificata.setEnabled(false);
                 	RadioInCorso.setEnabled(false);
                 	RadioCompletata.setEnabled(false);
+                	LabelProgettoTerminato.setVisible(true);
 	    		}
 	            
 	    		
@@ -335,6 +344,7 @@ public class VisualizzaProgetti extends JFrame {
         
         ComboProgetto.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	//pulizia campi
             	ComboAttivita.setSelectedIndex(0);
                 ComboColtureRacc.setSelectedIndex(-1);
                 FieldStima.setText("");
@@ -365,12 +375,14 @@ public class VisualizzaProgetti extends JFrame {
 	                	RadioPianificata.setEnabled(false);
 	                	RadioInCorso.setEnabled(false);
 	                	RadioCompletata.setEnabled(false);
+	                    LabelProgettoTerminato.setVisible(true);
 	                }else { //se non è completato, li abilita
 	                	ButtonTermina.setEnabled(true);
 	                	ButtonModificaAttivita.setEnabled(true);
 	                	RadioPianificata.setEnabled(true);
 	                	RadioInCorso.setEnabled(true);
 	                	RadioCompletata.setEnabled(true);
+	                    LabelProgettoTerminato.setVisible(false);
 	                }
 	                
 	                
@@ -461,8 +473,8 @@ public class VisualizzaProgetti extends JFrame {
         }
         
         try {
-            int idProgetto = Integer.parseInt(selectedProgetto);
-             idLotto = controller.getLottiByProprietario(idProgetto, CFProprietario); 
+            //int idProgetto = Integer.parseInt(selectedProgetto);
+             idLotto = controller.getLottiByProprietario(selectedProgetto, CFProprietario); 
             
             //controlla l'esistenza di un lotto
             if (idLotto != null) { 
@@ -484,6 +496,7 @@ public class VisualizzaProgetti extends JFrame {
     
     
     private void resetCampi() {
+    	//pulizia campi
         ComboAttivita.setSelectedIndex(0);
         ComboColtureRacc.setSelectedIndex(-1);
         ComboProgetto.setSelectedIndex(-1);
@@ -500,6 +513,7 @@ public class VisualizzaProgetti extends JFrame {
         RadioPianificata.setEnabled(true);
         RadioInCorso.setEnabled(true);
         RadioCompletata.setEnabled(true);
+        LabelProgettoTerminato.setVisible(false);
     }
 
 }

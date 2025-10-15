@@ -12,8 +12,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import controller.ControllerLogin;
+import controller.ControllerProprietario;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
@@ -29,9 +32,12 @@ public class HomePageProprietario extends JFrame {
 	private VisualizzaProgetti visualizza;
 	private CreaNotifica creanotifica;
 	private CreaProgetto creaprogetto;
-
+	private ControllerProprietario controllerProprietario;
+	private String username = ControllerLogin.getUsernameGlobale();
+	private String CFProprietario = ControllerLogin.getCodiceFiscaleByUsername(username);
 	
 	public HomePageProprietario() {
+		controllerProprietario = new ControllerProprietario();
 		setTitle("HomePageProprietario");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    setBounds(100, 100, 843, 564);
@@ -47,13 +53,11 @@ public class HomePageProprietario extends JFrame {
 	    @SuppressWarnings("unused")
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", 
-	    									"[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][][grow][grow][grow][grow][grow][grow]"));
 	  
 	    visualizza = new VisualizzaProgetti(this);
 	    creanotifica = new CreaNotifica(this);
 	    creaprogetto = new CreaProgetto(this); 
-	    
 	    
 	    JLabel LabelBenvenuto = new JLabel("Benvenuto! Sei un Proprietario");
 	    LabelBenvenuto.setFont(new Font("Tahoma", Font.BOLD, 17));
@@ -139,6 +143,11 @@ public class HomePageProprietario extends JFrame {
 	    JButton ButtonCreaN = new JButton("Crea Notifica");
 	    contentPane.add(ButtonCreaN, "cell 5 8,alignx center");
 	    ButtonCreaN.setPreferredSize(new Dimension(150, 20));
+	    
+	    JButton ButtonAggiungiL = new JButton("Aggiungi Lotto");
+	    ButtonAggiungiL.setPreferredSize(new Dimension(150, 20));
+	    contentPane.add(ButtonAggiungiL, "cell 5 9,alignx center");
+	    
 	    ButtonCreaN.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
@@ -146,6 +155,27 @@ public class HomePageProprietario extends JFrame {
 			}
 		});
 	    
+	    ButtonAggiungiL.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            
+	        	
+	            boolean aggiuntaLotto = controllerProprietario.aggiungiL(CFProprietario);
+	            
+	            if (aggiuntaLotto==true) {
+	            	creaprogetto.popolaComboLotto();
+	                //aggiunta lotto
+	                JOptionPane.showMessageDialog(HomePageProprietario.this, 
+	                    "Lotto aggiunto con successo!", "Successo", 
+	                    JOptionPane.INFORMATION_MESSAGE);
+	            } else {
+	                JOptionPane.showMessageDialog(HomePageProprietario.this, 
+	                    "Errore: nessun lotto libero disponibile", "Errore", 
+	                    JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    });
+	    
+	   
 	}
 
 }

@@ -107,33 +107,6 @@ public class daoCreaP {
 	        stmt.close();
 	        
 	        
-	        
-	      //inserisce l'id lotto e l'id del progetto nella tabella ponte
-//	        String sql2 = "INSERT INTO Ospita_Lotto_Progetto (id_progetto, id_lotto) VALUES (?, ?)";
-//	        
-//	        stmt = conn.prepareStatement(sql2);
-//	        stmt.setInt(1, idProgetto);
-//	        stmt.setInt(2, idLotto);
-//	        int rows = stmt.executeUpdate();
-//	        
-//	        stmt.close();
-	        
-	        
-	        
-	     // 2. CREA LE N COLTURE (NUOVO)
-//	        if (coltureArray != null && coltureArray.length > 0) {
-//	            for (String coltura : coltureArray) {
-//	                String colturaPulita = coltura.trim();
-//	                
-//	                if (!colturaPulita.isEmpty()) {
-//	                    // Crea o recupera coltura
-//	                    int colturaId = getOrCreateColtura(conn, colturaPulita);
-//	                    
-//	                    // Associa coltura al lotto
-//	                    associaColturaALotto(conn, idLotto, colturaId, idProgetto);
-//	                }
-//	            }
-//	        }
 	        //prova
 	        if (coltureArray != null && coltureArray.length > 0) {
 	            for (int i = 0; i < coltureArray.length; i++) {
@@ -177,22 +150,27 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
     	
     	conn = Connessione.getConnection();
     	
-    	String sql = "SELECT done FROM Progetto_Coltivazione WHERE id_lotto = ?"; //controlla se il progetto è completato tramite done
+    	String sql = "SELECT done FROM Progetto_Coltivazione WHERE id_lotto = ?";
         stmt = conn.prepareStatement(sql);
         stmt.setInt(1, idLotto);
         risultato = stmt.executeQuery();
         
         boolean completato = false;
         if(risultato.next()) {
-        	completato = risultato.getBoolean("done");
+            completato = risultato.getBoolean("done");
+        } else {
+            // Se non trova progetti, il lotto è libero
+            return true;
         }
+        
         risultato.close();
         stmt.close();
         
         if(completato==false) {
-        	System.out.println("Devi terminare il progetto"); //DEBUG
-        	return false;
+            System.out.println("Devi terminare il progetto");
+            return false;
         }
+        
     	
     	
     	return true;
@@ -269,6 +247,7 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
 	}
 	
 	
+	
 	public static boolean registraAttivita(String tipoAttivita, Date dataIA, Date dataFA, 
 		            					String tipoIrrigazione, String tipoSemina, String idLottoStr) {
 		Connection conn = null;
@@ -283,7 +262,8 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
 			// recupera tutti i coltivatori che lavorano in quel lotto
 			List<String> coltivatori = getColtivatoriLotto(idLotto);
 			if (coltivatori.isEmpty()) {
-				throw new SQLException("Nessun coltivatore assegnato al lotto " + idLotto);
+				System.out.println("Nessun coltivatore assegnato al lotto " + idLotto); //DEBUG
+				return false;
 			}
 		
 			// per ogni coltivatore, viene assegnata un'attività
@@ -333,7 +313,7 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
 				if (rowsAffected <= 0) {
 					success = false;
 				}
-				stmt.close();
+					stmt.close();
 				}
 		
 		return success;
@@ -347,6 +327,8 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
 			try { if (conn != null) conn.close(); } catch (Exception e) {}
 		}
 	}
+	
+	
 
 	
 

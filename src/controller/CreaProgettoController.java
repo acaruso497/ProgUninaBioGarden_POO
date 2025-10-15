@@ -43,6 +43,9 @@ public class CreaProgettoController {
     	// Se l'attività è stata salvata con successo, incrementa i contatori
     	if (risultato==true) {
     		incrementaContatore(tipoAttivita);
+    	}else {
+    		System.out.println("Errore nella creazione dell'attività"); //DEBUG
+    		return false;
     	}
     	
     	return risultato;

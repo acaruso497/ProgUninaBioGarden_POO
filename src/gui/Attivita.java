@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.net.URL;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -28,7 +29,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.Dimension;
-@SuppressWarnings("unused")
+
 
 public class Attivita extends JFrame {
 
@@ -67,9 +68,6 @@ public class Attivita extends JFrame {
 	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
 	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][][grow][grow][grow][grow]", "[grow][grow][grow][][grow][][grow][grow][][][grow][][][][grow][grow][][grow][grow][grow][grow][grow][grow][grow]"));
-	    
-	    
-	    
 	    
 	    
 	    JLabel LabelTitolo = new JLabel("Titolo del progetto");
@@ -231,9 +229,6 @@ public class Attivita extends JFrame {
         		String attivita = (String) ComboAttivita.getSelectedItem();
         		String dataInizioA = FieldDataIA.getText();
 				String dataFineA = FieldDataFA.getText();
-//				String tipoIrrigazione = (String) ComboTipoIrr.getSelectedItem();
-//				String tipoSemina = FieldTipoSemina.getText();
-				
 				String tipoIrrigazione = "";
 			    String tipoSemina = "";
 			    
@@ -252,8 +247,6 @@ public class Attivita extends JFrame {
 			    }
 				
 				
-				
-				
 				//controlli fields gui 
 				if (dataInizioA.isEmpty() || dataFineA.isEmpty()) {
 				    JOptionPane.showMessageDialog(Attivita.this, "COMPILA TUTTI I CAMPI !!", "Errore", JOptionPane.ERROR_MESSAGE);
@@ -265,10 +258,6 @@ public class Attivita extends JFrame {
 				    return;
 				}
 				
-//				if (ComboTipoIrr.getSelectedItem().equals("-- Seleziona --")) {
-//				    JOptionPane.showMessageDialog(Attivita.this, "Seleziona un tipo di irrigazione valido!", "Errore", JOptionPane.ERROR_MESSAGE);
-//				    return;
-//				}
 				
 				try {
 					// Converte le date dell'attività
@@ -290,14 +279,16 @@ public class Attivita extends JFrame {
 		            }
 		            
 		            if (dataInseritaFA.isBefore(dataInseritaIA)) { //data fine attività < data inizio attività
-		                JOptionPane.showMessageDialog(Attivita.this, "La data non può essere minore della data di inizio!");
+		                JOptionPane.showMessageDialog(Attivita.this, 
+		                							  "La data non può essere minore della data di inizio!");
 		                FieldDataFA.setBackground(Color.RED);
 		                
 		                return;
 		            }
 		            
 		            if (dataInseritaIA.isAfter(dataInseritaFA)) { //data inizio attività > data fine attività
-		                JOptionPane.showMessageDialog(Attivita.this, "La data non può essere maggiore della data di fine!");
+		                JOptionPane.showMessageDialog(Attivita.this, 
+		                							 "La data non può essere maggiore della data di fine!");
 		                FieldDataIA.setBackground(Color.RED);
 		                
 		                return;
@@ -307,14 +298,18 @@ public class Attivita extends JFrame {
                     LocalDate dataInizioProgetto = LocalDate.parse(dataInizioP, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
                     if (dataInseritaIA.isBefore(dataInizioProgetto)) { // Controlla che la data inizio attività non sia precedente alla data di inizio del progetto
-                        JOptionPane.showMessageDialog(Attivita.this, "La data di inizio attività non può essere precedente alla data di inizio del progetto (" + dataInizioP + ")!", "Errore", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(Attivita.this, 
+                        					"La data di inizio attività non può essere precedente alla data di inizio del progetto (" 
+                        					+ dataInizioP + ")!", "Errore", JOptionPane.ERROR_MESSAGE);
                         FieldDataIA.setBackground(Color.RED);
                         return;
                     }
                     
                     LocalDate dataFineProgetto = LocalDate.parse(dataFineP, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                     if (dataInseritaFA.isAfter(dataFineProgetto)) {  // Controlla che la data fine attività non sia successiva alla data di fine del progetto
-                        JOptionPane.showMessageDialog(Attivita.this, "La data di fine attività non può essere successiva alla data di fine del progetto (" + dataFineP + ")!", "Errore", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(Attivita.this, 
+                        						"La data di fine attività non può essere successiva alla data di fine del progetto (" 
+                        						+ dataFineP + ")!", "Errore", JOptionPane.ERROR_MESSAGE);
                         FieldDataFA.setBackground(Color.RED);
                         return;
                     }
@@ -333,40 +328,34 @@ public class Attivita extends JFrame {
 				LocalDate datalocalFA = LocalDate.parse(dataFineA, DateTimeFormatter.ofPattern("dd/MM/yyyy")); //converte il textfield della data fine in tipo data di sql
 				Date dataFA = Date.valueOf(datalocalFA);
 				
-//				DAO dao = new DAO(); // Crea il DAO
-//		        creaProgettoController = new CreaProgettoController(dao); //crea il controller
 
 		        
-				boolean check = creaProgettoController.creaAttivita(attivita, dataIA, dataFA, tipoIrrigazione, tipoSemina, lotto);
-				
-//				if (attivita.equals("Semina") || attivita.equals("Irrigazione")) {
-//                    boolean aggiorna = creaProgettoController.aggiornaTipo(attivita, tipoIrrigazione, tipoSemina);
-//                    if (aggiorna==false) {
-//                        JOptionPane.showMessageDialog(Attivita.this, "Errore durante l'aggiornamento del tipo!", "Errore", JOptionPane.ERROR_MESSAGE);
-//                        return;
-//                    }
-//                   
-//                }
-				
-				if (creaProgettoController.puoAvanzare()) {
-                    ButtonAvanti.setEnabled(true);
-                    ButtonSalva.setEnabled(false);
-                    System.out.println("DEBUG: Bottone Avanti abilitato");
-                } else {
-                	System.out.println("DEBUG: Bottone Avanti non abilitato");
-                }
-				
-			
-				JOptionPane.showMessageDialog(Attivita.this, "Attività creata con successo successo!");
-				
-				ComboAttivita.removeItem(attivita);
-				ComboAttivita.setSelectedIndex(0);
-				FieldDataIA.setText("");
-				FieldDataFA.setText("");
-				
-				FieldDataIA.setBackground(Color.WHITE);
-		        FieldDataFA.setBackground(Color.WHITE);
-				
+				boolean creaAttivita = creaProgettoController.creaAttivita(attivita, dataIA, dataFA, tipoIrrigazione, tipoSemina, lotto);
+
+				if(creaAttivita==true) { //crea l'attività
+				    JOptionPane.showMessageDialog(Attivita.this, "Attività creata con successo!");
+				    if (creaProgettoController.puoAvanzare()==true) {
+				        ButtonAvanti.setEnabled(true);
+				        ButtonSalva.setEnabled(false);
+				        System.out.println("DEBUG: Bottone Avanti abilitato");
+				    } else {
+				        System.out.println("DEBUG: Bottone Avanti non abilitato");
+				    }
+				    
+				    // pulizia campi
+				    ComboAttivita.removeItem(attivita);
+				    ComboAttivita.setSelectedIndex(0);
+				    FieldDataIA.setText("");
+				    FieldDataFA.setText("");
+				    FieldDataIA.setBackground(Color.WHITE);
+				    FieldDataFA.setBackground(Color.WHITE);
+				} else { //se non trova un coltivatore associato al lotto. dà errore
+				    JOptionPane.showMessageDialog(Attivita.this, 
+				        "Devi prima assegnare un coltivatore al lotto!", 
+				        "Errore", 
+				        JOptionPane.ERROR_MESSAGE);
+				}
+			     
         	}
         });
         contentPane.add(ButtonSalva, "cell 9 7,alignx center");
@@ -388,7 +377,7 @@ public class Attivita extends JFrame {
         FieldTipologia = new JTextField();
         FieldTipologia.setColumns(10);
         contentPane.add(FieldTipologia, "cell 0 17,growx");
-        FieldTipologia.setEditable(false);
+        FieldTipologia.setEditable(false); //blocca il textfield
         
         JLabel LabelProfondita = new JLabel("Profondità Semina");
         contentPane.add(LabelProfondita, "cell 0 18");
@@ -415,8 +404,6 @@ public class Attivita extends JFrame {
         if (tipologiaColtura != null && !tipologiaColtura.isEmpty()) {
         	FieldTipologia.setText(tipologiaColtura);
         }
-        
-        
         
         if (dataInizioP != null && !dataInizioP.isEmpty()) {
             FieldDataIP.setText(dataInizioP);

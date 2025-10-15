@@ -179,6 +179,14 @@ public class CreaProgetto extends JFrame {
 				    return; 
 				}
 				
+				if (!tipoColtura.contains(",")) {
+				    JOptionPane.showMessageDialog(CreaProgetto.this, 
+				        "Devi usare la VIRGOLA per separare le colture!\nEsempio: mela, banana, grano", 
+				        "Separatore mancante", JOptionPane.ERROR_MESSAGE);
+				    FieldTipologiaColtura.setBackground(Color.RED);
+				    return;
+				}
+				
 				try {
 		            double stima = Double.parseDouble(stimaRaccolto);
 		            if (stima <= 0) {
@@ -242,7 +250,7 @@ public class CreaProgetto extends JFrame {
 				//aggiunta
 				boolean controllo = creaProgettoController.checkColt(lotto, creaArr);
 				
-				if(controllo== true) {
+				if(controllo==true) {
 					JOptionPane.showMessageDialog(CreaProgetto.this, "\n\nuna tra le colture inserite è gia stata piantata");
 				}else {
 				
@@ -345,7 +353,8 @@ public class CreaProgetto extends JFrame {
         popolaComboLotto();   //Popola la ComboLotto con i lotti del proprietario loggato
 	}
 	
-	private void popolaComboLotto() { 
+	public void popolaComboLotto() { 
+		ComboLotto.removeAllItems();
         String username = ControllerLogin.getUsernameGlobale(); // Usa l'username globale
         List<String> lotti = creaProgettoController.getLottiPerCombo(username);  
         for (String lotto : lotti) { 
@@ -354,6 +363,7 @@ public class CreaProgetto extends JFrame {
         ComboLotto.setSelectedIndex(-1);
     }
 	public String[] dividiPerVirgola(String input) {
+		
 	    String[] parti = input.split(",");
 	    for (int i = 0; i < parti.length; i++) {
 	        parti[i] = parti[i].trim();

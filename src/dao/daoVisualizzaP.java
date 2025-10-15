@@ -17,8 +17,7 @@ public class daoVisualizzaP {
 	//GUI: Visualizza Progetti
 	
 	//popola il text field di giorno inizio, giorno fine e il radio button dello stato dell'attività
-	public String popolaAttivita(String idProgettoStr, String tipoAttivita, JTextField fieldDataIA, JTextField fieldDataFA) {
-	    int idProgetto = Integer.parseInt(idProgettoStr); //converte l'ID del progetto nella combo box in un intero
+	public String popolaAttivita(String titoloProgetto, String tipoAttivita, JTextField fieldDataIA, JTextField fieldDataFA) {
 	    
 	    Connection conn = null;
 	    PreparedStatement stmt = null;
@@ -36,7 +35,7 @@ public class daoVisualizzaP {
 			  		+ "JOIN Lotto l      ON l.id_lotto = pc.id_lotto "
 			  		+ "JOIN Attivita a   ON a.id_lotto = l.id_lotto "
 			  		+ "JOIN Raccolta r   ON r.id_attivita = a.id_attivita "
-			  		+ "WHERE pc.id_progetto = ? "
+			  		+ "WHERE pc.titolo = ? "
 			  		+ "  AND ( "
 			  		+ "       r.giorno_inizio BETWEEN pc.data_inizio AND pc.data_fine "
 			  		+ "    OR r.giorno_fine   BETWEEN pc.data_inizio AND pc.data_fine "
@@ -51,7 +50,7 @@ public class daoVisualizzaP {
 	        	  "JOIN Lotto l       ON l.id_lotto = pc.id_lotto " +
 	        	  "JOIN Attivita a    ON a.id_lotto = l.id_lotto " +
 	        	  "JOIN Irrigazione i ON i.id_attivita = a.id_attivita " +
-	        	  "WHERE pc.id_progetto = ? " +
+	        	  "WHERE pc.titolo = ? " +
 	        	    "AND (  " +
 	        	         "i.giorno_inizio BETWEEN pc.data_inizio AND pc.data_fine " +
 	        	      "OR i.giorno_fine   BETWEEN pc.data_inizio AND pc.data_fine " +
@@ -68,7 +67,7 @@ public class daoVisualizzaP {
 	        			  "JOIN Lotto l      ON l.id_lotto = pc.id_lotto " +
 	        			  "JOIN Attivita a   ON a.id_lotto = l.id_lotto " +
 	        			  "JOIN Semina s     ON s.id_attivita = a.id_attivita " +
-	        			  "WHERE pc.id_progetto = ? " +
+	        			  "WHERE pc.titolo = ? " +
 	        			    "AND ( " +
 	        			         "s.giorno_inizio BETWEEN pc.data_inizio AND pc.data_fine " +
 	        			      "OR s.giorno_fine   BETWEEN pc.data_inizio AND pc.data_fine " +
@@ -81,7 +80,7 @@ public class daoVisualizzaP {
 
 
 	        stmt = conn.prepareStatement(sql);
-	        stmt.setInt(1, idProgetto);  
+	        stmt.setString(1, titoloProgetto);  
 	        risultato = stmt.executeQuery();
 
 	     
@@ -206,7 +205,7 @@ public class daoVisualizzaP {
         try {
             conn = Connessione.getConnection(); 
 
-          String sql = "SELECT pc.ID_Progetto " +
+          String sql = "SELECT pc.titolo " +
         		  "FROM Progetto_Coltivazione pc " +
         		  "JOIN Lotto l ON l.ID_Lotto = pc.ID_Lotto " +
         		  "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
@@ -218,8 +217,8 @@ public class daoVisualizzaP {
             risultato = stmt.executeQuery();
             
             while (risultato.next()) {
-                int idProgetto = risultato.getInt("ID_Progetto");
-                lista.add(String.valueOf(idProgetto));
+                String titoloProgetto = risultato.getString("titolo");
+                lista.add(titoloProgetto);
             }
             
             
@@ -237,7 +236,7 @@ public class daoVisualizzaP {
     }
     
   //controlla se il progetto è completato
-    public boolean isCompletata(String username, String idProgetto) {
+    public boolean isCompletata(String username, String titoloProgetto) {
     	Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet risultato = null;
@@ -249,11 +248,11 @@ public class daoVisualizzaP {
 	                    "FROM Progetto_Coltivazione pc " +
 	                    "JOIN Lotto l ON l.ID_Lotto = pc.ID_Lotto " +
 	                    "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
-	                    "WHERE p.username = ? AND pc.ID_Progetto = ?";
+	                    "WHERE p.username = ? AND pc.titolo = ?";
         
 			 stmt = conn.prepareStatement(sql);   
 			 stmt.setString(1, username);
-			 stmt.setInt(2, Integer.parseInt(idProgetto));
+			 stmt.setString(2, titoloProgetto);
 			 risultato = stmt.executeQuery();
 
     
@@ -277,7 +276,7 @@ public class daoVisualizzaP {
 	
 	
 	//recupera i lotti di un proprietario (utile per popolare ComboLotti)
-		public String getLottiByProprietario(int idProgetto, String codiceFiscaleProprietario) {
+		public String getLottiByProprietario(String titoloProgetto, String codiceFiscaleProprietario) {
 		    Connection conn = null;
 		    PreparedStatement stmt = null;
 		    ResultSet risultato = null;
@@ -290,12 +289,12 @@ public class daoVisualizzaP {
 		        String sql = "SELECT l.ID_Lotto " +
 		                     "FROM Lotto l " +
 		                     "JOIN Progetto_Coltivazione pc ON l.ID_Lotto = pc.ID_Lotto " +  
-		                     "WHERE pc.ID_Progetto = ? " +
+		                     "WHERE pc.titolo = ? " +
 		                     "AND l.Codice_FiscalePr = ?";
 		        
 
 		        stmt = conn.prepareStatement(sql);   
-		        stmt.setInt(1, idProgetto); 
+		        stmt.setString(1, titoloProgetto); 
 		        stmt.setString(2, codiceFiscaleProprietario);
 		        risultato = stmt.executeQuery();
 
@@ -316,18 +315,17 @@ public class daoVisualizzaP {
 	
 		
 	//popola la combobox del progetto, il text field di data inizio, data fine, stima raccolto e raccolto effettivo  
-	public void popolaDatiProgetto(String idProgettoStr, JTextField fieldStima, JTextField fieldDataIP, JTextField fieldDataFP) {
-			int idProgetto = Integer.parseInt(idProgettoStr); //converte l'ID del progetto nella combo box in un intero
+	public void popolaDatiProgetto(String titoloProgetto, JTextField fieldStima, JTextField fieldDataIP, JTextField fieldDataFP) {
 			Connection conn = null;
 			PreparedStatement stmt = null;
 			ResultSet risultato = null;
 			
 			try {
 			conn = Connessione.getConnection(); 
-			String sql = "SELECT stima_raccolto, data_inizio, data_fine FROM view_raccolto WHERE ID_Progetto = ?"; //recupera tutti i dati del progetto tramite la view
+			String sql = "SELECT stima_raccolto, data_inizio, data_fine FROM view_raccolto WHERE titolo = ?"; //recupera tutti i dati del progetto tramite la view
 			
 			stmt = conn.prepareStatement(sql);   
-			stmt.setInt(1, idProgetto);
+			stmt.setString(1, titoloProgetto);
 			risultato = stmt.executeQuery();
 			
 			if (risultato.next()) {
@@ -376,8 +374,7 @@ public class daoVisualizzaP {
 	
 		
 	//mostra il raccolto prodotto per ogni coltura selezionata
-	public void mostraRaccolto(String idProgettoStr, String idLottoStr, String coltura) {
-		int idProgetto = Integer.parseInt(idProgettoStr);
+	public void mostraRaccolto(String titoloProgetto, String idLottoStr, String coltura) {
 		int idLotto = Integer.parseInt(idLottoStr);
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -385,11 +382,11 @@ public class daoVisualizzaP {
 		
 		try {
 				conn = Connessione.getConnection(); 
-				String sql="SELECT raccoltoprodotto FROM ProprietarioRaccoltoColture WHERE varietà = ? AND id_lotto = ? AND id_progetto = ?";
+				String sql="SELECT raccoltoprodotto FROM ProprietarioRaccoltoColture WHERE varietà = ? AND id_lotto = ? AND titolo = ?";
 				stmt = conn.prepareStatement(sql);   
 				stmt.setString(1, coltura);
 				stmt.setInt(2, idLotto);
-				stmt.setInt(3, idProgetto);
+				stmt.setString(3, titoloProgetto);
 				risultato = stmt.executeQuery();
 			
 			
@@ -407,8 +404,7 @@ public class daoVisualizzaP {
 	
 	
 	//!!NUOVO!! Metodo per liberare un lotto da un progetto di coltivazione e tutti i suoi riferimenti
-	public boolean terminaProgetto(String idProgettoStr, String idLottoStr) {
-		int idProgetto = Integer.parseInt(idProgettoStr);
+	public boolean terminaProgetto(String titoloProgetto, String idLottoStr) {
 		int idLotto = Integer.parseInt(idLottoStr);
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -420,10 +416,10 @@ public class daoVisualizzaP {
 				
 				
 				// segno il progetto come completato con la flag done
-		        String sql1 = "UPDATE Progetto_Coltivazione SET done = true WHERE id_lotto = ? AND id_progetto= ? ";
+		        String sql1 = "UPDATE Progetto_Coltivazione SET done = true WHERE id_lotto = ? AND titolo = ? ";
 		        stmt = conn.prepareStatement(sql1);
 		        stmt.setInt(1, idLotto);
-		        stmt.setInt(2, idProgetto);
+		        stmt.setString(2, titoloProgetto);
 		        rows = stmt.executeUpdate();
 		        stmt.close();
 				
@@ -525,7 +521,7 @@ public class daoVisualizzaP {
 	}	
 	
 	//restituisce le colture presenti nel lotto del progetto di coltivazione in riferimento al proprietario
-	public ArrayList<String> getColtureProprietario(String CF, String progettoId) {
+	public ArrayList<String> getColtureProprietario(String CF, String titoloProgetto) {
 	    ArrayList<String> listaC = new ArrayList<>();
 	    Connection conn = null;
 	    PreparedStatement stmt = null;
@@ -539,11 +535,11 @@ public class daoVisualizzaP {
 	                     "JOIN Progetto_Coltivazione pcol ON pc.ID_Progetto = pcol.ID_Progetto " +
 	                     "JOIN Lotto l ON pcol.ID_Lotto = l.ID_Lotto " +
 	                     "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
-	                     "WHERE p.codice_fiscale = ? AND pcol.ID_Progetto = ?";
+	                     "WHERE p.codice_fiscale = ? AND pcol.titolo = ?";
 	        
 	        stmt = conn.prepareStatement(sql);
 	        stmt.setString(1, CF);
-	        stmt.setInt(2, Integer.parseInt(progettoId));
+	        stmt.setString(2, titoloProgetto);
 	        risultato = stmt.executeQuery();
 	        
 	        while (risultato.next()) {
