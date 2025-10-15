@@ -1,6 +1,5 @@
 package gui;
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -20,7 +19,6 @@ import controller.ControllerGrafico;
 import controller.ControllerLogin;
 import controller.CreaProgettoController;
 import dao.DAO;
-import dao.daoGrafico;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -33,7 +31,6 @@ public class Grafico extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private String username = ControllerLogin.getUsernameGlobale();
 	CreaProgettoController creaProgettoController;
 	ControllerGrafico controllerGrafico;
 	VisualizzaProgetti visualizzaProgetti;
@@ -56,14 +53,11 @@ public class Grafico extends JFrame {
 	    contentPane = new BackgroundPanel(imageUrl);
 	    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    setContentPane(contentPane);
-	    
-	    // Layout: 15 colonne grow e push, 15 righe grow e push
-	    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
-	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
 	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", 
 	    										"[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 	    
+	    // Pulsante freccia indietro
 	    BasicArrowButton ButtonIndietro = new BasicArrowButton(7);
 	    ButtonIndietro.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -81,7 +75,6 @@ public class Grafico extends JFrame {
 	    JLabel LabelLotto = new JLabel("Lotto");
 	    contentPane.add(LabelLotto, "cell 0 1,alignx trailing");
 	    
-	    
 	    ComboLotto.setSelectedIndex(-1);
 	    ComboLotto.setPreferredSize(new Dimension(150, 20));
 	    contentPane.add(ComboLotto, "cell 1 1,growx");
@@ -89,14 +82,13 @@ public class Grafico extends JFrame {
 	    JLabel LabelColtura = new JLabel("Coltura");
 	    contentPane.add(LabelColtura, "cell 0 2,alignx trailing");
 	    
-	    
 	    ComboColtura.setSelectedIndex(-1);
 	    ComboColtura.setPreferredSize(new Dimension(150, 20));
 	    contentPane.add(ComboColtura, "cell 1 2,growx");
 	    
 	    JButton ButtonReport = new JButton("Report grafico");
-	    ButtonReport.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
+	    ButtonReport.addActionListener(new ActionListener() { //controllo che i campi non siano vuoti e inizializzo il grafico
+	    	public void actionPerformed(ActionEvent e) { 
 	            Object selLotto = ComboLotto.getSelectedItem();
 	            Object selColt  = ComboColtura.getSelectedItem();
 
@@ -114,12 +106,9 @@ public class Grafico extends JFrame {
 	            }
 	            final String varieta = selColt.toString().trim();
 
-	            // Controller (meglio avere un field, ma se vuoi lasciarlo qui va bene)
 	            ControllerGrafico controller = new ControllerGrafico();
 
 	            double[] stats = controller.getStatistiche(idlotto, varieta);
-	            // stats: [0]=num_raccolte, [1]=media, [2]=min, [3]=max
-	            System.out.println("DEBUG stats: " + java.util.Arrays.toString(stats));
 
 	            //se non c'è nessun dato, avvisa
 	            if (stats == null) {
@@ -192,24 +181,22 @@ public class Grafico extends JFrame {
                 popolaComboColtura(selectedLotto);
             }
         });
-	    
-
 	}
 	
-	private void popolaComboLotto() {  //Popolo il combolotto passato come parametro e uso il crea progetto controller
+	private void popolaComboLotto() {  //Popolo il combolotto 
         String username = ControllerLogin.getUsernameGlobale(); // Usa l'username globale
 		List<String> lotti = creaProgettoController.getLottiPerCombo(username);  
         for (String lotto : lotti) { 
-            ComboLotto.addItem(lotto);  // Aggiunge ogni ID_Lotto alla ComboBox (es. "1", "2")
+            ComboLotto.addItem(lotto); 
         }
         ComboLotto.setSelectedIndex(-1);
     }
 	
-	private void popolaComboColtura(String idLotto) { 
+	private void popolaComboColtura(String idLotto) { //Popolo il combocoltura 
         if (idLotto != null) {
             List<String> colture = controllerGrafico.getColturaByLotto(idLotto); 
             for (String coltura : colture) {
-                ComboColtura.addItem(coltura); // Aggiunge ogni coltura alla ComboBox (es. "Pomodoro San Marzano")
+                ComboColtura.addItem(coltura); 
             }
         }
         ComboColtura.setSelectedIndex(-1);

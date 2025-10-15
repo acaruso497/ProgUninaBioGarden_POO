@@ -2,15 +2,11 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,12 +16,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 
 import dao.DAO;
-import dao.daoCreaP;
-import database.Connessione;
 import controller.ControllerLogin;
 import controller.CreaProgettoController;
 import net.miginfocom.swing.MigLayout;
-import utils.ControlloData;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -37,9 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
 
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-@SuppressWarnings("unused")
+
 
 public class CreaProgetto extends JFrame {
 
@@ -67,11 +58,9 @@ public class CreaProgetto extends JFrame {
 	    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    setContentPane(contentPane);
 
-	    // Layout: 15 colonne grow e push, 15 righe grow e push
-	    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
-	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][][][grow][][][][grow][grow][][grow][grow][grow][][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][][grow][][grow][][grow][grow][grow][grow][grow][grow][grow][grow]"));	    
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][][][grow][][][][grow][grow][][grow][grow][grow][][grow][grow][grow][grow][grow][grow][grow]", 
+	    									"[grow][grow][grow][grow][][grow][][grow][][grow][grow][grow][grow][grow][grow][grow][grow]"));	    
 	    JLabel LabelProgetto = new JLabel("Crea Il Tuo Progetto");
 	    LabelProgetto.setFont(new Font("Tahoma", Font.BOLD, 17));
 	    contentPane.add(LabelProgetto, "cell 0 0");
@@ -158,7 +147,7 @@ public class CreaProgetto extends JFrame {
 	    
 	    JButton ButtonAvanti = new JButton("Avanti");
 	    contentPane.add(ButtonAvanti, "cell 4 15");
-	    ButtonAvanti.setEnabled(false); //inizialmente bloccato
+	    ButtonAvanti.setEnabled(false); 
 	    
 	    JButton ButtonSalva = new JButton("Salva");
 	    contentPane.add(ButtonSalva, "cell 1 15,alignx center");
@@ -166,23 +155,23 @@ public class CreaProgetto extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				String titolo = FieldTitolo.getText();
 				String tipoColtura = FieldTipologiaColtura.getText();
-				
 				String lotto = (String) ComboLotto.getSelectedItem();
 				String stimaRaccolto = FieldStimaRaccolto.getText();
 				String dataInizioP = FieldDataIP.getText();
 				String dataFineP = FieldDataFP.getText();
 				String descrizione = textArea.getText();
 				
-				//controlli fields gui 
+				// ---CONTROLLI SUI FIELDS---
 				if (titolo.isEmpty() || lotto == null || stimaRaccolto.isEmpty() || tipoColtura.isEmpty() ||dataInizioP.isEmpty() ||  dataFineP.isEmpty() || descrizione.isEmpty()) {
-				    JOptionPane.showMessageDialog(CreaProgetto.this, "COMPILA TUTTI I CAMPI !!", "Errore", JOptionPane.ERROR_MESSAGE);
+				    JOptionPane.showMessageDialog(CreaProgetto.this, 
+				    							  "COMPILA TUTTI I CAMPI !!", "Errore", JOptionPane.ERROR_MESSAGE);
 				    return; 
 				}
 				
-				if (!tipoColtura.contains(",")) {
+				if (!tipoColtura.contains(",")) { //controllo che il separatore sia una virgola
 				    JOptionPane.showMessageDialog(CreaProgetto.this, 
-				        "Devi usare la VIRGOLA per separare le colture!\nEsempio: mela, banana, grano", 
-				        "Separatore mancante", JOptionPane.ERROR_MESSAGE);
+											      "Devi usare la VIRGOLA per separare le colture!\nEsempio: mela, banana, grano", 
+											       "Separatore mancante", JOptionPane.ERROR_MESSAGE);
 				    FieldTipologiaColtura.setBackground(Color.RED);
 				    return;
 				}
@@ -190,17 +179,19 @@ public class CreaProgetto extends JFrame {
 				try {
 		            double stima = Double.parseDouble(stimaRaccolto);
 		            if (stima <= 0) {
-		                JOptionPane.showMessageDialog(CreaProgetto.this, "La stima raccolto deve essere maggiore di zero!", "Errore", JOptionPane.ERROR_MESSAGE);
+		                JOptionPane.showMessageDialog(CreaProgetto.this, 
+		                							 "La stima raccolto deve essere maggiore di zero!", "Errore", JOptionPane.ERROR_MESSAGE);
 		                FieldStimaRaccolto.setBackground(Color.RED);
 		                return;
 		            }
-		        } catch (NumberFormatException ex) {
-		            JOptionPane.showMessageDialog(CreaProgetto.this, "La stima raccolto deve essere un numero valido! Es: 100 o 50.5", "Errore", JOptionPane.ERROR_MESSAGE);
+		        } catch (NumberFormatException ex) { //controlla che la stima del raccolto è un numero
+		            JOptionPane.showMessageDialog(CreaProgetto.this, 
+		            							  "La stima raccolto deve essere un numero valido! Es: 100 o 50.5", "Errore", JOptionPane.ERROR_MESSAGE);
 		            FieldStimaRaccolto.setBackground(Color.RED);
 		            return;
 		        }
 				
-				try {
+				try { 					// Converte le date dell'attività ed effettua controlli
 					LocalDate dataInseritaIP = LocalDate.parse(dataInizioP, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		            if (dataInseritaIP.isBefore(LocalDate.now())) { //data inizio progetto < di oggi
 		                JOptionPane.showMessageDialog(CreaProgetto.this, "La data non può essere minore di oggi!");
@@ -231,7 +222,7 @@ public class CreaProgetto extends JFrame {
 		                return;
 		            }
 					
-		        } catch (DateTimeParseException ex) {
+		        } catch (DateTimeParseException ex) { 	// controlla il formato
 		            JOptionPane.showMessageDialog(CreaProgetto.this, "Inserisci una data valida con formato: 'GG/MM/AAAA'");
 		            return;
 					
@@ -240,21 +231,22 @@ public class CreaProgetto extends JFrame {
 				DAO dao = new DAO(); // Crea il DAO
 		        creaProgettoController = new CreaProgettoController(dao); // Crea il controller
 		        
-				String [] creaArr=dividiPerVirgola(FieldTipologiaColtura.getText());
+				String [] creaArr=creaProgettoController.dividiPerVirgola(FieldTipologiaColtura.getText()); // divide le colture dalle virgole per poterle salvare nel database
 				
 	            LocalDate datalocalIP = LocalDate.parse(dataInizioP, DateTimeFormatter.ofPattern("dd/MM/yyyy")); //converte il textfield della data inizio in tipo data di sql
 				Date dataIP = Date.valueOf(datalocalIP);
 				
 				LocalDate datalocalFP = LocalDate.parse(dataFineP, DateTimeFormatter.ofPattern("dd/MM/yyyy")); //converte il textfield della data fine in tipo data di sql
 				Date dataFP = Date.valueOf(datalocalFP);
-				//aggiunta
-				boolean controllo = creaProgettoController.checkColt(lotto, creaArr);
+				
+				boolean controllo = creaProgettoController.checkColt(lotto, creaArr); //flag per controllare se le colture sono state piantate nel lotto
 				
 				if(controllo==true) {
-					JOptionPane.showMessageDialog(CreaProgetto.this, "\n\nuna tra le colture inserite è gia stata piantata");
+					JOptionPane.showMessageDialog(CreaProgetto.this, 
+												 "\n\nuna tra le colture inserite è gia stata piantata");
 				}else {
 				
-				//vado a controllare se esiste il progetto è completato nel lotto
+				//vado a controllare se il progetto è completato nel lotto
 				boolean progettoCompletato = creaProgettoController.controlloProgettoChiuso(lotto);
 					
 			    //vado a controllare se esiste già un progetto in quel lotto
@@ -262,11 +254,12 @@ public class CreaProgetto extends JFrame {
 				
 				if (progettoCompletato==false) { //se il progetto non è segnato come completato, blocca la creazione
 			        JOptionPane.showMessageDialog(CreaProgetto.this, 
-			            "Questo lotto ha un progetto IN CORSO. Devi prima completare il progetto prima di crearne un altro!", 
-			            "Errore", JOptionPane.ERROR_MESSAGE);
-			    } else {
-					if (creaProgetto == true) { //se c'è un progetto segnato come completato, il lotto è libero per nuovi progetti
-						JOptionPane.showMessageDialog(CreaProgetto.this, "Progetto creato con successo!");
+									            "Questo lotto ha un progetto IN CORSO. Devi prima completare il progetto prima di crearne un altro!", 
+									            "Errore", JOptionPane.ERROR_MESSAGE);
+			    } else { 	//se c'è un progetto segnato come completato, il lotto è libero per nuovi progetti
+					if (creaProgetto == true) { 
+						JOptionPane.showMessageDialog(CreaProgetto.this, 
+													  "Progetto creato con successo!");
 					    ButtonAvanti.setEnabled(true);
 					    ButtonSalva.setEnabled(false);
 					}
@@ -278,59 +271,58 @@ public class CreaProgetto extends JFrame {
 		});
 	    
 	    
-	    ButtonAvanti.addActionListener(new ActionListener() {
-	    	//Prima di passare alla prossima GUI, effettua dei controlli
+	    ButtonAvanti.addActionListener(new ActionListener() { 	//Prima di passare alla prossima GUI, effettua dei controlli
 	    	public void actionPerformed(ActionEvent e) {
 	            String titolo = FieldTitolo.getText();
 	            String lotto = (String) ComboLotto.getSelectedItem();
 	            String stimaRaccolto = FieldStimaRaccolto.getText();
 	            String tipoColtura = FieldTipologiaColtura.getText();
-	            
 	            String dataInizioP = FieldDataIP.getText();
 	            String dataFineP = FieldDataFP.getText();
 	            String descrizione = textArea.getText();
 
-	            // controlla i fields gui
+	            // ---CONTROLLI SUI FIELDS---
 	            if (titolo.isEmpty() || lotto == null || stimaRaccolto.isEmpty() || dataInizioP.isEmpty() || dataFineP.isEmpty() || descrizione.isEmpty()) {
-	                JOptionPane.showMessageDialog(CreaProgetto.this, "COMPILA TUTTI I CAMPI PRIMA DI PROCEDERE!", "Errore", JOptionPane.ERROR_MESSAGE);
+	                JOptionPane.showMessageDialog(CreaProgetto.this, 
+	                							  "COMPILA TUTTI I CAMPI PRIMA DI PROCEDERE!", "Errore", JOptionPane.ERROR_MESSAGE);
 	                return;
 	            }
 	            
 	            
-	            try {
-	            	// Converte le date del progetto
+	            try { 	// Converte le date dell'attività ed effettua controlli
 					LocalDate dataInseritaIP = LocalDate.parse(dataInizioP, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		            if (dataInseritaIP.isBefore(LocalDate.now())) { //data inizio progetto < di oggi
-		                JOptionPane.showMessageDialog(CreaProgetto.this, "La data non può essere minore di oggi!");
+		                JOptionPane.showMessageDialog(CreaProgetto.this, 
+		                							  "La data non può essere minore di oggi!");
 		                FieldDataIP.setBackground(Color.RED);
-		                
 		                return;
 		            }
 		            
 		            LocalDate dataInseritaFP = LocalDate.parse(dataFineP, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		            if (dataInseritaFP.isBefore(LocalDate.now())) { //data fine progetto < di oggi
-		                JOptionPane.showMessageDialog(CreaProgetto.this, "La data non può essere minore di oggi!");
+		                JOptionPane.showMessageDialog(CreaProgetto.this, 
+		                							  "La data non può essere minore di oggi!");
 		                FieldDataFP.setBackground(Color.RED);
-		                
 		                return;
 		            }
 		            
 		            if (dataInseritaFP.isBefore(dataInseritaIP)) { //data fine progetto < data inizio progetto
-		                JOptionPane.showMessageDialog(CreaProgetto.this, "La data non può essere minore della data di inizio!");
+		                JOptionPane.showMessageDialog(CreaProgetto.this, 
+		                							  "La data non può essere minore della data di inizio!");
 		                FieldDataFP.setBackground(Color.RED);
-		                
 		                return;
 		            }
 		            
 		            if (dataInseritaIP.isAfter(dataInseritaFP)) { //data inizio progetto > data inizio progetto
-		                JOptionPane.showMessageDialog(CreaProgetto.this, "La data non può essere maggiore della data di fine!");
+		                JOptionPane.showMessageDialog(CreaProgetto.this, 
+		                							  "La data non può essere maggiore della data di fine!");
 		                FieldDataIP.setBackground(Color.RED);
-		                
 		                return;
 		            }
 					
-		        } catch (DateTimeParseException ex) {
-		            JOptionPane.showMessageDialog(CreaProgetto.this, "Inserisci una data valida con formato: 'GG/MM/AAAA'");
+		        } catch (DateTimeParseException ex) { 	// controlla il formato
+		            JOptionPane.showMessageDialog(CreaProgetto.this, 
+		            		                      "Inserisci una data valida con formato: 'GG/MM/AAAA'");
 		            return;
 					
 				}
@@ -340,9 +332,6 @@ public class CreaProgetto extends JFrame {
 
 	            CreaProgetto.this.setVisible(false);
 	            attivita.setVisible(true);
-	    		
-	    		
-	    	
 	    	}
 	    });
 	    
@@ -350,28 +339,18 @@ public class CreaProgetto extends JFrame {
 	    DAO dao = new DAO(); // Crea il DAO
         creaProgettoController = new CreaProgettoController(dao); // Crea il controller
         
-        popolaComboLotto();   //Popola la ComboLotto con i lotti del proprietario loggato
+        popolaComboLotto();   
 	}
 	
-	public void popolaComboLotto() { 
+	public void popolaComboLotto() {  	//Popola la ComboLotto con i lotti del proprietario loggato
 		ComboLotto.removeAllItems();
-        String username = ControllerLogin.getUsernameGlobale(); // Usa l'username globale
+        String username = ControllerLogin.getUsernameGlobale(); 	// Usa l'username globale
         List<String> lotti = creaProgettoController.getLottiPerCombo(username);  
         for (String lotto : lotti) { 
             ComboLotto.addItem(lotto);  // Aggiunge ogni ID_Lotto alla ComboBox (es. "1", "2")
         }
         ComboLotto.setSelectedIndex(-1);
     }
-	public String[] dividiPerVirgola(String input) {
-		
-	    String[] parti = input.split(",");
-	    for (int i = 0; i < parti.length; i++) {
-	        parti[i] = parti[i].trim();
-	    }
-	    System.out.println(Arrays.toString(parti));
-	    return parti;
-	    }
-	
 
 }
 	

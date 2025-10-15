@@ -11,7 +11,7 @@ public static String usernameGlobale; //variabile globale, in modo che l'usernam
 	
 	public ControllerLogin() {}
 
-
+	//effettua l'autenticazione dell'utente
     public boolean[] login(String username, String password) {
     	usernameGlobale = username; 
     	
@@ -26,15 +26,17 @@ public static String usernameGlobale; //variabile globale, in modo che l'usernam
 
         lista[0] = true;                  // campi ok
         
-        lista[1] = DAO.authP(username, password);//proprietario
+        //riconosce il tipo di utente
+        lista[1] = DAO.authP(username, password);
         if (lista[1]== false) {
-            lista[2] = DAO.authC(username, password);//coltivatore
+            lista[2] = DAO.authC(username, password);
         }
         return lista;
     }
     
+    //controlli generici
     public void LoginResult(JFrame loginFrame, boolean[] check) {
-        if (check[0]== false) {
+        if (check[0]==false) {
             JOptionPane.showMessageDialog(loginFrame, "\n USERNAME E/O PASSWORD \n RISULTANO VUOTI O NULLI");
         } else if (check[0] && check[1] && !check[2]) {
             loginFrame.setVisible(false);
@@ -52,17 +54,17 @@ public static String usernameGlobale; //variabile globale, in modo che l'usernam
     	
     }
 
-    
+    //Restituisce l'username della persona loggata
 	public static String getUsernameGlobale() {
 		return usernameGlobale;
 	}
 
-
+	//Imposta l'username della persona loggata
 	public static void setUsernameGlobale(String usernameGlobale) {
 		ControllerLogin.usernameGlobale = usernameGlobale;
 	}
 	
-	 //Restituisce il Codice Fiscale del proprietario loggato
+	//Restituisce il Codice Fiscale del proprietario loggato
     public static String getCodiceFiscaleByUsername(String username) {
     	return DAO.getCodiceFiscaleByUsername(username);
     }

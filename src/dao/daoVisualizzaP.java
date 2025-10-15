@@ -14,11 +14,9 @@ import javax.swing.JTextField;
 import database.Connessione;
 
 public class daoVisualizzaP {
-	//GUI: Visualizza Progetti
 	
 	//popola il text field di giorno inizio, giorno fine e il radio button dello stato dell'attività
 	public String popolaAttivita(String titoloProgetto, String tipoAttivita, JTextField fieldDataIA, JTextField fieldDataFA) {
-	    
 	    Connection conn = null;
 	    PreparedStatement stmt = null;
 	    ResultSet risultato = null;
@@ -29,7 +27,6 @@ public class daoVisualizzaP {
 	      
 	        //per ogni attività, verifica se il giorno inizio e fine sono comprese tra la data inizio e fine del progetto di coltivazione
 	        if ("Raccolta".equals(tipoAttivita)) {
-
 			sql = "SELECT r.id_attivita, r.stato, r.giorno_inizio, r.giorno_fine "
 			  		+ "FROM Progetto_Coltivazione pc "
 			  		+ "JOIN Lotto l      ON l.id_lotto = pc.id_lotto "
@@ -58,9 +55,7 @@ public class daoVisualizzaP {
 	        	    ") " +
 	        	  "ORDER BY i.giorno_inizio DESC, i.giorno_fine DESC " +
 	        	  "LIMIT 1 ";
-	        	  
-	        	  		 
-	                    
+	        	     
 	          } else if ("Semina".equals(tipoAttivita)) {
 	        	  sql = "SELECT s.id_attivita, s.stato, s.giorno_inizio, s.giorno_fine " +
 	        			  "FROM Progetto_Coltivazione pc " +
@@ -78,12 +73,10 @@ public class daoVisualizzaP {
 	        	  
 	          }
 
-
 	        stmt = conn.prepareStatement(sql);
 	        stmt.setString(1, titoloProgetto);  
 	        risultato = stmt.executeQuery();
 
-	     
 	        if (risultato.next()) {
 	        	//formatta le date del text field in date sql
 	        	java.sql.Date sqlDataInizio = risultato.getDate("giorno_inizio");
@@ -109,7 +102,6 @@ public class daoVisualizzaP {
 	        else {
 	            return null; 
 	        }
-	        
 	        
 	    } catch (SQLException ex) {
 	    	ex.printStackTrace();
@@ -145,6 +137,7 @@ public class daoVisualizzaP {
 	                   "WHERE a.id_lotto = ? " +
 	                   "ORDER BY r.giorno_inizio DESC, r.giorno_fine DESC " +
 	                   "LIMIT 1";
+	            
 	        } else if ("Irrigazione".equals(tipoAttivita)) {
 	            sql1 = "SELECT i.id_attivita " +
 	                   "FROM Irrigazione i " +
@@ -152,6 +145,7 @@ public class daoVisualizzaP {
 	                   "WHERE a.id_lotto = ? " +
 	                   "ORDER BY i.giorno_inizio DESC, i.giorno_fine DESC " +
 	                   "LIMIT 1";
+	            
 	        } else if ("Semina".equals(tipoAttivita)) {
 	            sql1 = "SELECT s.id_attivita " +
 	                   "FROM Semina s " +
@@ -167,8 +161,7 @@ public class daoVisualizzaP {
 	        
 	        if (risultato.next()) {
 	            idAttivita = risultato.getInt("id_attivita");
-	        } else {
-	            // Nessuna attività trovata per questo lotto e tipo
+	        } else {  // Nessuna attività trovata per questo lotto e tipo
 	            return false;
 	        }
 	        risultato.close();
@@ -193,8 +186,7 @@ public class daoVisualizzaP {
 	    }
 	}
 	
-	
-	
+
 	//seleziono tutti i progetti del proprietario dato il suo username (utile per ComboProgetto)
     public List<String> getProgettiByProprietario(String username) {
         List<String> lista = new ArrayList<>();
@@ -205,12 +197,12 @@ public class daoVisualizzaP {
         try {
             conn = Connessione.getConnection(); 
 
-          String sql = "SELECT pc.titolo " +
-        		  "FROM Progetto_Coltivazione pc " +
-        		  "JOIN Lotto l ON l.ID_Lotto = pc.ID_Lotto " +
-        		  "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
-        		  "WHERE p.username = ? " +
-        		  "ORDER BY pc.ID_Progetto ";
+	        String sql = "SELECT pc.titolo " +
+	        		  "FROM Progetto_Coltivazione pc " +
+	        		  "JOIN Lotto l ON l.ID_Lotto = pc.ID_Lotto " +
+	        		  "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+	        		  "WHERE p.username = ? " +
+	        		  "ORDER BY pc.ID_Progetto ";
             
             stmt = conn.prepareStatement(sql);   
             stmt.setString(1, username);
@@ -219,11 +211,7 @@ public class daoVisualizzaP {
             while (risultato.next()) {
                 String titoloProgetto = risultato.getString("titolo");
                 lista.add(titoloProgetto);
-            }
-            
-            
-            
-
+            }  
         } catch (SQLException ex) {
         	ex.printStackTrace();
         } finally {
@@ -231,7 +219,6 @@ public class daoVisualizzaP {
             try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
             try { if (conn != null) conn.close(); } catch (Exception ignored) {}
         }
-
         return lista;
     }
     
@@ -255,14 +242,10 @@ public class daoVisualizzaP {
 			 stmt.setString(2, titoloProgetto);
 			 risultato = stmt.executeQuery();
 
-    
 			 if (risultato.next()) {
 				 return risultato.getBoolean("done");
 		     }
-    
 		    	return false;
-    	
-    	
     } catch (SQLException ex) {
     	ex.printStackTrace();
     	return false;
@@ -273,8 +256,7 @@ public class daoVisualizzaP {
     }
  }   
     
-	
-	
+
 	//recupera i lotti di un proprietario (utile per popolare ComboLotti)
 		public String getLottiByProprietario(String titoloProgetto, String codiceFiscaleProprietario) {
 		    Connection conn = null;
@@ -284,15 +266,12 @@ public class daoVisualizzaP {
 
 		    try {
 		        conn = Connessione.getConnection(); 
-	        
-		        
 		        String sql = "SELECT l.ID_Lotto " +
 		                     "FROM Lotto l " +
 		                     "JOIN Progetto_Coltivazione pc ON l.ID_Lotto = pc.ID_Lotto " +  
 		                     "WHERE pc.titolo = ? " +
 		                     "AND l.Codice_FiscalePr = ?";
-		        
-
+		     
 		        stmt = conn.prepareStatement(sql);   
 		        stmt.setString(1, titoloProgetto); 
 		        stmt.setString(2, codiceFiscaleProprietario);
@@ -309,12 +288,11 @@ public class daoVisualizzaP {
 		        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
 		        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
 		    }
-
 		    return idLotto;
 		}
 	
 		
-	//popola la combobox del progetto, il text field di data inizio, data fine, stima raccolto e raccolto effettivo  
+	//popola la combobox del progetto, il text field di data inizio, data fine, stima raccolto
 	public void popolaDatiProgetto(String titoloProgetto, JTextField fieldStima, JTextField fieldDataIP, JTextField fieldDataFP) {
 			Connection conn = null;
 			PreparedStatement stmt = null;
@@ -322,7 +300,8 @@ public class daoVisualizzaP {
 			
 			try {
 			conn = Connessione.getConnection(); 
-			String sql = "SELECT stima_raccolto, data_inizio, data_fine FROM view_raccolto WHERE titolo = ?"; //recupera tutti i dati del progetto tramite la view
+			//recupera tutti i dati del progetto tramite la view
+			String sql = "SELECT stima_raccolto, data_inizio, data_fine FROM view_raccolto WHERE titolo = ?"; 
 			
 			stmt = conn.prepareStatement(sql);   
 			stmt.setString(1, titoloProgetto);
@@ -356,11 +335,7 @@ public class daoVisualizzaP {
 					} else {
 						fieldDataFP.setText("");
 					} 
-				
-				
 			}
-			
-			
 			} catch (SQLException | NumberFormatException ex) {
 				ex.printStackTrace();
 			} finally {
@@ -371,8 +346,7 @@ public class daoVisualizzaP {
 	}
 	
 	
-	
-		
+
 	//mostra il raccolto prodotto per ogni coltura selezionata
 	public void mostraRaccolto(String titoloProgetto, String idLottoStr, String coltura) {
 		int idLotto = Integer.parseInt(idLottoStr);
@@ -388,9 +362,7 @@ public class daoVisualizzaP {
 				stmt.setInt(2, idLotto);
 				stmt.setString(3, titoloProgetto);
 				risultato = stmt.executeQuery();
-			
-			
-			
+
 		}  catch (SQLException | NumberFormatException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -398,12 +370,11 @@ public class daoVisualizzaP {
 			try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
 			try { if (conn != null) conn.close(); } catch (Exception ignored) {}
 		}
-		
-		
+
 	}
 	
 	
-	//!!NUOVO!! Metodo per liberare un lotto da un progetto di coltivazione e tutti i suoi riferimenti
+	//Libera un lotto da un progetto di coltivazione e tutti i suoi riferimenti
 	public boolean terminaProgetto(String titoloProgetto, String idLottoStr) {
 		int idLotto = Integer.parseInt(idLottoStr);
 		Connection conn = null;
@@ -413,8 +384,7 @@ public class daoVisualizzaP {
 		try {
 				conn = Connessione.getConnection(); 
 				int rows = 0;
-				
-				
+	
 				// segno il progetto come completato con la flag done
 		        String sql1 = "UPDATE Progetto_Coltivazione SET done = true WHERE id_lotto = ? AND titolo = ? ";
 		        stmt = conn.prepareStatement(sql1);
@@ -422,7 +392,6 @@ public class daoVisualizzaP {
 		        stmt.setString(2, titoloProgetto);
 		        rows = stmt.executeUpdate();
 		        stmt.close();
-				
 				
 		        //segno l'attività come completata
 		        String sql2 = "UPDATE Attivita SET stato = 'completata' WHERE id_lotto = ? ";
@@ -468,10 +437,7 @@ public class daoVisualizzaP {
 		            stmt.executeUpdate();
 		            stmt.close();
 		        }
-		        
-				System.out.println("Progetto terminato con successo!"); //DEBUG
 				return true;
-		
 		}  catch (SQLException | NumberFormatException ex) {
 			ex.printStackTrace();
 			return false;
@@ -479,13 +445,11 @@ public class daoVisualizzaP {
 			try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
 			try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
 			try { if (conn != null) conn.close(); } catch (Exception ignored) {}
-		}
-				
+		}		
 	}
 	
 	
-	
-	//restituisce la raccolta del prodotto selezionato nella drop
+	//restituisce la raccolta del prodotto selezionato nella dropdown
 	public String getRaccoltoProdotto(String username, int idLotto) {
 	    String raccolto = "";
 	    Connection conn = null;
@@ -520,7 +484,7 @@ public class daoVisualizzaP {
 	    return raccolto;
 	}	
 	
-	//restituisce le colture presenti nel lotto del progetto di coltivazione in riferimento al proprietario
+	//restituisce le colture presenti nel lotto del progetto di coltivazione in riferimento al proprietario (utile per la dropdown)
 	public ArrayList<String> getColtureProprietario(String CF, String titoloProgetto) {
 	    ArrayList<String> listaC = new ArrayList<>();
 	    Connection conn = null;
@@ -555,9 +519,8 @@ public class daoVisualizzaP {
 	    return listaC;
 	}
 	
-	
   
-//restituisce il raccolto prodotto della coltura	
+//restituisce il raccolto prodotto dalla coltura	
 public String getRaccoltoProdotto(String username, int idLotto, String coltura) {
     String raccolto = "";
     Connection conn = null;
@@ -594,9 +557,5 @@ public String getRaccoltoProdotto(String username, int idLotto, String coltura) 
         try { if (conn != null) conn.close(); } catch (Exception ignored) {}
     }
     return raccolto.isEmpty() ? "nessun dato!!!" : raccolto; // Restituisci "0 kg" se non trovato
-
-	}
 }
-		
-
-//GUI: Visualizza Progetti	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+}

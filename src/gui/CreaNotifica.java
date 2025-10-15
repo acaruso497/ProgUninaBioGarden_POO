@@ -5,7 +5,6 @@ import java.time.format.DateTimeParseException;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.net.URL;
 import java.sql.Date;
 
@@ -23,19 +22,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.plaf.basic.BasicArrowButton;
 import controller.ControllerCreaN;
 import controller.ControllerLogin;
-import dao.DAO;
-//checkData
-import utils.ControlloData;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JComboBox;
-@SuppressWarnings("unused")
+
 public class CreaNotifica extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -58,21 +52,15 @@ public class CreaNotifica extends JFrame {
 		    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		    setContentPane(contentPane);
 
-		    // Layout: 15 colonne grow e push, 15 righe grow e push
-		    
-		    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
-		    
-		    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
+		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", 
+		    										"[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 		    
 		    JLabel LabelNotifica = new JLabel("Crea La Tua Notifica!");
 		    LabelNotifica.setFont(new Font("Tahoma", Font.BOLD, 17));
 		    contentPane.add(LabelNotifica, "cell 0 0");
 		    
 		    JTextArea TxtDescrizione = new JTextArea();
-		    
-		    
 		    
 		    
 		    JLabel LabelData = new JLabel("Data");
@@ -97,7 +85,7 @@ public class CreaNotifica extends JFrame {
 		    contentPane.add(CheckTuttiColtivatori, "cell 1 5");
 		    CheckTuttiColtivatori.setOpaque(false);
 		    CheckTuttiColtivatori.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) { //tiene traccia dello stato del pulsante
 				if(CheckTuttiColtivatori.isSelected()) {
 					FieldUsernameC.setEditable(false);
 					FieldUsernameC.setBackground(Color.LIGHT_GRAY);
@@ -161,35 +149,37 @@ public class CreaNotifica extends JFrame {
 					String titolo = FieldTitolo.getText();
 					String descrizione = TxtDescrizione.getText();
 					
+					// ---CONTROLLI SUI FIELDS---
 					
-					
-					//controlli fields gui 
 					if (usernameC.isEmpty() && tutti == false || titolo.isEmpty() || descrizione.isEmpty()) {
-					    JOptionPane.showMessageDialog(CreaNotifica.this, "COMPILA TUTTI I CAMPI !!", "Errore", JOptionPane.ERROR_MESSAGE);
+					    JOptionPane.showMessageDialog(CreaNotifica.this, "COMPILA TUTTI I CAMPI !!", 
+					    							  "Errore", JOptionPane.ERROR_MESSAGE);
 					    return; 
 					} else if (tutti == false) {
 			            ControllerCreaN CreaN = new ControllerCreaN();
 			            boolean checkUser = CreaN.controllaUsername(usernameC); //flag per controllare l'esistenza dell'username
 			            if (checkUser == false) { //se l'username non è presente nel database, stampa un errore
-			                JOptionPane.showMessageDialog(CreaNotifica.this, "L'username non esiste !!", "Errore", JOptionPane.ERROR_MESSAGE);
+			                JOptionPane.showMessageDialog(CreaNotifica.this, 
+			                							  "L'username non esiste !!", 
+			                							   "Errore", JOptionPane.ERROR_MESSAGE);
 			                return; 
 			            }
 			        }
 					
-					try {
+					try { 				// Converte le date dell'attività ed effettua controlli
 			            LocalDate dataInserita = LocalDate.parse(DataInserita, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 			            if (dataInserita.isBefore(LocalDate.now())) {
-			                JOptionPane.showMessageDialog(CreaNotifica.this, "La data non può essere minore di oggi!");
+			                JOptionPane.showMessageDialog(CreaNotifica.this, 
+			                							  "La data non può essere minore di oggi!");
 			                FieldData.setBackground(Color.RED);
-			                
 			                return;
 			            }
-			        } catch (DateTimeParseException ex) {
-			            JOptionPane.showMessageDialog(CreaNotifica.this, "Inserisci una data valida con formato: 'GG/MM/AAAA'");
+			        } catch (DateTimeParseException ex) { 			// controlla il formato
+			            JOptionPane.showMessageDialog(CreaNotifica.this, 
+			            		                      "Inserisci una data valida con formato: 'GG/MM/AAAA'");
 			            FieldData.setBackground(Color.RED);
 			            return;
 			        }
-					//controlli fields gui 
 					
 					ControllerCreaN CreaN = new ControllerCreaN();
 					LocalDate datalocal = LocalDate.parse(DataInserita, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
@@ -198,12 +188,13 @@ public class CreaNotifica extends JFrame {
 					if (tutti == false) {
 						boolean controlloUsername = CreaN.dividiUsername(usernameP, usernameC, data, titolo, descrizione);
 							if(controlloUsername==true) { //se l'username inserito corrisponde ai coltivatori del proprietario invia la notifica
-								JOptionPane.showMessageDialog(CreaNotifica.this, "Notifica inviata con successo!");
+								JOptionPane.showMessageDialog(CreaNotifica.this, 
+															  "Notifica inviata con successo!");
 							}else {
 								JOptionPane.showMessageDialog(CreaNotifica.this, 
-							            "Uno o più username non appartengono ai tuoi coltivatori!", 
-							            "Errore", 
-							            JOptionPane.ERROR_MESSAGE);
+												             "Uno o più username non appartengono ai tuoi coltivatori!", 
+												             "Errore", 
+												             JOptionPane.ERROR_MESSAGE);
 								FieldUsernameC.setBackground(Color.RED);
 							}
 			            } else {
@@ -211,16 +202,13 @@ public class CreaNotifica extends JFrame {
 						JOptionPane.showMessageDialog(CreaNotifica.this, "Notifica inviata con successo!");
 						
 					}
-					
-					
-			
 			}    
 		    });
 		    
 		    popolaComboColtivatori();
 	}
 	
-	private void popolaComboColtivatori() {
+	private void popolaComboColtivatori() { 	//popola la combobox dei coltivatori per verificare i loro username
 		ControllerCreaN CreaN = new ControllerCreaN();
         ArrayList<String> coltivatori = CreaN.getColtivatoriByProprietario(usernameP);
         for (String coltivatore : coltivatori) {

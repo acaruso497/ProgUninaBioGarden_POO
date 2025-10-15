@@ -1,15 +1,11 @@
 package gui;
 
-import gui.HomePageProprietario;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.net.URL;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -27,8 +23,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.plaf.basic.BasicArrowButton;
-import java.awt.Dimension;
 
 
 public class Attivita extends JFrame {
@@ -47,7 +41,7 @@ public class Attivita extends JFrame {
 	private JTextField FieldTipologia;
 	private JTextField FieldProfondita;
 	private JTextField FieldStimaRaccolto;
-	private JButton ButtonAvanti;
+	private JButton ButtonHomePage;
 	private HomePageProprietario home; 
 	/**
 	 * Create the frame.
@@ -63,11 +57,9 @@ public class Attivita extends JFrame {
 	    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    setContentPane(contentPane);
 
-	    // Layout: 15 colonne grow e push, 15 righe grow e push
-	    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
-	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][][grow][grow][grow][grow]", "[grow][grow][grow][][grow][][grow][grow][][][grow][][][][grow][grow][][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][][grow][grow][grow][grow]", 
+	    										"[grow][grow][grow][][grow][][grow][grow][][][grow][][][][grow][grow][][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    
 	    JLabel LabelTitolo = new JLabel("Titolo del progetto");
@@ -85,29 +77,28 @@ public class Attivita extends JFrame {
 	    FieldTitolo = new JTextField();
 	    contentPane.add(FieldTitolo, "cell 0 0");
 	    FieldTitolo.setColumns(10);
-	    FieldTitolo.setEditable(false); //blocca il textfield
+	    FieldTitolo.setEditable(false); 				//blocca il textfield per impedirne la modifica
 	    
 	    FieldDataIP = new JTextField();
 	    contentPane.add(FieldDataIP, "cell 0 1,alignx right");
 	    FieldDataIP.setColumns(10);
-	    FieldDataIP.setEditable(false); //blocca il textfield
+	    FieldDataIP.setEditable(false); 
 	    
 	    FieldDataFP = new JTextField();
 	    contentPane.add(FieldDataFP, "cell 2 1,alignx right");
 	    FieldDataFP.setColumns(10);
-	    FieldDataFP.setEditable(false); //blocca il textfield
+	    FieldDataFP.setEditable(false); 
 	    
 	    FieldLotto = new JTextField();
 	    contentPane.add(FieldLotto, "cell 2 0");
 	    FieldLotto.setColumns(10);
-	    FieldLotto.setEditable(false); //blocca il textfield
+	    FieldLotto.setEditable(false); 
 	    
 	    JLabel LabelAttivita = new JLabel("Attività");
 	    contentPane.add(LabelAttivita, "flowx,cell 8 1,alignx trailing,aligny bottom");
 	    
 	    
-	    JComboBox<String> ComboAttivita = new JComboBox<>();
-	    //Tipo di attività selezionabile
+	    JComboBox<String> ComboAttivita = new JComboBox<>(); 			//Tipo di attività selezionabile
 		ComboAttivita.setModel(new DefaultComboBoxModel<>(
 	    	    new String[] { "-- Seleziona --",
 	    	    				"Semina", 
@@ -140,14 +131,13 @@ public class Attivita extends JFrame {
 	    
 	    JTextArea TextDescrizione = new JTextArea();
 	    contentPane.add(TextDescrizione, "cell 0 4 3 10,grow");
-	    TextDescrizione.setEditable(false); //blocca il textfield
+	    TextDescrizione.setEditable(false); 
 	    
 	    JLabel LabelTipologiaI = new JLabel("Tipologia Irrigazione");
 	    contentPane.add(LabelTipologiaI, "cell 8 5,alignx trailing");
 	    
-	    JComboBox<String> ComboTipoIrr = new JComboBox<String>();
+	    JComboBox<String> ComboTipoIrr = new JComboBox<String>(); 				//Tipo di irrigazione selezionabile
 	    contentPane.add(ComboTipoIrr, "cell 9 5,growx");
-	    //Tipo di irrigazione selezionabile
 	    ComboTipoIrr.setModel(new DefaultComboBoxModel<>(
 	    	    new String[] { "-- Seleziona --",
 	    	    				"a goccia", 
@@ -161,28 +151,32 @@ public class Attivita extends JFrame {
 	    FieldTipoSemina = new JTextField();
 	    FieldTipoSemina.setColumns(10);
 	    contentPane.add(FieldTipoSemina, "cell 9 6,growx");
-	    FieldTipoSemina.setEnabled(false); //blocca il textfield
+	    FieldTipoSemina.setEnabled(false); 
 	    
 	    
 	    ComboAttivita.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	            String selectedAttivita = (String) ComboAttivita.getSelectedItem();
 	            
+	            // se non viene selezionata l'attività, blocca i field relativi alle attività
 	            if (selectedAttivita == null || selectedAttivita.equals("-- Seleziona --")) {
 	                ComboTipoIrr.setEnabled(false);
 	                FieldTipoSemina.setEnabled(false);
 	                FieldTipoSemina.setEditable(false);
 	                ComboTipoIrr.setSelectedIndex(0);
 	                FieldTipoSemina.setText("");
+	            // se viene selezionata l'attività Irrigazione, attiva la combobox relativa al tipo di irrigazione    
 	            } else if (selectedAttivita.equals("Irrigazione")) {
 	                ComboTipoIrr.setEnabled(true);
 	                FieldTipoSemina.setEnabled(false);
 	                FieldTipoSemina.setText("");
+	             // se viene selezionata l'attività Semina, attiva il textfield relativo al tipo di semina 
 	            } else if (selectedAttivita.equals("Semina")) {
 	                ComboTipoIrr.setEnabled(false);
 	                FieldTipoSemina.setEnabled(true);
 	                FieldTipoSemina.setEditable(true);
 	                ComboTipoIrr.setSelectedIndex(0);
+	             // se viene selezionata l'attività Raccolta, blocca i field relativi alle altre attività
 	            } else if (selectedAttivita.equals("Raccolta")) {
 	                ComboTipoIrr.setEnabled(false);
 	                FieldTipoSemina.setEnabled(false);
@@ -192,33 +186,16 @@ public class Attivita extends JFrame {
 	        }
 	    });
         
-        ButtonAvanti = new JButton("HomePage");
-        ButtonAvanti.setEnabled(false); //inizialmente bloccato
-        ButtonAvanti.addActionListener(new ActionListener() {
+        ButtonHomePage = new JButton("HomePage");
+        ButtonHomePage.setEnabled(false); 
+        ButtonHomePage.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		// Reset dei contatori per il nuovo ciclo di attività
                 if (creaProgettoController != null) {
-                    creaProgettoController.resetContatori();
-                    
-                    //opzione da prendere in considerazione per istanziare solo 3 attivita a progetto , 
-                    //alternativa valida quello commentato qui giu che fa inserire piu di 3 attivita e minimo 3 
-                    
+                    creaProgettoController.resetContatori(); 			// Reset dei contatori per il nuovo ciclo di attività
                     Attivita.this.setVisible(false);
                     home.setVisible(true);
                     
               }
-               /* !!ALTERNATIVA!
-                // Disabilita nuovamente il pulsante Avanti
-                ButtonAvanti.setEnabled(false);
-                
-                // Resetta tutti i campi
-                ComboAttivita.setSelectedIndex(0);
-                FieldDataIA.setText("");
-                FieldDataFA.setText("");
-                ComboTipoIrr.setSelectedIndex(0);
-                ComboTipoIrr.setEnabled(false);
-                //FieldTipoSemina.setText("");
-                //FieldTipoSemina.setEnabled(false);*/
         	}
         });
         
@@ -231,6 +208,8 @@ public class Attivita extends JFrame {
 				String dataFineA = FieldDataFA.getText();
 				String tipoIrrigazione = "";
 			    String tipoSemina = "";
+			    
+			    // ---CONTROLLI SUI FIELDS---
 			    
 			    if (attivita.equals("Irrigazione")) {
 			        tipoIrrigazione = (String) ComboTipoIrr.getSelectedItem();
@@ -246,8 +225,6 @@ public class Attivita extends JFrame {
 			        }
 			    }
 				
-				
-				//controlli fields gui 
 				if (dataInizioA.isEmpty() || dataFineA.isEmpty()) {
 				    JOptionPane.showMessageDialog(Attivita.this, "COMPILA TUTTI I CAMPI !!", "Errore", JOptionPane.ERROR_MESSAGE);
 				    return; 
@@ -259,30 +236,28 @@ public class Attivita extends JFrame {
 				}
 				
 				
-				try {
-					// Converte le date dell'attività
+				try { 				// Converte le date dell'attività ed effettua controlli
+					
 					LocalDate dataInseritaIA = LocalDate.parse(dataInizioA, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		            if (dataInseritaIA.isBefore(LocalDate.now())) { //data inizio attività < oggi
-		                JOptionPane.showMessageDialog(Attivita.this, "La data non può essere minore di oggi!");
+		                JOptionPane.showMessageDialog(Attivita.this, 
+		                							  "La data non può essere minore di oggi!");
 		                FieldDataIA.setBackground(Color.RED);
-		                
 		                return;
 		            }
-		            
 		            
 		            LocalDate dataInseritaFA = LocalDate.parse(dataFineA, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		            if (dataInseritaFA.isBefore(LocalDate.now())) { //data fine attività < oggi
-		                JOptionPane.showMessageDialog(Attivita.this, "La data non può essere minore di oggi!");
+		                JOptionPane.showMessageDialog(Attivita.this, 
+		                							  "La data non può essere minore di oggi!");
 		                FieldDataFA.setBackground(Color.RED);
-		                
 		                return;
 		            }
-		            
+		   
 		            if (dataInseritaFA.isBefore(dataInseritaIA)) { //data fine attività < data inizio attività
 		                JOptionPane.showMessageDialog(Attivita.this, 
 		                							  "La data non può essere minore della data di inizio!");
 		                FieldDataFA.setBackground(Color.RED);
-		                
 		                return;
 		            }
 		            
@@ -290,13 +265,11 @@ public class Attivita extends JFrame {
 		                JOptionPane.showMessageDialog(Attivita.this, 
 		                							 "La data non può essere maggiore della data di fine!");
 		                FieldDataIA.setBackground(Color.RED);
-		                
 		                return;
 		            }
 		            
 		            // Converte le date del progetto
                     LocalDate dataInizioProgetto = LocalDate.parse(dataInizioP, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-
                     if (dataInseritaIA.isBefore(dataInizioProgetto)) { // Controlla che la data inizio attività non sia precedente alla data di inizio del progetto
                         JOptionPane.showMessageDialog(Attivita.this, 
                         					"La data di inizio attività non può essere precedente alla data di inizio del progetto (" 
@@ -316,7 +289,7 @@ public class Attivita extends JFrame {
                     
                     
 					
-		        } catch (DateTimeParseException ex) {
+		        } catch (DateTimeParseException ex) { 		// controlla il formato
 		            JOptionPane.showMessageDialog(Attivita.this, "Inserisci una data valida con formato: 'GG/MM/AAAA'");
 		            return;
 					
@@ -335,12 +308,9 @@ public class Attivita extends JFrame {
 				if(creaAttivita==true) { //crea l'attività
 				    JOptionPane.showMessageDialog(Attivita.this, "Attività creata con successo!");
 				    if (creaProgettoController.puoAvanzare()==true) {
-				        ButtonAvanti.setEnabled(true);
+				        ButtonHomePage.setEnabled(true);
 				        ButtonSalva.setEnabled(false);
-				        System.out.println("DEBUG: Bottone Avanti abilitato");
-				    } else {
-				        System.out.println("DEBUG: Bottone Avanti non abilitato");
-				    }
+				    } 
 				    
 				    // pulizia campi
 				    ComboAttivita.removeItem(attivita);
@@ -349,7 +319,7 @@ public class Attivita extends JFrame {
 				    FieldDataFA.setText("");
 				    FieldDataIA.setBackground(Color.WHITE);
 				    FieldDataFA.setBackground(Color.WHITE);
-				} else { //se non trova un coltivatore associato al lotto. dà errore
+				} else { //se non trova un coltivatore associato al lotto dà errore
 				    JOptionPane.showMessageDialog(Attivita.this, 
 				        "Devi prima assegnare un coltivatore al lotto!", 
 				        "Errore", 
@@ -359,7 +329,7 @@ public class Attivita extends JFrame {
         	}
         });
         contentPane.add(ButtonSalva, "cell 9 7,alignx center");
-        contentPane.add(ButtonAvanti, "cell 9 9,alignx center");
+        contentPane.add(ButtonHomePage, "cell 9 9,alignx center");
 	    
 	    
         
@@ -367,7 +337,7 @@ public class Attivita extends JFrame {
         contentPane.add(LabelStimaRaccolto, "cell 0 14");
         
         FieldStimaRaccolto = new JTextField();
-        FieldStimaRaccolto.setEditable(false); //blocca il textfield
+        FieldStimaRaccolto.setEditable(false); 
         FieldStimaRaccolto.setColumns(10);
         contentPane.add(FieldStimaRaccolto, "cell 0 15,growx");
         
@@ -377,14 +347,14 @@ public class Attivita extends JFrame {
         FieldTipologia = new JTextField();
         FieldTipologia.setColumns(10);
         contentPane.add(FieldTipologia, "cell 0 17,growx");
-        FieldTipologia.setEditable(false); //blocca il textfield
+        FieldTipologia.setEditable(false); 
         
         JLabel LabelProfondita = new JLabel("Profondità Semina");
         contentPane.add(LabelProfondita, "cell 0 18");
         
         FieldProfondita = new JTextField();
         FieldProfondita.setText("10cm (default)");
-        FieldProfondita.setEditable(false); //blocca il textfield
+        FieldProfondita.setEditable(false); 
         FieldProfondita.setColumns(10);
         contentPane.add(FieldProfondita, "cell 0 19,growx");
         

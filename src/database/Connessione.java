@@ -8,14 +8,8 @@ public class Connessione {
 	public static Connection getConnection() throws SQLException {
         String url = "jdbc:postgresql://localhost:5432/ProgettoGardenUnina";
         String user = "postgres";
-        String password = "Admin"; // cambia se serve
+        String password = "Admin"; 
 
         return DriverManager.getConnection(url, user, password);
     }
 }
-
-
-
-
-
-

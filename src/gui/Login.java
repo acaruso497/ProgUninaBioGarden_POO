@@ -15,15 +15,12 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import controller.ControllerLogin;
-import dao.DAO;
-import database.Connessione;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
-@SuppressWarnings("unused")
+
 public class Login extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -33,15 +30,10 @@ public class Login extends JFrame {
 	private JLabel Logo;
 	private JButton ButtonLogin;
 	public static String usernameGlobale;
-	public static String CFProprietario; /* appena ci recuperiamo l'username, 
-	                                      deve partire una select per prendere il codice fiscale del proprietario
-	                                        per recuperare nella GUI VisualizzaProgetti in base al progetto selezionato il lotto corrispondente (1 solo)      */
+	public static String CFProprietario;
 	registraUtente registraUtente = new registraUtente();
 	ControllerLogin cl = new ControllerLogin();
 	private JButton buttonRegistra;
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		
 		EventQueue.invokeLater(new Runnable() {
@@ -55,9 +47,7 @@ public class Login extends JFrame {
 			}
 		});
 	}
-	/**
-	 * Create the frame.
-	 */
+	
 	public Login() {
 		setTitle("Login Schede");
 		 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,22 +58,14 @@ public class Login extends JFrame {
 		    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		    setContentPane(contentPane);
 
-		    // Layout: 15 colonne grow e push, 15 righe grow e push
-		    @SuppressWarnings("unused")
-		    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
-		    @SuppressWarnings("unused")
-		    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
-
 		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]",
-		    		"[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
-		    
+		    									"[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 		    
 		    ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/logo.png"));
 		    Image scaledImage = originalIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
 		    Logo = new JLabel(new ImageIcon(scaledImage));
 		    contentPane.add(Logo, "cell 6 3 2 1,alignx center,gapbottom 20");
 
-		    
 		    JLabel LabelUsername = new JLabel("Username");
 		    contentPane.add(LabelUsername, "cell 6 6,alignx center,aligny center");
 		    
@@ -100,6 +82,7 @@ public class Login extends JFrame {
 		    ButtonLogin = new JButton("Login");
 		    ButtonLogin.setPreferredSize(new Dimension(150, 20));
 		    contentPane.add(ButtonLogin, "cell 6 9 2 1, alignx center");
+		    
 		  //registra utente
 		    buttonRegistra = new JButton("registra utente ");
 		    buttonRegistra.addActionListener(new ActionListener() {
@@ -109,41 +92,18 @@ public class Login extends JFrame {
 		    		
 		    	}
 		    });
-		  //registra utente
+		  
 		    buttonRegistra.setPreferredSize(new Dimension(150, 20));
 		    contentPane.add(buttonRegistra, "cell 8 9");
 		    
 		    ButtonLogin.addActionListener(new ActionListener() {
-			 public void actionPerformed(ActionEvent e) {			
-				
-				
+			public void actionPerformed(ActionEvent e) {			
 				//tramite questa variabile troveremo il codice fiscale da passare al metodo getLottiByProprietario 
 				usernameGlobale = FieldUsername.getText(); 
-				@SuppressWarnings("deprecation")
 				String psw = FieldPassword.getText();
 				CFProprietario = ControllerLogin.getCodiceFiscaleByUsername(usernameGlobale);
-				
-				boolean[] check = cl.login(usernameGlobale, psw);
-				
-//				if (check[0] == false) {// campi non validi
-//					JOptionPane.showMessageDialog(Login.this, "\n USERNAME E/O PASSWORD \n RISULTANO VUOTI O NULLI");}
-//								
-//				else if (check[0]==true && check[1]==true && check[2]==false) {// proprietario homepage
-//					Login.this.setVisible(false);
-//					HomePageProprietario homeP = new HomePageProprietario();
-//					homeP.setVisible(true);
-//				}
-//				else if (check[0]==true && check[1]==false && check[2]==true) {// coltivatore homepage
-//					Login.this.setVisible(false);		
-//					HomePageColtivatore homeC = new HomePageColtivatore();
-//					homeC.setVisible(true);
-//					
-//				}else if (check[0]==true && check[1]==false && check[2]==false) {// nessuno dei due
-//					
-//					JOptionPane.showMessageDialog(Login.this, " Username o Password errati!! ");
-//				}		
+				boolean[] check = cl.login(usernameGlobale, psw);	
 				cl.LoginResult(Login.this, check);
-			
 			}				
 		   }); 
 		    

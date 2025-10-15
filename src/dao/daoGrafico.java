@@ -10,7 +10,6 @@ import java.util.List;
 import database.Connessione;
 
 public class daoGrafico {
-// GUI: Grafico
 	
 	//recupera la varietà della coltura (utile per popolare ComboColtura)
 	public List<String> getColturaByLotto(String idLottoStr) {
@@ -41,35 +40,36 @@ public class daoGrafico {
 			        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
 			        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
 			    }
-
 			    return lista;
 			}
 	
-    // COUNT(*)
+    // COUNT(*) - 
     public long getNumeroRaccolte(int idLotto, String varieta) {
         Number n = queryAggregato("COUNT(*)", idLotto, varieta);
         return n != null ? n.longValue() : 0L;
     }
 
-    // AVG
+    // AVG -
     public double getMediaRaccolto(int idLotto, String varieta) {
     	Number n = queryAggregato("AVG(c.raccoltoprodotto)", idLotto, varieta);
         return n != null ? n.doubleValue() : 0.0;
     }
 
-    // MIN
+    // MIN -
     public double getMinRaccolto(int idLotto, String varieta) {
     	Number n = queryAggregato("MIN(c.raccoltoprodotto)", idLotto, varieta);
         return n != null ? n.doubleValue() : 0.0;
     }
 
-    // MAX
+    // MAX -
     public double getMaxRaccolto(int idLotto, String varieta) {
     	Number n = queryAggregato("MAX(c.raccoltoprodotto)", idLotto, varieta);
         return n != null ? n.doubleValue() : 0.0;
     }
 
-    // ===== Helper per evitare duplicazioni =====
+    // ===== Helper di appoggio =====
+    /* i metodi precedenti mi passano l'espressione sulla quale il metodo seguente effettua la query, in questo modo evito 
+       di scrivere una query complessa per ogni richiesta */
     private Number queryAggregato(String expr, int idLotto, String varieta) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -77,7 +77,6 @@ public class daoGrafico {
         try {
             conn = Connessione.getConnection();
 
-            
             String sql =
             "SELECT " + expr + " AS val " +
             "FROM Coltura AS c " +
@@ -90,7 +89,6 @@ public class daoGrafico {
              "  AND lower(trim(c.\"varietà\")) = lower(trim(?)) " +
              "  AND r.stato IN ('completata')"; 
                    
-
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, idLotto);
             stmt.setString(2, varieta);
@@ -116,4 +114,3 @@ public class daoGrafico {
     }
 	
 }
-//GUI: Grafico

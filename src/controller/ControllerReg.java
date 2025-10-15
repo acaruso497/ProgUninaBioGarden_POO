@@ -1,14 +1,13 @@
 package controller;
 
-import java.util.List;
 import java.util.ArrayList;
 import dao.DAO;
 public class ControllerReg {
-	 public ControllerReg() {}
+	public ControllerReg() {}
 	 
 	DAO dao = new dao.DAO();
 	public boolean[] registra(String nome, String cognome, String username, 
-								String password, String cf, String ruolo, String usernameProprietario) {
+							  String password, String cf, String ruolo, String usernameProprietario) {
         boolean[] result = new boolean[4];
         result[0] = false; // non è proprietario
         result[1] = false; // non è coltivatore
@@ -39,6 +38,7 @@ public class ControllerReg {
         return result;
     }
 
+	//popola la combobox dei proprietari
     public ArrayList<String> popolaComboProprietari() {
         return dao.popolaComboProprietari();
     }

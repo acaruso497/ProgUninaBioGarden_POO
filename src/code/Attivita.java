@@ -18,4 +18,3 @@ public class Attivita {
 		this.stato=stato;
 	}
 }
-// prova di sincronizzazione file github

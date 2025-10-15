@@ -22,26 +22,23 @@ private daoVisualizzaP dao;
     	return dao.aggiornaStato(stato, tipoAttivita, idLottoStr);
     }
     
-    // Popola ComboProgetto con ID progetti del proprietario
+    // Popola ComboProgetto con il titolo del progetto del proprietario
     public List<String> getProgettiByProprietario(String username) {
         return dao.getProgettiByProprietario(username);  
     }
 	
-    
-    // Popola il field del lotto tramite l'id del progetto e codice fiscale del del proprietario
+    // Popola il field del lotto tramite il titolo del progetto e codice fiscale del del proprietario
     public String getLottiByProprietario(String titoloProgetto, String codiceFiscaleProprietario) {
 	  return dao.getLottiByProprietario(titoloProgetto, codiceFiscaleProprietario);
   }
     
-    
     // Setta l'ID del progetto, i campi di data inizio e data fine
     public void popolaDatiProgetto(String titoloProgetto, JTextField fieldStima, 
     	                           JTextField fieldDataIP, JTextField fieldDataFP) {
-    	
         dao.popolaDatiProgetto(titoloProgetto, fieldStima, fieldDataIP, fieldDataFP);
     } 
      
-    // Mostra il raccolto stimato e quello effettivo
+    // Mostra il raccolto stimato
     public void mostraRaccolto (String titoloProgetto, String idLottoStr, String coltura) {
     	dao.mostraRaccolto(titoloProgetto, idLottoStr, coltura);
     }
@@ -49,13 +46,11 @@ private daoVisualizzaP dao;
     // termina il progetto di coltivazione 
     public boolean terminaProgetto(String titoloProgetto, String idLottoStr) {
     	return dao.terminaProgetto(titoloProgetto, idLottoStr);
-    	
     }
     
     //controlla se il progetto è completato
     public boolean isCompletata(String username, String titoloProgetto) {
     	return dao.isCompletata(username, titoloProgetto);
-    	
     }
     
     //restituisce le colture presenti nel lotto del progetto di coltivazione in riferimento al proprietario
@@ -65,7 +60,6 @@ private daoVisualizzaP dao;
     
     //restituisce il raccolto prodotto della coltura
     public String getRaccoltoProdotto(String username, int idLotto, String coltura){
-    	
     	return dao.getRaccoltoProdotto(username, idLotto, coltura);
 	}
     

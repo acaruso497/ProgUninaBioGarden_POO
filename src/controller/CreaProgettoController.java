@@ -3,13 +3,10 @@ package controller;
 import java.sql.Date;
 import java.util.List;
 
-import javax.swing.JTextField;
-
 import dao.DAO;
 import dao.daoCreaP;
 
 public class CreaProgettoController {
-//GUI: Crea Progetto
 	private DAO dao; 
 	private daoCreaP daoCreap;
 	private int countSemina = 0;
@@ -26,17 +23,14 @@ public class CreaProgettoController {
         return dao.getLottiByProprietario(username); 
     }
     
-    //Crea il progetto di coltivazione inserendo i parametri tramite dao !!MODIFICATO!!
+    //Crea il progetto di coltivazione inserendo i parametri tramite dao 
     public boolean creaProgetto(String titolo, String idLottoStr, String descrizione, String stimaRaccoltoStr, 
     							String [] coltureString, Date dataIP, Date dataFP) {
-    	
-	    	
-	    //PASSA AL DAO !!MODIFICATO!!
 	    return daoCreaP.registraProgetto(titolo, idLottoStr, stimaRaccoltoStr, 
-	    		coltureString, descrizione, dataIP, dataFP);
+	    								 coltureString, descrizione, dataIP, dataFP);
     }
     
-    
+    //crea l'attività
     public boolean creaAttivita(String tipoAttivita, Date dataIA, Date dataFA, String tipoIrrigazione, String tipoSemina, String lotto) {
     	boolean risultato = daoCreaP.registraAttivita(tipoAttivita, dataIA, dataFA, tipoIrrigazione, tipoSemina, lotto);
     	
@@ -44,30 +38,25 @@ public class CreaProgettoController {
     	if (risultato==true) {
     		incrementaContatore(tipoAttivita);
     	}else {
-    		System.out.println("Errore nella creazione dell'attività"); //DEBUG
     		return false;
     	}
     	
     	return risultato;
     }
     
-    
+    //incrementa il contatore delle attività
     private void incrementaContatore(String tipoAttivita) {
         if ("Semina".equals(tipoAttivita)) {
             countSemina++;
-            System.out.println("DEBUG: Incrementato countSemina a " + countSemina);
         } else if ("Irrigazione".equals(tipoAttivita)) {
             countIrrigazione++;
-            System.out.println("DEBUG: Incrementato countIrrigazione a " + countIrrigazione);
         } else if ("Raccolta".equals(tipoAttivita)) {
             countRaccolta++;
-            System.out.println("DEBUG: Incrementato countRaccolta a " + countRaccolta);
         }
     }
     
     // Verifica se l'utente ha completato almeno 1 semina, 1 irrigazione e 1 raccolta
     public boolean puoAvanzare() {
-        System.out.println("DEBUG: Controllo puoAvanzare() - Semina: " + countSemina + ", Irrigazione: " + countIrrigazione + ", Raccolta: " + countRaccolta);
         return countSemina >= 1 && countIrrigazione >= 1 && countRaccolta >= 1;
     }
     
@@ -76,16 +65,25 @@ public class CreaProgettoController {
         countSemina = 0;
         countIrrigazione = 0;
         countRaccolta = 0;
-        System.out.println("DEBUG: Contatori resettati - Semina: " + countSemina + ", Irrigazione: " + countIrrigazione + ", Raccolta: " + countRaccolta);
     }
+    
+    //controlla se le colture sono già piantate nel lotto
     public boolean checkColt(String idLotto, String[] coltureArray) {
     	return daoCreaP.checkColtura(idLotto, coltureArray);
     }
     
+    //controlla se il progetto è completato
     public boolean controlloProgettoChiuso(String idLottoStr) {
     	return daoCreap.controlloProgettoChiuso(idLottoStr);
     }
     
-  
+   //divide la coltura dalla virgola e dagli spazi
+    public String[] dividiPerVirgola(String input) { 	
+	    String[] parti = input.split(",");
+	    for (int i = 0; i < parti.length; i++) {
+	        parti[i] = parti[i].trim();
+	    }
+	    return parti;
+    }
     
 }

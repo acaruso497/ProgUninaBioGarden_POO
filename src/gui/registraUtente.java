@@ -1,12 +1,8 @@
 package gui;
 
-import java.awt.EventQueue;
-import java.sql.*;
-
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Dimension;
 import java.net.URL;
 
 import javax.swing.DefaultComboBoxModel;
@@ -15,19 +11,16 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import gui.Login;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
-import java.awt.Button;
 import javax.swing.JComboBox;
 import controller.ControllerReg;
-import java.awt.Scrollbar;
-import java.awt.Font;
-@SuppressWarnings("unused")
+
+
 public class registraUtente extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -62,13 +55,9 @@ public class registraUtente extends JFrame {
 		    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		    setContentPane(contentPane);
 
-		    // Layout: 15 colonne grow e push, 15 righe grow e push
-		    @SuppressWarnings("unused")
-		    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
-		    @SuppressWarnings("unused")
-		    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][][grow][grow][grow][grow][grow][][grow][grow][grow][grow]"));
+		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", 
+		    									"[grow][grow][grow][grow][grow][][grow][grow][grow][grow][grow][][grow][grow][grow][grow]"));
 		    
 		    ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/logo.png"));
 		    Image scaledImage = originalIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
@@ -80,6 +69,7 @@ public class registraUtente extends JFrame {
 		    name.setColumns(10);
 		    contentPane.add(name, "cell 7 2,growx");
 		    
+		    //Pulsante freccia indietro
 		    btnback = new JButton("◀");
 		    btnback.addActionListener(new ActionListener() {
 		    	public void actionPerformed(ActionEvent e) {
@@ -114,12 +104,11 @@ public class registraUtente extends JFrame {
 		    ControllerReg controller = new ControllerReg();
 		    
 		    
-		    comboBox.addActionListener(new ActionListener() {
+		    comboBox.addActionListener(new ActionListener() { 	// Popola ComboProprietari usando il controller
 		        public void actionPerformed(ActionEvent e) {
 		        	String ruoloSelezionato = (String) comboBox.getSelectedItem();
 		            if ("Coltivatore".equals(ruoloSelezionato)) {
 		                ComboProprietari.setEnabled(true); // Abilita la ComboProprietari
-		                // Popola ComboProprietari usando il controller
 		                ArrayList<String> proprietari = controller.popolaComboProprietari(); // Cattura il risultato
 		                ComboProprietari.removeAllItems(); // Pulisci la combo
 		                ComboProprietari.addItem("--Seleziona--");
@@ -129,7 +118,7 @@ public class registraUtente extends JFrame {
 		            }
 		            else {
 		                ComboProprietari.setEnabled(false); // Disabilita se non è Coltivatore
-		                ComboProprietari.removeAllItems(); // Pulisci la combo
+		                ComboProprietari.removeAllItems(); 
 		            }
 		        }
 		    });
@@ -165,8 +154,7 @@ public class registraUtente extends JFrame {
 		    reg = new JButton("salva profilo");
 		    contentPane.add(reg, "cell 7 11,alignx center");	    
 		    
-		    
-		    reg.addActionListener(new ActionListener() {
+		    reg.addActionListener(new ActionListener() { 	//registrazione utente
 		        public void actionPerformed(ActionEvent e) {
 		            Login login = new Login();
 		            String nome = name.getText();
@@ -178,20 +166,24 @@ public class registraUtente extends JFrame {
 		            String confermaPass = new String(passwordField.getPassword());
 		            boolean[] value = new boolean[4];
 		            
+		            // ---CONTROLLI SUI FIELDS---
 		            if ("Coltivatore".equals(RUOLO) && "--Seleziona--".equals(ComboProprietari.getSelectedItem())) {
-		                JOptionPane.showMessageDialog(registraUtente.this, "Selezionare il proprietario con cui si vuole collaborare", "Errore", JOptionPane.ERROR_MESSAGE);
+		                JOptionPane.showMessageDialog(registraUtente.this, 
+		                							  "Selezionare il proprietario con cui si vuole collaborare", "Errore", JOptionPane.ERROR_MESSAGE);
 		                return;
 		            }
 		            
-		            // Validazioni campi
 		            if (!pass.equals(confermaPass)) {
-		                JOptionPane.showMessageDialog(registraUtente.this, "Le password non corrispondono", "Errore", JOptionPane.ERROR_MESSAGE);
+		                JOptionPane.showMessageDialog(registraUtente.this, 
+		                							  "Le password non corrispondono", "Errore", JOptionPane.ERROR_MESSAGE);
 		            } else if (nome.equals(cognome)) {
-		                JOptionPane.showMessageDialog(registraUtente.this, "Nome e cognome devono essere diversi", "Errore", JOptionPane.ERROR_MESSAGE);
+		                JOptionPane.showMessageDialog(registraUtente.this, 
+		                							  "Nome e cognome devono essere diversi", "Errore", JOptionPane.ERROR_MESSAGE);
 		            } else if (nome.isEmpty() || cognome.isEmpty() || cf.isEmpty() || user.isEmpty() || pass.isEmpty() || confermaPass.isEmpty() || RUOLO.equals("-- Seleziona ruolo --")) {
 		                JOptionPane.showMessageDialog(registraUtente.this, "COMPILA TUTTI I CAMPI!!!", "Errore", JOptionPane.ERROR_MESSAGE);
 		            } else if (pass.length() > 8) {
-		                JOptionPane.showMessageDialog(contentPane, "La password deve essere lunga al massimo 8 caratteri.", "Errore", JOptionPane.ERROR_MESSAGE);
+		                JOptionPane.showMessageDialog(contentPane, 
+		                							  "La password deve essere lunga al massimo 8 caratteri.", "Errore", JOptionPane.ERROR_MESSAGE);
 		            } else {
 		                ControllerReg controller = new ControllerReg();
 		                String usernameProprietario = "Coltivatore".equals(RUOLO) ? (String) ComboProprietari.getSelectedItem() : null;
@@ -201,19 +193,23 @@ public class registraUtente extends JFrame {
 		            // Messaggi di avviso stato registrazione
 		            try {
 		                if (value[0] == false && value[1] == false && value[2] == false && value[3] == true) {
-		                    JOptionPane.showMessageDialog(registraUtente.this, "USERNAME ESISTENTE ", "Errore", JOptionPane.ERROR_MESSAGE);
+		                    JOptionPane.showMessageDialog(registraUtente.this, 
+		                    							  "USERNAME ESISTENTE ", "Errore", JOptionPane.ERROR_MESSAGE);
 		                } else if (value[0] == true && value[2] == true) {
-		                    JOptionPane.showMessageDialog(registraUtente.this, "Registrazione proprietario avvenuta con successo", "ESITO POSITIVO", JOptionPane.INFORMATION_MESSAGE);
+		                    JOptionPane.showMessageDialog(registraUtente.this, 
+		                    							  "Registrazione proprietario avvenuta con successo", "ESITO POSITIVO", JOptionPane.INFORMATION_MESSAGE);
 		                    dispose();
 		                    registraUtente.this.setVisible(false);
 		                    login.setVisible(true);
 		                } else if (value[1] == true && value[2] == true) {
-		                    JOptionPane.showMessageDialog(registraUtente.this, "Registrazione coltivatore avvenuta con successo", "ESITO POSITIVO", JOptionPane.INFORMATION_MESSAGE);
+		                    JOptionPane.showMessageDialog(registraUtente.this, 
+		                    							  "Registrazione coltivatore avvenuta con successo", "ESITO POSITIVO", JOptionPane.INFORMATION_MESSAGE);
 		                    dispose();
 		                    registraUtente.this.setVisible(false);
 		                    login.setVisible(true);
 		                } else if (value[2] == false) {
-		                    JOptionPane.showMessageDialog(registraUtente.this, "Registrazione non riuscita", "Errore", JOptionPane.ERROR_MESSAGE);
+		                    JOptionPane.showMessageDialog(registraUtente.this, 
+		                    							  "Registrazione non riuscita", "Errore", JOptionPane.ERROR_MESSAGE);
 		                }
 		            } catch (Exception ex) {
 		                ex.printStackTrace();

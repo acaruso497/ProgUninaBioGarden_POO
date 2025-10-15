@@ -8,7 +8,7 @@ public class ControlloData {
 	
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public static boolean isDataValida(String dataStr) {
+    public static boolean isDataValida(String dataStr) { //prende la data come stringa e controlla che sia nel formato dd/MM/yyyy
         try {
             LocalDate.parse(dataStr, formatter);
             return true;
@@ -17,7 +17,7 @@ public class ControlloData {
         }
     }
     
-    public static boolean isPrimaDataMinore(String dataStr1, String dataStr2) {
+    public static boolean isPrimaDataMinore(String dataStr1, String dataStr2) { //prende due date e controlla che la prima sia minore della seconda
         try {
             LocalDate data1 = LocalDate.parse(dataStr1, formatter);
             LocalDate data2 = LocalDate.parse(dataStr2, formatter);

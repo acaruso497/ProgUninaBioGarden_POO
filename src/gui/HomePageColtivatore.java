@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.List;
 
-//import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -24,15 +23,13 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 
-@SuppressWarnings("unused")
+
 public class HomePageColtivatore extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	//no editable text field
 	private JTextField FieldDataIP;
 	private JTextField FieldDataFP;
 	private JTextField FieldDataIA;
@@ -45,7 +42,6 @@ public class HomePageColtivatore extends JFrame {
     private JTextField tipoSeminaField;
     private JTextField FieldRaccoltoColture;
     private JButton ButtonSalva;
-    //drop down
 	private JComboBox<String> ComboProgetti;	
     private JComboBox<String> ComboAttivita;
     private List<String> tipiAttivita;
@@ -62,18 +58,12 @@ public class HomePageColtivatore extends JFrame {
 	    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    setContentPane(contentPane);
 
-	    // Layout: 15 colonne grow e push, 15 righe grow e push
-	   
-	    String columns = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
-	    
-	    String rows = "push " + " ".repeat(14).replace(" ", "[grow] ") + "push";
 
-	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][][][grow][][][][][][][][grow][grow][grow][grow][grow][grow][grow][][][][]", "[grow][grow][grow][grow][grow][grow][grow][][][][][grow][grow][][][grow][grow][grow][grow][grow][grow][grow]"));
+	    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][][][grow][][][][][][][][grow][grow][grow][grow][grow][grow][grow][][][][]", 
+	    									"[grow][grow][grow][grow][grow][grow][grow][][][][][grow][grow][][][grow][grow][grow][grow][grow][grow][grow]"));
 	    
 	    JLabel LabelBenvenuto = new JLabel("Benvenuto sei un coltivatore!");
 	    contentPane.add(LabelBenvenuto, "cell 0 0");
-	    //prova
-	    //inzio sezione notifiche
 	    
 	    JToggleButton TButtonNotifiche = new JToggleButton("");
 	    contentPane.add(TButtonNotifiche, "cell 23 0,alignx center,aligny center");
@@ -84,27 +74,38 @@ public class HomePageColtivatore extends JFrame {
 	    
 	    ControllerColtivatore ControllerC = new ControllerColtivatore();		//SISTEMA NOTIFICHE
 	    
-	    // inizializza  campi
 	    JTextArea TxtListaNotifiche = new JTextArea();
 	    JScrollPane scrollNotifiche = new JScrollPane(TxtListaNotifiche);
+	    
 	    JLabel LabelEsperienza = new JLabel("Esperienza");
 	    FieldEsperienza = new JTextField();
+	    
 	    JLabel LabelProgetti = new JLabel("Progetti");
+	    
 	    JLabel LabelDataIP = new JLabel("Data Inizio");
+	    
 	    ComboProgetti = new JComboBox<>();
+	    
 	    ComboTipologia = new JComboBox<>();
+	    
 	    JLabel LabelDataFP = new JLabel("Data Fine");
 	    FieldDataFP = new JTextField();
+	    
 	    JLabel LabelStima = new JLabel("Stima raccolto");
 	    FieldStima = new JTextField();
+	    
 	    JLabel LabelAttivita = new JLabel("Attività");
 	    ComboAttivita = new JComboBox<>();
+	    
 	    JLabel LabelDataIA = new JLabel("Data Inizio");
+	    FieldDataIA = new JTextField();
+	    
 	    JLabel LabelDataFA = new JLabel("Data Fine");
 	    FieldDataFA = new JTextField();
-	    FieldDataIA = new JTextField();
+	    
 	    JLabel LabelTipologia = new JLabel("Tipologia Coltura");
 	    FieldDataIP = new JTextField();
+	    
 	    JLabel lblTipoSemina = new JLabel("Tipo Semina");
 	    tipoSeminaField = new JTextField();
 	    
@@ -112,19 +113,19 @@ public class HomePageColtivatore extends JFrame {
 	    
 	    scrollNotifiche.setVisible(false); // Inizialmente nascosto
 	    
-	   
 	    contentPane.add(LabelEsperienza, "cell 7 1,alignx right");
-	    
 	   
 	    FieldEsperienza.setEditable(false);
 	    contentPane.add(FieldEsperienza, "cell 8 1,growx");
 	    FieldEsperienza.setColumns(10);
 	    contentPane.add(scrollNotifiche, "cell 22 1 2 4,grow");
+	    
 	    //popola esperienza
 	    ControllerColtivatore controllerEsperienza = new ControllerColtivatore();
 	    String esperienza = controllerEsperienza.getEsperienzaColtivatore(ControllerLogin.getUsernameGlobale());
 	    FieldEsperienza.setText(esperienza);
-	    //CONTROLLO NOTIFICHE
+	    
+	    //CONTROLLO NOTIFICHE - scelgo l'immagine in base alle notifiche in arrivo 
 	    if(!ControllerC.checknotifiche(ControllerLogin.getUsernameGlobale())) {
 		    ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/notifichevuote.png"));
 		    Image scaledImage = originalIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);	//ridimensionamento immagine
@@ -140,7 +141,6 @@ public class HomePageColtivatore extends JFrame {
 		    TButtonNotifiche.setIcon(scaledIcon);
 	    }
 	    
-	    
 
 	    TButtonNotifiche.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -155,20 +155,15 @@ public class HomePageColtivatore extends JFrame {
 			}
 		});
 	    
-	    //fine sezione notifiche
-	    //prova
 	    
 	    contentPane.add(LabelProgetti, "cell 1 1,alignx trailing");
 	   
 	    contentPane.add(ComboProgetti, "cell 2 1,growx");
 	    dropdownProg();
-	    //data inizio e fine progetto
 	    
 	    contentPane.add(LabelDataIP, "flowx,cell 0 2,alignx right");
 	    
-	    
 	    contentPane.add(LabelDataFP, "flowx,cell 1 2,alignx trailing");
-	    
 	    
 	    FieldDataFP.setEditable(false);
 	    contentPane.add(FieldDataFP, "cell 2 2,growx");
@@ -179,103 +174,78 @@ public class HomePageColtivatore extends JFrame {
 	        aggiornaCampiProgetto();      
 	        popolaAttivita();
 	    });
-	    //data inizio e fine progetto
 	    
 	    contentPane.add(LabelStima, "cell 7 3,alignx right");
 	    
-	   
 	    FieldStima.setEditable(false);
 	    contentPane.add(FieldStima, "flowx,cell 8 3,growx");
 	    FieldStima.setColumns(10);
 	    JLabel kg = new JLabel("KG");
 	    
-	    
 	    contentPane.add(kg, "cell 9 3");
-	    
 	    
 	    contentPane.add(LabelAttivita, "cell 1 4,alignx trailing,aligny baseline");
 	    
-	    //drop down attivita
-	   
 	    contentPane.add(ComboAttivita, "cell 2 4,growx");
 	   
-	    //drop down attivita
-	    
-	    
-	    
 	    contentPane.add(LabelDataIA, "flowx,cell 0 5");
 	    
-	    
 	    contentPane.add(LabelDataFA, "cell 1 5,alignx trailing");
-	    
 	    
 	    FieldDataFA.setEditable(false);
 	    contentPane.add(FieldDataFA, "cell 2 5,growx");
 	    FieldDataFA.setColumns(10);
 	    
-	    
 	    FieldDataIA.setEditable(false);
 	    contentPane.add(FieldDataIA, "cell 0 5");
 	    FieldDataIA.setColumns(10);
 	    
-	    
 	    contentPane.add(LabelTipologia, "cell 7 6,alignx trailing");
-	    
 	    
 	    FieldDataIP.setEditable(false);
 	    contentPane.add(FieldDataIP, "cell 0 2");
 	    FieldDataIP.setColumns(10);
 	    
-	    
 	    contentPane.add(ComboTipologia, "cell 8 6 8 1,growx");
 	    
-	    
 	    contentPane.add(lblTipoSemina, "cell 1 7,alignx trailing");
-	    
 	    
 	    tipoSeminaField.setEditable(false);
 	    tipoSeminaField.setColumns(10);
 	    contentPane.add(tipoSeminaField, "cell 2 7,growx");
 	    JLabel LabelIrrigazione = new JLabel("Irrigazione");
 	    
-	    
 	    contentPane.add(LabelIrrigazione, "cell 7 8,alignx trailing");
 	    FieldIrrigazione = new JTextField();
-	    
-	    
-	    
+	    	    
 	    FieldIrrigazione.setEditable(false);
 	    contentPane.add(FieldIrrigazione, "cell 8 8 6 1,growx");
 	    FieldIrrigazione.setColumns(10);
 	    JLabel lblRaccoltoColture = new JLabel("Raccolto Colture");
-	    
 	    
 	    contentPane.add(lblRaccoltoColture, "cell 7 10,alignx trailing");
 	    FieldRaccoltoColture = new JTextField();
 	    
 	    FieldRaccoltoColture.setColumns(10);
 	    contentPane.add(FieldRaccoltoColture, "flowx,cell 8 10,growx");
-	    FieldRaccoltoColture.setEnabled(false); //blocca il textfield
+	    FieldRaccoltoColture.setEnabled(false); 
 	    JLabel kgColtura = new JLabel("KG");
 	    
 	    contentPane.add(kgColtura, "cell 9 10");
 	    JLabel LabelLotti = new JLabel("Lotto assegnato");
 	    
-	    
 	    contentPane.add(LabelLotti, "cell 1 12,alignx trailing");
 	    lottovisualizza = new JTextField();
 	    
-	   
 	    lottovisualizza.setEditable(false);
 	    lottovisualizza.setColumns(10);
 	    contentPane.add(lottovisualizza, "cell 2 12,growx");
 	    ButtonSalva = new JButton("Salva");
 	    
-	    
-	    ButtonSalva.setEnabled(false); //bottone bloccato
+	    ButtonSalva.setEnabled(false); 
 	    contentPane.add(ButtonSalva, "cell 8 12,alignx center");
 	    
-	    ButtonSalva.addActionListener(new ActionListener() {
+	    ButtonSalva.addActionListener(new ActionListener() { //salva il raccolto delle colture inserite
 	    	public void actionPerformed(ActionEvent e) {
 	    		try {
 	    			ControllerColtivatore controller = new ControllerColtivatore();
@@ -283,15 +253,16 @@ public class HomePageColtivatore extends JFrame {
 		    		String selectedColtura = (String) ComboTipologia.getSelectedItem();
 		    		String raccoltoColture = FieldRaccoltoColture.getText();
 		    		
+		    		// ---CONTROLLI SUI FIELDS---
 	    			if (selectedColtura == null || selectedColtura.isEmpty() || raccoltoColture == null || raccoltoColture.isEmpty()) {
-					    JOptionPane.showMessageDialog(HomePageColtivatore.this, "COMPILA TUTTI I CAMPI !!", "Errore", JOptionPane.ERROR_MESSAGE);
+					    JOptionPane.showMessageDialog(HomePageColtivatore.this, 
+					    							  "COMPILA TUTTI I CAMPI !!", "Errore", JOptionPane.ERROR_MESSAGE);
 					    return; 
 		    		}
 	    			
 	    			
-	    			//controlla se è stato inserito un raccolto minore o pari a 0
 	    			int raccolto = Integer.parseInt(raccoltoColture);
-	    			if (raccolto <= 0) {
+	    			if (raccolto <= 0) { //controlla se è stato inserito un raccolto minore o pari a 0
 		    			JOptionPane.showMessageDialog(HomePageColtivatore.this, 
 		    					"Il raccolto deve essere maggiore di 0!", "Errore", 
 		    					JOptionPane.ERROR_MESSAGE);
@@ -299,29 +270,25 @@ public class HomePageColtivatore extends JFrame {
 		    			return;
 	    			}else {
 	    				boolean sommaRaccolto = controller.sommaRaccolto(raccoltoColture, selectedColtura, selectedProgetto);
-	    				JOptionPane.showMessageDialog(HomePageColtivatore.this, "Il raccolto è stato aggiornato con successo!");
+	    				JOptionPane.showMessageDialog(HomePageColtivatore.this, 
+	    											  "Il raccolto è stato aggiornato con successo!");
 	    			}
-	    			
-	    			
-	            } catch (NumberFormatException ex) {
+	            } catch (NumberFormatException ex) { //controllo formato numerico
 	                JOptionPane.showMessageDialog(HomePageColtivatore.this, 
 	                			"Il raccolto deve essere un numero valido!", 
 	                			"Errore", JOptionPane.ERROR_MESSAGE);
 	                FieldRaccoltoColture.setBackground(Color.RED);
 	                return;
 	            }
-	    		
-	    		
-	    		FieldRaccoltoColture.setText(""); //pulisce il field
+	    		//pulisce i field
+	    		FieldRaccoltoColture.setText(""); 
 	    		FieldRaccoltoColture.setBackground(Color.WHITE);
 	    	}
 	    });
 	    JLabel LabelPosizioneLotto = new JLabel("Posizione lotto");
 	    
-	    
 	    contentPane.add(LabelPosizioneLotto, "cell 1 13,alignx trailing");
 	    FieldPosizione = new JTextField();
-	    
 	    
 	    FieldPosizione.setEditable(false);
 	    contentPane.add(FieldPosizione, "cell 2 13,growx");
@@ -329,9 +296,9 @@ public class HomePageColtivatore extends JFrame {
 	   
 	    popolaAttivita();
 	    
-	    }//costruttore
-	 // funzioni gui   
-	private void dropdownProg() {
+	    }
+	  
+	private void dropdownProg() { 	//popola la dropdown con i titoli dei progetti
 	    ControllerColtivatore controller = new ControllerColtivatore();
 	    ComboProgetti.removeAllItems();
 	    ComboProgetti.addItem("--seleziona--");
@@ -339,10 +306,10 @@ public class HomePageColtivatore extends JFrame {
 	        ComboProgetti.addItem(p);
 	    }
 	    ComboProgetti.setSelectedItem("--seleziona--");
-	}//function
+	}
 	
 	
-	private void aggiornaCampiProgetto() {
+	private void aggiornaCampiProgetto() { //imposta i campi relativi al progetto
 	    String progettoSelezionato = (String) ComboProgetti.getSelectedItem();
 	    String username = ControllerLogin.getUsernameGlobale();
 	    
@@ -380,7 +347,7 @@ public class HomePageColtivatore extends JFrame {
 	}
 	    
 	    
-	private void popolaAttivita() {
+	private void popolaAttivita() { 	//popola i campi relativi alle attività
 	    String progettoSelezionato = (String) ComboProgetti.getSelectedItem();
 	    String username = ControllerLogin.getUsernameGlobale();
 	    
@@ -397,7 +364,6 @@ public class HomePageColtivatore extends JFrame {
 	    
 	    ControllerColtivatore controller = new ControllerColtivatore();
 	    
-	    // CORREGGI: PASSA 2 PARAMETRI (username E progetto)
 	    tipiAttivita = controller.getTipiAttivita(username, progettoSelezionato);
 	    
 	    for (String idSpecifico : controller.getIdAttivita(username, progettoSelezionato)) {
@@ -416,20 +382,20 @@ public class HomePageColtivatore extends JFrame {
 	        aggiornaDateAttivita();  
 	        
 	    	String selectedAttivita = (String) ComboAttivita.getSelectedItem();
-	    	//String selectedTipologia = (String) ComboTipologia.getSelectedItem();
 	    	
+	    	// se non viene selezionata l'attività, blocca i field relativi alle attività
 	        if (selectedAttivita == null || selectedAttivita.equals("-- Seleziona --")) {
-	            FieldRaccoltoColture.setEnabled(false); //disabilita il field
+	            FieldRaccoltoColture.setEnabled(false); 
 	            FieldRaccoltoColture.setEditable(false);
 	            FieldRaccoltoColture.setText("");
 	            ComboTipologia.setEnabled(false);
-	            ButtonSalva.setEnabled(false);  //disabilita il bottone
+	            ButtonSalva.setEnabled(false);  
 	        } else if (selectedAttivita.startsWith("Raccolta-")) {  //controlla se l'attività selezionata inizia per Raccolta-
-	            FieldRaccoltoColture.setEnabled(true); //attiva il field
+	            FieldRaccoltoColture.setEnabled(true); 
 	            FieldRaccoltoColture.setEditable(true);
-	            ButtonSalva.setEnabled(true); //attiva il bottone
+	            ButtonSalva.setEnabled(true); 
 	            ComboTipologia.setEnabled(true);
-	        }else {
+	        }else { //se vengono selezionate attività diverse da raccolta, vengono bloccati i campi relativi
 	        	FieldRaccoltoColture.setEnabled(false);
 	            FieldRaccoltoColture.setEditable(false);
 	            FieldRaccoltoColture.setText("");
@@ -442,7 +408,7 @@ public class HomePageColtivatore extends JFrame {
 	
 	
 	    
-	private void aggiornaDateAttivita() {
+	private void aggiornaDateAttivita() { 	//imposta i campi delle date delle diverse attività
 	    String attivitaSelezionata = (String) ComboAttivita.getSelectedItem();
 	    
 	    if (attivitaSelezionata != null && !attivitaSelezionata.equals("--seleziona--")) {
@@ -458,7 +424,6 @@ public class HomePageColtivatore extends JFrame {
 	                try {
 	                    ControllerColtivatore controller = new ControllerColtivatore();
 	                    
-	                    // CORREGGI QUESTA RIGA - AGGIUNGI 'tipo' COME PARAMETRO
 	                    String[] date = controller.getDateByAttivitaId(id, tipo);
 	                    
 	                    if (date != null && date[0] != null) {
@@ -469,7 +434,7 @@ public class HomePageColtivatore extends JFrame {
 	                        FieldDataFA.setText("");
 	                    }
 	                    
-	                    // Gestione tipo semina (rimane uguale)
+	                    // Gestione tipo semina 
 	                    if (tipo.equals("Semina")) {
 	                        String tipoSemina = controller.getTipoSemina(id);
 	                        tipoSeminaField.setText(tipoSemina);
@@ -477,7 +442,7 @@ public class HomePageColtivatore extends JFrame {
 	                        tipoSeminaField.setText("");
 	                    }
 	                    
-	                } catch (NumberFormatException e) {
+	                } catch (NumberFormatException e) { 	//controllo del formato numerico
 	                    System.err.println("ID non valido: " + id);
 	                    FieldDataIA.setText("");
 	                    FieldDataFA.setText("");
@@ -491,9 +456,8 @@ public class HomePageColtivatore extends JFrame {
 	        tipoSeminaField.setText("");
 	    }
 	}
-	//lotto e posizione in base al progetto selezionato
 	
-		private void aggiornaLottoEPosizione() {
+		private void aggiornaLottoEPosizione() { 	//lotto e posizione in base al progetto selezionato
 		    String progettoSelezionato = (String) ComboProgetti.getSelectedItem();
 		    
 		    if (progettoSelezionato != null && !progettoSelezionato.equals("--seleziona--")) {
@@ -522,4 +486,4 @@ public class HomePageColtivatore extends JFrame {
 		}
 
 
-	}//classe
+	}
