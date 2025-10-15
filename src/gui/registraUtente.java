@@ -19,6 +19,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import controller.ControllerReg;
+import controller.ControllerProprietario;
 
 
 public class registraUtente extends JFrame {
@@ -27,7 +28,7 @@ public class registraUtente extends JFrame {
 	private JPanel contentPane;
 	private JTextField FieldUsername;
 	private JPasswordField FieldPassword;
-	private String username;
+	
 	
 	private JButton buttonRegistra;
 	private JPasswordField passwordField;
@@ -185,10 +186,11 @@ public class registraUtente extends JFrame {
 		                JOptionPane.showMessageDialog(contentPane, 
 		                							  "La password deve essere lunga al massimo 8 caratteri.", "Errore", JOptionPane.ERROR_MESSAGE);
 		            } else {
+		            	ControllerProprietario controllerP = new ControllerProprietario();//associa il primo lotto libero al proprietario registrato
 		                ControllerReg controller = new ControllerReg();
 		                String usernameProprietario = "Coltivatore".equals(RUOLO) ? (String) ComboProprietari.getSelectedItem() : null;
 		                value = controller.registra(nome, cognome, user, pass, cf, RUOLO.toString(), usernameProprietario);
-		            }
+		                controllerP.aggiungiL(cf);}
 		            
 		            // Messaggi di avviso stato registrazione
 		            try {
