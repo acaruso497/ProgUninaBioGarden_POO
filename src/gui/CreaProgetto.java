@@ -153,6 +153,7 @@ public class CreaProgetto extends JFrame {
 	    contentPane.add(ButtonSalva, "cell 1 15,alignx center");
 	    ButtonSalva.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				String titolo = FieldTitolo.getText();
 				String tipoColtura = FieldTipologiaColtura.getText();
 				String lotto = (String) ComboLotto.getSelectedItem();
@@ -162,9 +163,11 @@ public class CreaProgetto extends JFrame {
 				String descrizione = textArea.getText();
 				
 				// ---CONTROLLI SUI FIELDS---
+				ButtonIndietro.setEnabled(false);
 				if (titolo.isEmpty() || lotto == null || stimaRaccolto.isEmpty() || tipoColtura.isEmpty() ||dataInizioP.isEmpty() ||  dataFineP.isEmpty() || descrizione.isEmpty()) {
 				    JOptionPane.showMessageDialog(CreaProgetto.this, 
 				    							  "COMPILA TUTTI I CAMPI !!", "Errore", JOptionPane.ERROR_MESSAGE);
+				    ButtonIndietro.setEnabled(true);
 				    return; 
 				}
 				
@@ -173,6 +176,7 @@ public class CreaProgetto extends JFrame {
 											      "Devi usare la VIRGOLA per separare le colture!\nEsempio: mela, banana, grano", 
 											       "Separatore mancante", JOptionPane.ERROR_MESSAGE);
 				    FieldTipologiaColtura.setBackground(Color.RED);
+				    ButtonIndietro.setEnabled(true);
 				    return;
 				}
 				
@@ -196,6 +200,7 @@ public class CreaProgetto extends JFrame {
 		            if (dataInseritaIP.isBefore(LocalDate.now())) { //data inizio progetto < di oggi
 		                JOptionPane.showMessageDialog(CreaProgetto.this, "La data non può essere minore di oggi!");
 		                FieldDataIP.setBackground(Color.RED);
+		                ButtonIndietro.setEnabled(true);
 		                
 		                return;
 		            }
@@ -204,28 +209,28 @@ public class CreaProgetto extends JFrame {
 		            if (dataInseritaFP.isBefore(LocalDate.now())) { //data fine progetto < di oggi
 		                JOptionPane.showMessageDialog(CreaProgetto.this, "La data non può essere minore di oggi!");
 		                FieldDataFP.setBackground(Color.RED);
-		                
+		                ButtonIndietro.setEnabled(true);
 		                return;
 		            }
 		            
 		            if (dataInseritaFP.isBefore(dataInseritaIP)) { //data fine progetto < data inizio progetto
 		                JOptionPane.showMessageDialog(CreaProgetto.this, "La data non può essere minore della data di inizio!");
 		                FieldDataFP.setBackground(Color.RED);
-		                
+		                ButtonIndietro.setEnabled(true);
 		                return;
 		            }
 		            
 		            if (dataInseritaIP.isAfter(dataInseritaFP)) { //data inizio progetto > data inizio progetto
-		                JOptionPane.showMessageDialog(CreaProgetto.this, "La data non può essere maggiore della data di fine!");
+		                JOptionPane.showMessageDialog(CreaProgetto.this, "La data iniziale non può essere maggiore della data di fine!");
 		                FieldDataIP.setBackground(Color.RED);
-		                
+		                ButtonIndietro.setEnabled(true);
 		                return;
 		            }
 					
 		        } catch (DateTimeParseException ex) { 	// controlla il formato
 		            JOptionPane.showMessageDialog(CreaProgetto.this, "Inserisci una data valida con formato: 'GG/MM/AAAA'");
+		            ButtonIndietro.setEnabled(true);
 		            return;
-					
 				}
 				
 				DAO dao = new DAO(); // Crea il DAO

@@ -165,6 +165,7 @@ public class registraUtente extends JFrame {
 		            String user = FieldUsername.getText();
 		            String pass = new String(FieldPassword.getPassword());
 		            String confermaPass = new String(passwordField.getPassword());
+		            String usernameProprietario = (String)ComboProprietari.getSelectedItem();
 		            boolean[] value = new boolean[4];
 		            
 		            // ---CONTROLLI SUI FIELDS---
@@ -185,12 +186,24 @@ public class registraUtente extends JFrame {
 		            } else if (pass.length() > 8) {
 		                JOptionPane.showMessageDialog(contentPane, 
 		                							  "La password deve essere lunga al massimo 8 caratteri.", "Errore", JOptionPane.ERROR_MESSAGE);
+		            }else if (cf.length() >16) {
+		                JOptionPane.showMessageDialog(registraUtente.this, 
+		                                                  "Il codice fiscale deve essere al massimo 16 caratteri alfanumerici", 
+		                                                  "Errore", JOptionPane.ERROR_MESSAGE);
+		             
+		                
 		            } else {
 		            	ControllerProprietario controllerP = new ControllerProprietario();//associa il primo lotto libero al proprietario registrato
 		                ControllerReg controller = new ControllerReg();
-		                String usernameProprietario = "Coltivatore".equals(RUOLO) ? (String) ComboProprietari.getSelectedItem() : null;
+		                
+		               if (RUOLO.equals("Coltivatore")) {
+		            	   value = controller.registra(nome, cognome, user, pass, cf, RUOLO.toString(), usernameProprietario);
+		            	   
+		               }else if (RUOLO.equals("Proprietario")) {
 		                value = controller.registra(nome, cognome, user, pass, cf, RUOLO.toString(), usernameProprietario);
-		                controllerP.aggiungiL(cf);}
+		                controllerP.aggiungiL(cf);
+		                
+		                }
 		            
 		            // Messaggi di avviso stato registrazione
 		            try {
@@ -205,18 +218,23 @@ public class registraUtente extends JFrame {
 		                    login.setVisible(true);
 		                } else if (value[1] == true && value[2] == true) {
 		                    JOptionPane.showMessageDialog(registraUtente.this, 
-		                    							  "Registrazione coltivatore avvenuta con successo", "ESITO POSITIVO", JOptionPane.INFORMATION_MESSAGE);
+		                    							"Registrazione coltivatore avvenuta con successo", "ESITO POSITIVO", JOptionPane.INFORMATION_MESSAGE);
 		                    dispose();
 		                    registraUtente.this.setVisible(false);
 		                    login.setVisible(true);
+		                    
 		                } else if (value[2] == false) {
 		                    JOptionPane.showMessageDialog(registraUtente.this, 
 		                    							  "Registrazione non riuscita", "Errore", JOptionPane.ERROR_MESSAGE);
 		                }
 		            } catch (Exception ex) {
-		                ex.printStackTrace();
+		                ex.printStackTrace();		            		        
 		            }
-		        }
+		       }//chisura else
+		    }
 		    });
-	}
-}
+		    }
+		    } 
+	
+	
+	

@@ -30,6 +30,7 @@ public class ControllerReg {
                 // Recupera i lotti del proprietario e associa il coltivatore
             	
                 ArrayList<Integer> lotti = dao.getLottiByProprietarioUsername(usernameProprietario);
+                
                 for (int idLotto : lotti) {
                     dao.associaColtivatoreLotto(cf, idLotto);
                 }

@@ -687,12 +687,7 @@ public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username
 
     try {
         conn = Connessione.getConnection();
-//        String sql = "SELECT ID_Attivita, " +
-//                     "CASE WHEN ID_Semina IS NOT NULL THEN 'Semina' " +
-//                     "     WHEN ID_Irrigazione IS NOT NULL THEN 'Irrigazione' " +
-//                     "     WHEN ID_Raccolta IS NOT NULL THEN 'Raccolta' END AS tipo_attivita " +
-//                     "FROM coltivatoreview " +
-//                     "ORDER BY data_inizio_attivita";
+
         
         String sql = "SELECT ID_Attivita, " +
                 "CASE WHEN ID_Semina IS NOT NULL THEN 'Semina' " +
@@ -702,10 +697,7 @@ public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username
                 "WHERE username_coltivatore = ? AND titolo_progetto = ? "  +
                 "ORDER BY data_inizio_attivita";
         
-//        String sql = "SELECT tipo_attivita, id_attivita " +
-//                "FROM DateAttivitaColtivatore " +
-//                "WHERE username = ? AND titolo = ? AND done = false" +
-//                "ORDER BY giorno_inizio";
+
        
         
         stmt = conn.prepareStatement(sql);
@@ -852,13 +844,6 @@ public List<String> getTipiAttivitaColtivatore(String username, String progetto)
 public String getLottoEPosizione(String progetto, String username) {
     String risultato = "";
     
-//    try (Connection conn = Connessione.getConnection();
-//         PreparedStatement stmt = conn.prepareStatement(
-//             "SELECT DISTINCT id_lotto, posizione " +
-//             "FROM coltivatoreview " +
-//             "WHERE titolo_progetto = ? AND username_coltivatore = ?")) {
-    
-    
     try (Connection conn = Connessione.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
                 "SELECT id_lotto, posizione " +
@@ -882,14 +867,7 @@ public String getLottoEPosizione(String progetto, String username) {
 
 // da testare 
 public String getEsperienzaColtivatore(String username) {
-    String esperienza = "";
-    
-//    try (Connection conn = Connessione.getConnection();
-//         PreparedStatement stmt = conn.prepareStatement(
-//             "SELECT DISTINCT esperienza " +
-//             "FROM coltivatoreview " +
-//             "WHERE username_coltivatore = ?")) {
-    
+    String esperienza = "";        
     try (Connection conn = Connessione.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
                 "SELECT DISTINCT esperienza " +
@@ -933,14 +911,9 @@ public String getStimaRaccolto(String username, String progetto) {
 }
 
 
-
-
 public String getTipologia(String username, String progetto) {
     String tipologia = "";
-//    try (Connection conn = Connessione.getConnection();
-//         PreparedStatement stmt = conn.prepareStatement(
-//             "SELECT tipo_semina FROM coltivatoreview " +
-//             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
+
         
     try (Connection conn = Connessione.getConnection();
             PreparedStatement stmt = conn.prepareStatement(

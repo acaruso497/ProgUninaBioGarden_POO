@@ -76,7 +76,7 @@ public class CreaNotifica extends JFrame {
 		    FieldUsernameC = new JTextField();
 		    contentPane.add(FieldUsernameC, "cell 1 4,growx");
 		    FieldUsernameC.setColumns(10);
-		    ComboColtivatori.setEnabled(false);
+		    ComboColtivatori.setEnabled(true);
 		    ComboColtivatori.setSelectedIndex(-1);
 		    ComboColtivatori.setPreferredSize(new Dimension(150, 20));
 		    contentPane.add(ComboColtivatori, "cell 2 4,growx");
@@ -91,7 +91,7 @@ public class CreaNotifica extends JFrame {
 					FieldUsernameC.setBackground(Color.LIGHT_GRAY);
 					FieldUsernameC.setText("");
 					tutti = true;
-					ComboColtivatori.setEnabled(true);
+					ComboColtivatori.setEnabled(false);
 				}
 				else {
 					FieldUsernameC.setEditable(true);

@@ -69,10 +69,8 @@ public class daoVisualizzaP {
 	        			      "OR pc.data_inizio  BETWEEN s.giorno_inizio AND s.giorno_fine " +
 	        			    ") " +
 	        			  "ORDER BY s.giorno_inizio DESC, s.giorno_fine DESC " +
-	        			  "LIMIT 1 ";
-	        	  
+	        			  "LIMIT 1 ";	        	  
 	          }
-
 	        stmt = conn.prepareStatement(sql);
 	        stmt.setString(1, titoloProgetto);  
 	        risultato = stmt.executeQuery();
@@ -113,7 +111,6 @@ public class daoVisualizzaP {
 	    }
 	}
 	
-
 	// Aggiorna lo stato di ciascuna attività
 	public boolean aggiornaStato(String stato, String tipoAttivita, String idLottoStr) {
 	    int idLotto = Integer.parseInt(idLottoStr);
