@@ -46,7 +46,7 @@ public class Attivita extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Attivita(String titolo, String lotto, String stimaRaccolto, String tipologiaColtura, String dataInizioP, String dataFineP, String descrizione) {
+	public Attivita(String titolo, String lotto, String stimaRaccolto, String tipologiaColtura, String dataInizioP, String dataFineP, String descrizione, Integer idProgetto) {
 		home = new HomePageProprietario();
 		setTitle("Attività");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -302,8 +302,7 @@ public class Attivita extends JFrame {
 				Date dataFA = Date.valueOf(datalocalFA);
 				
 
-		        
-				boolean creaAttivita = creaProgettoController.creaAttivita(attivita, dataIA, dataFA, tipoIrrigazione, tipoSemina, lotto);
+				boolean creaAttivita = creaProgettoController.creaAttivita(attivita, dataIA, dataFA, tipoIrrigazione, tipoSemina, lotto, idProgetto);
 
 				if(creaAttivita==true) { //crea l'attività
 				    JOptionPane.showMessageDialog(Attivita.this, "Attività creata con successo!");

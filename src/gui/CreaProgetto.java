@@ -46,6 +46,7 @@ public class CreaProgetto extends JFrame {
     private CreaProgettoController creaProgettoController;  
     private JTextField FieldStimaRaccolto;
     private JTextField FieldTipologiaColtura;
+    private Integer idProgetto;
 	
 	public CreaProgetto(HomePageProprietario home) {
 		this.home = home;
@@ -256,6 +257,7 @@ public class CreaProgetto extends JFrame {
 					
 			    //vado a controllare se esiste già un progetto in quel lotto
 				boolean creaProgetto = creaProgettoController.creaProgetto(titolo, lotto, descrizione, stimaRaccolto, creaArr, dataIP, dataFP);
+				idProgetto = creaProgettoController.getLastIdProgetto(); //PROVAAA
 				
 				if (progettoCompletato==false) { //se il progetto non è segnato come completato, blocca la creazione
 			        JOptionPane.showMessageDialog(CreaProgetto.this, 
@@ -333,7 +335,7 @@ public class CreaProgetto extends JFrame {
 				}
 	            
 	            // Passa i field già popolati alla GUI attività salvati nelle variabili locali
-	            Attivita attivita = new Attivita(titolo, lotto, stimaRaccolto, tipoColtura, dataInizioP, dataFineP, descrizione);
+	            Attivita attivita = new Attivita(titolo, lotto, stimaRaccolto, tipoColtura, dataInizioP, dataFineP, descrizione, idProgetto);
 
 	            CreaProgetto.this.setVisible(false);
 	            attivita.setVisible(true);

@@ -3,6 +3,7 @@ package dao;
 import database.Connessione;
 import java.sql.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.ArrayList;
 
 public class daoCreaP {
@@ -28,8 +29,7 @@ public class daoCreaP {
 	}
 	
 	//Registrazione dei dati del progetto
-	public static boolean registraProgetto(String titolo, String idLottoStr, String stimaRaccoltoStr, 
-										   String[] coltureArray, String descrizione, Date dataIP, Date dataFP) {
+	public static boolean registraProgetto(String titolo, String idLottoStr, String stimaRaccoltoStr, String[] coltureArray, String descrizione, Date dataIP, Date dataFP, AtomicInteger idProgettoOut) {
 	    int idLotto = Integer.parseInt(idLottoStr);  //converte l'ID del lotto nella combo box in un intero
 	    
 	    Connection conn = null;
@@ -80,6 +80,7 @@ public class daoCreaP {
 	        int idProgetto = 0;
 	        if (risultato.next()) {
 	            idProgetto = risultato.getInt("id_progetto");
+	            idProgettoOut.set(idProgetto);
 	        }
 	        
 	        risultato.close();
@@ -100,8 +101,9 @@ public class daoCreaP {
 	                }
 	            }
 	        }
-	        return true;
 	      }  
+	        
+	    return true;
 	    } catch(SQLException | NumberFormatException ex) {
 	        ex.printStackTrace();
 	        return false;
@@ -214,7 +216,7 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
 	
 	//registra l'attività verso i coltivatori che lavorano nel lotto
 	public static boolean registraAttivita(String tipoAttivita, Date dataIA, Date dataFA, 
-		            					   String tipoIrrigazione, String tipoSemina, String idLottoStr) {
+		            					   String tipoIrrigazione, String tipoSemina, String idLottoStr, int lastIdProgetto) {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet risultato = null;
@@ -232,10 +234,11 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
 		
 			// per ogni coltivatore, viene assegnata un'attività
 			for (String coltivatore : coltivatori) {
-				String sqlAttivita = "INSERT INTO Attivita (ID_Lotto, Codice_FiscaleCol, giorno_assegnazione, stato) VALUES (?, ?, CURRENT_DATE, 'pianificata') RETURNING ID_Attivita";
+				String sqlAttivita = "INSERT INTO Attivita (ID_Lotto, Codice_FiscaleCol, giorno_assegnazione, stato, id_progetto) VALUES (?, ?, CURRENT_DATE, 'pianificata', ?) RETURNING ID_Attivita";
 				stmt = conn.prepareStatement(sqlAttivita);
 				stmt.setInt(1, idLotto);
 				stmt.setString(2, coltivatore);
+				stmt.setInt(3, lastIdProgetto);
 				risultato = stmt.executeQuery();
 		
 				int idAttivita = 0;

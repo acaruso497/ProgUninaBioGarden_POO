@@ -2,6 +2,7 @@ package controller;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import dao.DAO;
 import dao.daoCreaP;
@@ -12,6 +13,7 @@ public class CreaProgettoController {
 	private int countSemina = 0;
     private int countIrrigazione = 0;
     private int countRaccolta = 0;
+    private Integer lastIdProgetto;
 
     public CreaProgettoController(DAO dao) {
         this.dao = dao;
@@ -26,13 +28,23 @@ public class CreaProgettoController {
     //Crea il progetto di coltivazione inserendo i parametri tramite dao 
     public boolean creaProgetto(String titolo, String idLottoStr, String descrizione, String stimaRaccoltoStr, 
     							String [] coltureString, Date dataIP, Date dataFP) {
-	    return daoCreaP.registraProgetto(titolo, idLottoStr, stimaRaccoltoStr, 
-	    								 coltureString, descrizione, dataIP, dataFP);
+    	
+    	AtomicInteger idOut = new AtomicInteger();
+    	
+	    boolean ok = daoCreaP.registraProgetto(titolo, idLottoStr, stimaRaccoltoStr, 
+	    								 coltureString, descrizione, dataIP, dataFP, idOut);
+	    
+	    if(ok)	lastIdProgetto = idOut.get();
+	    else	lastIdProgetto = null;
+	    
+	    return ok;
+	    
     }
     
     //crea l'attività
-    public boolean creaAttivita(String tipoAttivita, Date dataIA, Date dataFA, String tipoIrrigazione, String tipoSemina, String lotto) {
-    	boolean risultato = daoCreaP.registraAttivita(tipoAttivita, dataIA, dataFA, tipoIrrigazione, tipoSemina, lotto);
+    public boolean creaAttivita(String tipoAttivita, Date dataIA, Date dataFA, String tipoIrrigazione, String tipoSemina, String lotto, Integer IdProgetto) {
+        
+    	boolean risultato = daoCreaP.registraAttivita(tipoAttivita, dataIA, dataFA, tipoIrrigazione, tipoSemina, lotto, IdProgetto);
     	
     	// Se l'attività è stata salvata con successo, incrementa i contatori
     	if (risultato==true) {
@@ -86,4 +98,7 @@ public class CreaProgettoController {
 	    return parti;
     }
     
+    public Integer getLastIdProgetto() {
+        return lastIdProgetto;
+    }
 }
