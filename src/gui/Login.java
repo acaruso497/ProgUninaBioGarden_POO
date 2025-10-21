@@ -58,13 +58,12 @@ public class Login extends JFrame {
 		    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		    setContentPane(contentPane);
 
-		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]",
-		    									"[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
+		    contentPane.setLayout(new MigLayout("", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]", "[grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow][grow]"));
 		    
 		    ImageIcon originalIcon = new ImageIcon(getClass().getResource("/img/logo.png"));
 		    Image scaledImage = originalIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
 		    Logo = new JLabel(new ImageIcon(scaledImage));
-		    contentPane.add(Logo, "cell 6 3 2 1,alignx center,gapbottom 20");
+		    contentPane.add(Logo, "cell 4 3 5 1,alignx center,gapbottom 20");
 
 		    JLabel LabelUsername = new JLabel("Username");
 		    contentPane.add(LabelUsername, "cell 6 6,alignx center,aligny center");
