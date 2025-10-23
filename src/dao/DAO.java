@@ -55,22 +55,29 @@ public class DAO {
 	// ______________registrazione____________
 
 		// Registrazione COLTIVATORE
-		public static boolean registraC(String nome ,String cognome ,String username, String password, String cf) {
+		public static boolean registraC(String nome ,String cognome ,String username, String password, String cf, String usernameProprietario) {		//MODIFICA
 		    Connection conn = null;
 		    PreparedStatement stmt = null;
 		    try {
 		        conn = Connessione.getConnection();
-		        String sql = "INSERT INTO coltivatore (nome, cognome ,username, psw,Codice_Fiscale) VALUES (?, ?,?, ?,?)";
+
+		        String sql = """
+		            INSERT INTO Coltivatore 
+		            (Codice_Fiscale, nome, cognome, username, psw, esperienza, username_proprietario)
+		            VALUES (?, ?, ?, ?, ?, 'principiante', ?)
+		        """;
+
 		        stmt = conn.prepareStatement(sql);
-		        stmt.setString(1, nome);
-		        stmt.setString(2, cognome);
-		        stmt.setString(3, username);
-		        stmt.setString(4, password);
-		        stmt.setString(5, cf);
-		        
-		        int rows = stmt.executeUpdate();   // ritorna quante righe inserite
-		        if (rows ==1) { return true;}
-		        else {return false;}                // true se una riga inserita
+		        stmt.setString(1, cf);
+		        stmt.setString(2, nome);
+		        stmt.setString(3, cognome);
+		        stmt.setString(4, username);
+		        stmt.setString(5, password);
+		        stmt.setString(6, usernameProprietario);
+
+		        int rows = stmt.executeUpdate();
+		        return rows == 1;
+
 		    } catch (SQLException ex) {
 		        ex.printStackTrace();
 		        return false;
@@ -203,7 +210,7 @@ public class DAO {
 	    }
 	    
 	 // Metodo per associare un coltivatore a un lotto
-	    public static boolean associaColtivatoreLotto(String codiceFiscaleColtivatore, int idLotto) {
+	    public static boolean associaColtivatoreProprietario(String codiceFiscaleColtivatore, int idLotto) {		//MODIFICA
 	        Connection conn = null;
 	        PreparedStatement stmt = null;
 	        try {
@@ -602,70 +609,82 @@ public class DAO {
 
 //_____________________!!!   DAO:coltivatore !!!!____________________________________
 
-public List<String> popolaProgettiCB(String username) {
-    List<String> lista = new ArrayList<>(); // Lista vuota per i titoli dei progetti
-    Connection conn = null;
-    PreparedStatement stmt = null;
-    ResultSet risultato = null;
+public List<String> popolaProgettiCB(String usernameColtivatore) {		//MODIFICATO
+		    List<String> lista = new ArrayList<>();
+		    Connection conn = null;
+		    PreparedStatement ps = null;
+		    ResultSet rs = null;
 
-    try {
-        conn = Connessione.getConnection(); // Ottiene la connessione al DB
+		    try {
+		        conn = Connessione.getConnection();
 
-        //String sql = "SELECT DISTINCT titolo_progetto FROM coltivatoreview WHERE username_coltivatore = ?";
-        String sql = "SELECT titolo_progetto FROM ComboProgettiColtivatore WHERE username_coltivatore = ? AND done = false";
-        // Seleziona solo i titoli dei progetti associati all'username
+		        String sql = """
+		            SELECT pc.titolo
+		            FROM coltivatore c
+		            JOIN proprietario p      ON p.username = c.username_proprietario
+		            JOIN lotto l             ON l.codice_fiscalepr = p.codice_fiscale
+		            JOIN progetto_coltivazione pc ON pc.id_lotto = l.id_lotto
+		            WHERE c.username = ?
+		              AND pc.done = false
+		            ORDER BY pc.data_inizio DESC
+		        """;
 
-        stmt = conn.prepareStatement(sql);   
-        stmt.setString(1, username);         // Imposta il parametro username
-        risultato = stmt.executeQuery();     // Esegue la query
+		        ps = conn.prepareStatement(sql);
+		        ps.setString(1, usernameColtivatore);
+		        rs = ps.executeQuery();
 
-        while (risultato.next()) {
-            String titolo = risultato.getString("titolo_progetto"); // Ottiene il titolo
-            lista.add(titolo); // Aggiunge il titolo alla lista
-        }
-
-    } catch (SQLException ex) {
-        ex.printStackTrace(); // Stampa l'errore in console
-    } finally {
-        try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
-        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
-        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
-    }
-
-    return lista; // Restituisce la lista (vuota se nessun risultato o errore)
+		        while (rs.next()) {
+		            lista.add(rs.getString("titolo"));
+		        }
+		    } catch (SQLException ex) {
+		        ex.printStackTrace();
+		    } finally {
+		        try { if (rs != null) rs.close(); } catch (Exception ignore) {}
+		        try { if (ps != null) ps.close(); } catch (Exception ignore) {}
+		        try { if (conn != null) conn.close(); } catch (Exception ignore) {}
+		    }
+		    return lista;
 }
+
+
 //           _____________________________________________________________
 
-public ArrayList<String> dateI_FProgCB(String titolo_progetto, String username) {
-	ArrayList<String> date = new ArrayList<>();
+public ArrayList<String> dateI_FProgCB(String titolo_progetto, String usernameColtivatore) {		//MODIFICATO
+    ArrayList<String> date = new ArrayList<>();
     Connection conn = null;
     PreparedStatement stmt = null;
-    ResultSet risultato = null;
+    ResultSet rs = null;
 
     try {
         conn = Connessione.getConnection();
-//        String sql = "SELECT data_inizio_progetto, data_fine_progetto "
-//        		+ "FROM coltivatoreview WHERE username_coltivatore = ? AND titolo_progetto = ?";
-        
-        String sql = "SELECT data_inizio_progetto, data_fine_progetto "
-                + "FROM date_progetti_coltivatore WHERE username_coltivatore = ? AND titolo_progetto = ?";
-        
-        stmt = conn.prepareStatement(sql);
-        stmt.setString(1, username);
-        stmt.setString(2, titolo_progetto);
-        risultato = stmt.executeQuery();
 
-        while (risultato.next()) {
-            String dataInizio = risultato.getString("data_inizio_progetto");
-            String dataFine = risultato.getString("data_fine_progetto");
-            date.add(dataInizio);
-            date.add(dataFine);
+        String sql = """
+            SELECT pc.data_inizio, pc.data_fine
+            FROM progetto_coltivazione pc
+            JOIN lotto l         ON l.id_lotto = pc.id_lotto
+            JOIN proprietario p  ON p.codice_fiscale = l.codice_fiscalepr
+            JOIN coltivatore c   ON c.username_proprietario = p.username
+            WHERE c.username = ?
+              AND pc.titolo = ?
+            ORDER BY pc.data_inizio DESC
+            LIMIT 1
+        """;
+
+        stmt = conn.prepareStatement(sql);
+        stmt.setString(1, usernameColtivatore);
+        stmt.setString(2, titolo_progetto);
+
+        rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            date.add(rs.getString("data_inizio"));
+            date.add(rs.getString("data_fine"));
         }
 
     } catch (SQLException ex) {
         ex.printStackTrace();
     } finally {
-        try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+        try { if (rs != null) rs.close(); } catch (Exception ignored) {}
         try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
         try { if (conn != null) conn.close(); } catch (Exception ignored) {}
     }
@@ -673,12 +692,13 @@ public ArrayList<String> dateI_FProgCB(String titolo_progetto, String username) 
     return date;
 }
 
+
 //           _____________________________________________________________
 
 //attivita data inizio e fine
 public static ArrayList<String> idList = new ArrayList<>();
 
-public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username) {
+public ArrayList<String> getAttivitaByPr(String titolo_progetto, String usernameColtivatore) {
     ArrayList<String> tipi = new ArrayList<>();
     idList.clear();
     Connection conn = null;
@@ -688,29 +708,43 @@ public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username
     try {
         conn = Connessione.getConnection();
 
-        
-        String sql = "SELECT ID_Attivita, " +
-                "CASE WHEN ID_Semina IS NOT NULL THEN 'Semina' " +
-                "     WHEN ID_Irrigazione IS NOT NULL THEN 'Irrigazione' " +
-                "     WHEN ID_Raccolta IS NOT NULL THEN 'Raccolta' END AS tipo_attivita " +
-                "FROM AttivitaColtivatore " +
-                "WHERE username_coltivatore = ? AND titolo_progetto = ? "  +
-                "ORDER BY data_inizio_attivita";
-        
+        String sql = """
+            SELECT 
+                a.id_attivita,
+                CASE 
+                    WHEN s.id_semina IS NOT NULL THEN 'Semina'
+                    WHEN i.id_irrigazione IS NOT NULL THEN 'Irrigazione'
+                    WHEN r.id_raccolta IS NOT NULL THEN 'Raccolta'
+                END AS tipo_attivita
+            FROM coltivatore c
+            JOIN proprietario p         ON p.username = c.username_proprietario
+            JOIN lotto l                ON l.codice_fiscalepr = p.codice_fiscale
+            JOIN progetto_coltivazione pc ON pc.id_lotto = l.id_lotto
+            JOIN attivita a             ON a.id_progetto = pc.id_progetto
+            LEFT JOIN semina s          ON s.id_attivita = a.id_attivita
+            LEFT JOIN irrigazione i     ON i.id_attivita = a.id_attivita
+            LEFT JOIN raccolta r        ON r.id_attivita = a.id_attivita
+            WHERE c.username = ?
+              AND pc.titolo = ?
+              AND pc.done = false
+            ORDER BY a.giorno_inizio
+        """;
 
-       
-        
         stmt = conn.prepareStatement(sql);
-        stmt.setString(1, username);
+        stmt.setString(1, usernameColtivatore);
         stmt.setString(2, titolo_progetto);
         rs = stmt.executeQuery();
 
         while (rs.next()) {
             String tipo = rs.getString("tipo_attivita");
             String id = rs.getString("id_attivita");
-            tipi.add(tipo);
-            idList.add(id);
+
+            if (tipo != null && id != null) {
+                tipi.add(tipo);
+                idList.add(id);
+            }
         }
+
     } catch (SQLException ex) {
         ex.printStackTrace();
     } finally {
@@ -721,6 +755,7 @@ public ArrayList<String> getAttivitaByPr(String titolo_progetto, String username
 
     return tipi;
 }
+
 
 
 public String[] getDateByAttivitaId(String idAttivita, String tipoAttivita) {

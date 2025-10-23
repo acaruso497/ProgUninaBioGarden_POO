@@ -25,14 +25,14 @@ public class ControllerReg {
             result[2] = DAO.registraP(nome, cognome, username, password, cf); // esito registrazione
         } else if (ruolo.equals("Coltivatore")) {
             result[1] = true; // è coltivatore
-            result[2] = DAO.registraC(nome, cognome, username, password, cf); // esito registrazione
+            result[2] = DAO.registraC(nome, cognome, username, password, cf, usernameProprietario); // esito registrazione
             if (result[2] && usernameProprietario != null && !usernameProprietario.equals("--Seleziona--")) {
                 // Recupera i lotti del proprietario e associa il coltivatore
             	
                 ArrayList<Integer> lotti = dao.getLottiByProprietarioUsername(usernameProprietario);
                 
                 for (int idLotto : lotti) {
-                    dao.associaColtivatoreLotto(cf, idLotto);
+                    dao.associaColtivatoreProprietario(cf, idLotto);
                 }
             }
         }
