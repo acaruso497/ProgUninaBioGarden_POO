@@ -609,42 +609,43 @@ public class DAO {
 
 //_____________________!!!   DAO:coltivatore !!!!____________________________________
 
-public List<String> popolaProgettiCB(String usernameColtivatore) {		//MODIFICATO
+		public List<String> popolaProgettiCB(String usernameColtivatore) {
 		    List<String> lista = new ArrayList<>();
-		    Connection conn = null;
-		    PreparedStatement ps = null;
-		    ResultSet rs = null;
+		    String sql = """
+		        SELECT t.titolo
+		        FROM (
+		          SELECT pc.titolo, MAX(pc.data_inizio) AS di
+		          FROM coltivatore c
+		          JOIN proprietario p            ON p.username = c.username_proprietario
+		          JOIN lotto l                   ON l.codice_fiscalepr = p.codice_fiscale
+		          JOIN progetto_coltivazione pc  ON pc.id_lotto = l.id_lotto
+		          WHERE c.username = ?
+		            AND pc.done = false
+		            AND EXISTS (
+		              SELECT 1
+		              FROM attivita a
+		              WHERE a.id_progetto = pc.id_progetto
+		                AND a.codice_fiscalecol = c.codice_fiscale
+		                AND a.stato IN ('pianificata','in corso')
+		            )
+		          GROUP BY pc.titolo
+		        ) t
+		        ORDER BY t.di DESC
+		    """;
 
-		    try {
-		        conn = Connessione.getConnection();
-
-		        String sql = """
-		            SELECT pc.titolo
-		            FROM coltivatore c
-		            JOIN proprietario p      ON p.username = c.username_proprietario
-		            JOIN lotto l             ON l.codice_fiscalepr = p.codice_fiscale
-		            JOIN progetto_coltivazione pc ON pc.id_lotto = l.id_lotto
-		            WHERE c.username = ?
-		              AND pc.done = false
-		            ORDER BY pc.data_inizio DESC
-		        """;
-
-		        ps = conn.prepareStatement(sql);
+		    try (Connection conn = Connessione.getConnection();
+		         PreparedStatement ps = conn.prepareStatement(sql)) {
 		        ps.setString(1, usernameColtivatore);
-		        rs = ps.executeQuery();
-
-		        while (rs.next()) {
-		            lista.add(rs.getString("titolo"));
+		        try (ResultSet rs = ps.executeQuery()) {
+		            while (rs.next()) lista.add(rs.getString("titolo"));
 		        }
 		    } catch (SQLException ex) {
 		        ex.printStackTrace();
-		    } finally {
-		        try { if (rs != null) rs.close(); } catch (Exception ignore) {}
-		        try { if (ps != null) ps.close(); } catch (Exception ignore) {}
-		        try { if (conn != null) conn.close(); } catch (Exception ignore) {}
 		    }
 		    return lista;
-}
+		}
+
+
 
 
 //           _____________________________________________________________
