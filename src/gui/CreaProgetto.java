@@ -156,7 +156,7 @@ public class CreaProgetto extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				String titolo = FieldTitolo.getText();
-				String tipoColtura = FieldTipologiaColtura.getText();
+				String tipoColtura = FieldTipologiaColtura.getText().trim().replaceAll("\\s*,\\s*", ",");
 				String lotto = (String) ComboLotto.getSelectedItem();
 				String stimaRaccolto = FieldStimaRaccolto.getText();
 				String dataInizioP = FieldDataIP.getText();
@@ -172,10 +172,14 @@ public class CreaProgetto extends JFrame {
 				    return; 
 				}
 				
-				if (!tipoColtura.contains(",")) { //controllo che il separatore sia una virgola
-				    JOptionPane.showMessageDialog(CreaProgetto.this, 
-											      "Devi usare la VIRGOLA per separare le colture!\nEsempio: mela, banana, grano", 
-											       "Separatore mancante", JOptionPane.ERROR_MESSAGE);
+				if (!tipoColtura.matches("^[a-zA-ZàèéìòùÀÈÉÌÒÙ,]+$")) { //controllo che il separatore sia una virgola
+				    JOptionPane.showMessageDialog(CreaProgetto.this, "Devi usare la VIRGOLA per separare le colture!\nEsempio: mela, banana, grano", "Separatore mancante", JOptionPane.ERROR_MESSAGE);
+				    FieldTipologiaColtura.setBackground(Color.RED);
+				    ButtonIndietro.setEnabled(true);
+				    return;
+				}
+				if(tipoColtura.endsWith(",")) {
+				    JOptionPane.showMessageDialog(CreaProgetto.this, "Non mettere la virgola alla fine.\n", "Separatore errato", JOptionPane.ERROR_MESSAGE);
 				    FieldTipologiaColtura.setBackground(Color.RED);
 				    ButtonIndietro.setEnabled(true);
 				    return;
