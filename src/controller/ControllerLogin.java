@@ -7,7 +7,7 @@ import gui.HomePageColtivatore;
 import gui.HomePageProprietario;
 public class ControllerLogin {
 	
-public static String usernameGlobale; //variabile globale, in modo che l'username della persona loggata sia visibile nelle gui
+public static String usernameGlobale;
 	
 	public ControllerLogin() {}
 

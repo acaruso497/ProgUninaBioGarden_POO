@@ -5,6 +5,7 @@ import java.net.URL;
 
 import java.awt.*;
 
+@SuppressWarnings("serial")
 public class BackgroundPanel extends JPanel {		//imposto l'immagine di background
 	private Image backgroundImage;
 

@@ -45,17 +45,13 @@ public class DAO {
 	        try { if (conn != null) conn.close(); } catch (Exception e) {}
 	    }
 	}
-	
-	
-	
-	//home proprietario
-	
+//home proprietario
 	
 	
 	// ______________registrazione____________
 
 		// Registrazione COLTIVATORE
-		public static boolean registraC(String nome ,String cognome ,String username, String password, String cf, String usernameProprietario) {		//MODIFICA
+		public static boolean registraC(String nome, String cognome, String username, String password, String cf, String usernameProprietario) {		//MODIFICA
 		    Connection conn = null;
 		    PreparedStatement stmt = null;
 		    try {
@@ -88,7 +84,7 @@ public class DAO {
 		}
 
 		// Registrazione PROPRIETARIO
-		public static boolean registraP(String nome ,String cognome ,String username, String password, String cf) {
+		public static boolean registraP(String nome, String cognome, String username, String password, String cf) {
 		    Connection conn = null;
 		    PreparedStatement stmt = null;
 		    try {
@@ -111,7 +107,8 @@ public class DAO {
 		        try { if (conn != null) conn.close(); } catch (Exception e) {}
 		    }
 		}
-		//username esistente
+		
+		//controlla se l'username esistente
 		public static boolean usernameEsiste(String username) {
 		    Connection conn = null;
 		    PreparedStatement stmt = null;
@@ -146,6 +143,7 @@ public class DAO {
 		}// username esistente
 
 		
+		// popola la combobox
 		public ArrayList<String> popolaComboProprietari() {
 			
 	        ArrayList<String> usernames = new ArrayList<>();
@@ -210,7 +208,7 @@ public class DAO {
 	    }
 	    
 	 // Metodo per associare un coltivatore a un lotto
-	    public static boolean associaColtivatoreProprietario(String codiceFiscaleColtivatore, int idLotto) {		//MODIFICA
+	    public static boolean associaColtivatoreProprietario(String codiceFiscaleColtivatore, int idLotto) {		
 	        Connection conn = null;
 	        PreparedStatement stmt = null;
 	        try {
@@ -233,7 +231,7 @@ public class DAO {
 
 	 // ______________registrazione____________
 
-	//____________________!!!   DAO: LOGIN     !!!!____________________________________
+	//____________________   LOGIN     ____________________________________
 	
 		//Autenticazione proprietario
 		public static boolean authP(String username, String password) {
@@ -262,6 +260,7 @@ public class DAO {
 			   }
 			
 		}
+		
 		//Autenticazione coltivatore
 		public static boolean authC(String username, String password) {
 			Connection conn = null;
@@ -289,9 +288,7 @@ public class DAO {
 			   }
 			
 		}
-		
-		
-		//!!da pulire tutte le system out interne di debug!!
+	
 		public static String getCodiceFiscaleByUsername(String username) {
 		    String codiceFiscale = null;
 		    Connection conn = null;
@@ -313,12 +310,9 @@ public class DAO {
 		        // Recupera il risultato
 		        if (rs.next()) {
 		            codiceFiscale = rs.getString("Codice_Fiscale"); // Recupera il Codice_Fiscale
-		        } else {
-		            System.out.println("Nessun proprietario trovato con username: " + username);
 		        }
 		    } catch (SQLException ex) {
-		        ex.printStackTrace(); // Stampa l'errore per debugging
-		        System.out.println("Errore durante l'esecuzione della query: " + ex.getMessage());
+		        ex.printStackTrace(); 
 		    } finally {
 		        // Chiudi tutte le risorse nel blocco finally
 		        try { if (rs != null) rs.close(); } catch (Exception e) {}
@@ -328,7 +322,9 @@ public class DAO {
 
 		    return codiceFiscale; // Restituisce il Codice_Fiscale o null se non trovato
 		}
-// GUI: CREA PROGETTO	!!!METODO NON ADTATTATO AL SINGLETON!!!
+		
+// GUI: CREA PROGETTO	
+		
 	//recupera i lotti di un proprietario (utile per popolare ComboLotti)
 	public List<String> getLottiByProprietario(String username) {
 	    List<String> lista = new ArrayList<>(); // Lista vuota per ID lotti
@@ -365,36 +361,8 @@ public class DAO {
 
 	    return lista;
 	}
-
-//	public static String getColtivatoreByUsername(String username) {
-//        Connection conn = null;
-//        PreparedStatement stmt = null;
-//        ResultSet rs = null;
-//        try {
-//            conn = Connessione.getConnection();
-//            String sql = "SELECT username FROM coltivatore WHERE username = ?";  // O da Proprietario se misto
-//            stmt = conn.prepareStatement(sql);
-//            stmt.setString(1, username);
-//            rs = stmt.executeQuery();
-//            if (rs.next()) {
-//                return rs.getString("username");
-//            }
-//        } catch (SQLException ex) {
-//            ex.printStackTrace();
-//        } finally {
-//            try { if (rs != null) rs.close(); } catch (Exception e) {}
-//            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-//            try { if (conn != null) conn.close(); } catch (Exception e) {}
-//        }
-//        return null;  // Se non trovato
-//    }
 	
-	
-		
-
-	
-	
-// GUI: CREA NOTIFICA ArrayList<String> usernamesList
+// GUI: CREA NOTIFICA 
 		public boolean Inserisci_NotificaDB(String utentiTag,Date dataEvento, 
 											String titolo, String descrizione) {
 			Connection conn = null;
@@ -607,7 +575,7 @@ public class DAO {
 	//GUI: CREA NOTIFICA
 
 
-//_____________________!!!   DAO:coltivatore !!!!____________________________________
+//_____________________  coltivatore ____________________________________
 
 		public List<String> popolaProgettiCB(String usernameColtivatore) {
 		    List<String> lista = new ArrayList<>();
@@ -650,7 +618,7 @@ public class DAO {
 
 //           _____________________________________________________________
 
-public ArrayList<String> dateI_FProgCB(String titolo_progetto, String usernameColtivatore) {		//MODIFICATO
+public ArrayList<String> dateI_FProgCB(String titolo_progetto, String usernameColtivatore) {		
     ArrayList<String> date = new ArrayList<>();
     Connection conn = null;
     PreparedStatement stmt = null;
@@ -769,23 +737,23 @@ public String[] getDateByAttivitaId(String idAttivita, String tipoAttivita) {
         conn = Connessione.getConnection();
         // Query DINAMICA in base al tipo di attività
         
-        //String sql = "SELECT giorno_inizio, giorno_fine FROM DateAttivitaColtivatore WHERE id_attivita = ? AND done = false";
-
-        
          String sql = "";
         switch(tipoAttivita) {
             case "Semina":
-                //sql = "SELECT data_inizio_semina, data_fine_semina FROM coltivatoreview WHERE ID_Attivita = ?";
+  
             	sql = "SELECT giorno_inizio, giorno_fine FROM DateAttivitaColtivatore WHERE id_attivita = ? AND done=false AND tipo_attivita = 'Semina'";
                 break;
+                
             case "Irrigazione":
-                //sql = "SELECT data_inizio_irrigazione, data_fine_irrigazione FROM coltivatoreview WHERE ID_Attivita = ?";
+                
             	sql = "SELECT giorno_inizio, giorno_fine FROM DateAttivitaColtivatore WHERE id_attivita = ? AND done=false AND tipo_attivita = 'Irrigazione'";
                 break;
+                
             case "Raccolta":
-                //sql = "SELECT data_inizio_raccolta, data_fine_raccolta FROM coltivatoreview WHERE ID_Attivita = ?";
+                
             	sql = "SELECT giorno_inizio, giorno_fine FROM DateAttivitaColtivatore WHERE id_attivita = ? AND done=false AND tipo_attivita = 'Raccolta'";
                 break;
+                
             default:
                 return date;
         }
@@ -812,7 +780,7 @@ public String[] getDateByAttivitaId(String idAttivita, String tipoAttivita) {
     return date;
 }
 
-//PRIMA FUNZIONE: Restituisce gli ID per la dropdown
+//Restituisce gli ID per la dropdown
 public List<String> getIdAttivitaColtivatore(String username, String progetto) {
     List<String> idList = new ArrayList<>();
     
@@ -842,7 +810,7 @@ public List<String> getIdAttivitaColtivatore(String username, String progetto) {
 }
 
 
-//SECONDA FUNZIONE: Restituisce i tipi per indice
+//Restituisce i tipi per indice
 public List<String> getTipiAttivitaColtivatore(String username, String progetto) {
     List<String> tipoList = new ArrayList<>();
 
@@ -901,7 +869,6 @@ public String getLottoEPosizione(String progetto, String username) {
     return risultato;
 }
 
-// da testare 
 public String getEsperienzaColtivatore(String username) {
     String esperienza = "";        
     try (Connection conn = Connessione.getConnection();
@@ -970,16 +937,11 @@ public String getTipologia(String username, String progetto) {
 }
 
 public String getVarieta(String username, String progetto) {
-    // Implementazione simile - dipende da quale colonna nella vista contiene la varietà
     return "";
 }
 
 public String getIrrigazione(String username, String progetto) {
     String irrigazione = "";
-//    try (Connection conn = Connessione.getConnection();
-//         PreparedStatement stmt = conn.prepareStatement(
-//             "SELECT tipo_irrigazione FROM coltivatoreview " +
-//             "WHERE username_coltivatore = ? AND titolo_progetto = ?")) {
     
     try (Connection conn = Connessione.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
@@ -1009,9 +971,6 @@ public List<String> getColtura(String username, String progetto) {
 	
 	try {
 		  conn = Connessione.getConnection();
-//	       String sql = "SELECT DISTINCT tipo_coltura " +
-//	       "FROM coltivatoreview " +
-//	       "WHERE username_coltivatore = ? AND titolo_progetto = ?"; 
 
 		  String sql = "SELECT varieta_coltura " +
                   "FROM ComboTipologiaColturaColtivatore " +
@@ -1024,9 +983,7 @@ public List<String> getColtura(String username, String progetto) {
 		 risultato= stmt.executeQuery();
 	  
 	  while (risultato.next()) {
-//	      String tipoColtura = risultato.getString("tipo_coltura").toLowerCase();
 		  String varieta = risultato.getString("varieta_coltura");
-	      //lista.add(String.valueOf(tipoColtura));
 		  lista.add(String.valueOf(varieta));
 	  }
 	  
@@ -1047,10 +1004,6 @@ public List<String> getColtura(String username, String progetto) {
 
 public String getTipoSemina(String idSemina) {
     String tipoSemina = "";
-    
-//    try (Connection conn = Connessione.getConnection();
-//         PreparedStatement stmt = conn.prepareStatement(
-//             "SELECT tipo_semina FROM coltivatoreview WHERE id_semina = ?")) {
     
     try (Connection conn = Connessione.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
@@ -1113,12 +1066,6 @@ public boolean sommaRaccolto(String raccolto, String coltura, String progetto) {
     }
 }
 
-
-
-
-
-
-
 }
 
-//_____________________!!!   DAO:coltivatore !!!!____________________________________
+//_____________________coltivatore ____________________________________

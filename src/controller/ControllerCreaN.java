@@ -12,7 +12,8 @@ public class ControllerCreaN {
 public ControllerCreaN () {}
 
 // viene chiamato se la spunta "tutti i coltivatori" è disattivata	
-public boolean dividiUsername(String usernameProprietario, String usernameConcatenati, Date data, String titolo, String descrizione) {		
+public boolean dividiUsername(String usernameProprietario, String usernameConcatenati, Date data, 
+							  String titolo, String descrizione) {		
 	
 				// Split della stringa
 				String[] usernamesArray = usernameConcatenati.split(",");	        

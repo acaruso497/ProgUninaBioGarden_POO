@@ -87,22 +87,9 @@ public class VisualizzaProgetti extends JFrame {
 	        JButton ButtonGrafici = new JButton("Visualizza Grafici");
 	        ButtonGrafici.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent e) {
-	        		String selectedLotto = FieldLotto.getText();
-	        		//verifica prima se è stato selezionato un progetto
-	        		if(selectedLotto.isEmpty()) {
-	        			JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
-	                    		"Seleziona un progetto valido", "Errore", JOptionPane.ERROR_MESSAGE);
-	        		} else {
-	                    try { //controlla i field
-	                        Integer.parseInt(selectedLotto); 
-	                        Grafico grafico = new Grafico(selectedLotto);
-	                        VisualizzaProgetti.this.setVisible(false);
-	                        grafico.setVisible(true);
-	                    } catch (NumberFormatException ex) { //controllo formato dell'id lotto
-	                        JOptionPane.showMessageDialog(VisualizzaProgetti.this, 
-	                                "ID lotto non valido (deve essere un numero)", "Errore", JOptionPane.ERROR_MESSAGE);
-	                    }
-	                }
+	        		Grafico grafico = new Grafico();
+                    VisualizzaProgetti.this.setVisible(false);
+                    grafico.setVisible(true);
 	        	}
 	        });
 	        

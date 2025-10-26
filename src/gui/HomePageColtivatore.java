@@ -48,6 +48,7 @@ public class HomePageColtivatore extends JFrame {
     private JComboBox<String> ComboTipologia;
    
 	
+	@SuppressWarnings("unused")
 	public HomePageColtivatore() {
 		setTitle("HomePageColtivatore");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -347,6 +348,7 @@ public class HomePageColtivatore extends JFrame {
 	}
 	    
 	    
+	@SuppressWarnings("unused")
 	private void popolaAttivita() { 	//popola i campi relativi alle attività
 	    String progettoSelezionato = (String) ComboProgetti.getSelectedItem();
 	    String username = ControllerLogin.getUsernameGlobale();
@@ -406,8 +408,7 @@ public class HomePageColtivatore extends JFrame {
 	    });
 	}
 	
-	
-	    
+	  
 	private void aggiornaDateAttivita() { 	//imposta i campi delle date delle diverse attività
 	    String attivitaSelezionata = (String) ComboAttivita.getSelectedItem();
 	    

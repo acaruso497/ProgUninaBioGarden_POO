@@ -42,9 +42,11 @@ public class CreaProgettoController {
     }
     
     //crea l'attività
-    public boolean creaAttivita(String tipoAttivita, Date dataIA, Date dataFA, String tipoIrrigazione, String tipoSemina, String lotto, Integer IdProgetto) {
+    public boolean creaAttivita(String tipoAttivita, Date dataIA, Date dataFA, String tipoIrrigazione, 
+    							String tipoSemina, String lotto, Integer IdProgetto) {
         
-    	boolean risultato = daoCreaP.registraAttivita(tipoAttivita, dataIA, dataFA, tipoIrrigazione, tipoSemina, lotto, IdProgetto);
+    	boolean risultato = daoCreaP.registraAttivita(tipoAttivita, dataIA, dataFA, 
+    								tipoIrrigazione, tipoSemina, lotto, IdProgetto);
     	
     	// Se l'attività è stata salvata con successo, incrementa i contatori
     	if (risultato==true) {

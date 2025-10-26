@@ -38,10 +38,7 @@ public class Grafico extends JFrame {
 	JComboBox<String> ComboLotto = new JComboBox<String>();
 	JComboBox<String> ComboColtura = new JComboBox<String>();
 
-	/**
-	 * Create the frame.
-	 */
-	public Grafico(String selectedLotto) {
+	public Grafico() {
 		home = new HomePageProprietario();
 		visualizzaProgetti = new VisualizzaProgetti(home);
 		
@@ -155,10 +152,6 @@ public class Grafico extends JFrame {
 	    });
 	    contentPane.add(ButtonReport, "cell 1 4,alignx center");
 	    
-	    //controlla la ComboLotto
-	    if (selectedLotto != null) {
-            ComboLotto.setSelectedItem(selectedLotto);
-        }
 	    
 	    DAO dao = new DAO(); //creo il DAO
 	    creaProgettoController = new CreaProgettoController(dao); //creo il controller di crea progetto
@@ -167,11 +160,6 @@ public class Grafico extends JFrame {
 	    
 	    popolaComboLotto(); //Popola la ComboLotto con i lotti del proprietario loggato
 	    
-	    // Imposta il lotto selezionato e popola ComboColtura
-        if (selectedLotto != null) {
-            ComboLotto.setSelectedItem(selectedLotto);
-            popolaComboColtura(selectedLotto);
-        }
 
         // Aggiungi listener per aggiornare ComboColtura quando cambia ComboLotto
         ComboLotto.addActionListener(new ActionListener() {
@@ -185,7 +173,7 @@ public class Grafico extends JFrame {
 	
 	private void popolaComboLotto() {  //Popolo il combolotto 
         String username = ControllerLogin.getUsernameGlobale(); // Usa l'username globale
-		List<String> lotti = creaProgettoController.getLottiPerCombo(username);  
+		List<String> lotti = controllerGrafico.getLotti(username);  
         for (String lotto : lotti) { 
             ComboLotto.addItem(lotto); 
         }

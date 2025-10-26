@@ -23,4 +23,8 @@ public class ControllerGrafico {
         double max   = dao.getMaxRaccolto(idLotto, varieta);
         return new double[]{ num, media, min, max };
     }
+    
+    public List<String> getLotti(String username) {
+    	return dao.getLotti(username);
+    }
 }

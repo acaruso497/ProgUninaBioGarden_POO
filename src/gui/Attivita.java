@@ -43,9 +43,7 @@ public class Attivita extends JFrame {
 	private JTextField FieldStimaRaccolto;
 	private JButton ButtonHomePage;
 	private HomePageProprietario home; 
-	/**
-	 * Create the frame.
-	 */
+	
 	public Attivita(String titolo, String lotto, String stimaRaccolto, String tipologiaColtura, String dataInizioP, String dataFineP, String descrizione, Integer idProgetto) {
 		home = new HomePageProprietario();
 		setTitle("Attività");

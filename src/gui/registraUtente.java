@@ -30,6 +30,7 @@ public class registraUtente extends JFrame {
 	private JPasswordField FieldPassword;
 	
 	
+	@SuppressWarnings("unused")
 	private JButton buttonRegistra;
 	private JPasswordField passwordField;
 	private JLabel lblConfermaPassword;
@@ -46,6 +47,7 @@ public class registraUtente extends JFrame {
 	private JComboBox<String> ComboProprietari;
 	private JLabel lblProprietari;
 
+	@SuppressWarnings("unused")
 	public registraUtente() {
 		setTitle("Login Schede");
 		 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

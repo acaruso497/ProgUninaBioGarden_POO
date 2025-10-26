@@ -99,6 +99,42 @@ public class daoGrafico {
 	        try { if (conn != null) conn.close(); } catch (Exception ignore) {}
 	    }
 	}
+	
+	public List<String> getLotti(String username) {
+	    List<String> lista = new ArrayList<>(); // Lista vuota per ID lotti
+	    Connection conn = null;
+	    PreparedStatement stmt = null;
+	    ResultSet risultato = null;
+
+	    try {
+	        conn = Connessione.getConnection(); 
+
+	        String sql = "SELECT l.ID_Lotto, l.posizione " + 
+                    "FROM Lotto l " +
+                    "JOIN Proprietario p ON l.Codice_FiscalePr = p.Codice_Fiscale " +
+                    "WHERE p.username = ? " +
+                    "ORDER BY l.posizione"; 
+
+	        stmt = conn.prepareStatement(sql);   
+	        stmt.setString(1, username);         // Inserisce l'username del proprietario
+	        risultato = stmt.executeQuery();
+
+	        while (risultato.next()) {
+	            int idLotto = risultato.getInt("ID_Lotto"); // Legge solo ID
+                String idStr = String.valueOf(idLotto); 
+                lista.add(idStr); // Aggiunge alla lista
+	        }
+
+	    } catch (SQLException e) {
+	        System.err.println("Errore SELECT: " + e.getMessage());
+	    } finally {
+	        try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
+	        try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
+	        try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+	    }
+
+	    return lista;
+	}
 
 	
 }

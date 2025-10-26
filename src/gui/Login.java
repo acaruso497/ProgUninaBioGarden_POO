@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.EventQueue;
-import java.sql.*;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -96,6 +95,7 @@ public class Login extends JFrame {
 		    contentPane.add(buttonRegistra, "cell 8 9");
 		    
 		    ButtonLogin.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {			
 				//tramite questa variabile troveremo il codice fiscale da passare al metodo getLottiByProprietario 
 				usernameGlobale = FieldUsername.getText(); 

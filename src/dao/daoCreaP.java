@@ -157,7 +157,6 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
 	}
 	
 	
-	// ==HELPER==
 	// crea la coltura dalla varietà
 	private static int getOrCreateColtura(Connection conn, String nomeColtura) throws SQLException {
 	    String selectSql = "SELECT id_coltura FROM Coltura WHERE varietà = ?";
@@ -190,7 +189,6 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
 	    throw new SQLException("Impossibile creare coltura: " + nomeColtura);
 	}
 	
-	//==HELPER==
 	// associa la coltura al lotto
 	private static void associaColturaALotto(Connection conn, int lottoId, int colturaId, int progettoId) throws SQLException {
 		
@@ -298,7 +296,6 @@ public boolean controlloProgettoChiuso(String idLottoStr) {
 	}
 	
 	
-//==HELPER==
 //Recupera il coltivatore dal lotto
 private static List<String> getColtivatoriLotto(int idLotto) {
 	Connection conn = null;

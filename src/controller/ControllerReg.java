@@ -6,6 +6,7 @@ public class ControllerReg {
 	public ControllerReg() {}
 	 
 	DAO dao = new dao.DAO();
+	@SuppressWarnings("static-access")
 	public boolean[] registra(String nome, String cognome, String username, 
 							  String password, String cf, String ruolo, String usernameProprietario) {
         boolean[] result = new boolean[4];

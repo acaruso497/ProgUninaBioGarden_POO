@@ -23,14 +23,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Arrays;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
-
-
 
 public class CreaProgetto extends JFrame {
 
@@ -143,7 +140,6 @@ public class CreaProgetto extends JFrame {
 	     contentPane.add(LabelDescrizione, "cell 0 10");
 	    
 	    	    
-	    
 	    contentPane.add(textArea, "cell 0 11 9 4,grow");
 	    
 	    JButton ButtonAvanti = new JButton("Avanti");

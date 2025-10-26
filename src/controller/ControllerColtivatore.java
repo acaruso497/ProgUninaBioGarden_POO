@@ -1,14 +1,10 @@
 package controller;
 
 import dao.DAO;
-//import javax.swing.JComboBox;
-//import javax.swing.JTextField;
-//import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.List;
 
 public class ControllerColtivatore {
-	private DAO dao = new DAO(); // UNICA istanza
+	private DAO dao = new DAO(); 
 	
 	public ControllerColtivatore() {}
 	
@@ -24,19 +20,14 @@ public class ControllerColtivatore {
         return dao.getNotificheNonLette(usernamecoltivatore);
     }
 	
-	// progetto data inizio e fine con nome progetti
-	
-	//String username0 = ControllerLogin.getUsernameGlobale();
-
 	public List<String> popolaPrComboBox(String username) {
         return dao.popolaProgettiCB(username);
     }
 	
-	 public List<String> DateInizioFineP(String titolo_progetto, String username) {
+	public List<String> DateInizioFineP(String titolo_progetto, String username) {
 	        return dao.dateI_FProgCB(titolo_progetto, username);
-	    }
+	}
 	
-    
     public List<String> getTipiAttivita(String username, String progetto) {
         return dao.getTipiAttivitaColtivatore(username, progetto);
     }
@@ -45,12 +36,10 @@ public class ControllerColtivatore {
         return dao.getIdAttivitaColtivatore(username, progetto);
     }
 
-  
     public String getEsperienzaColtivatore(String username) {
         return dao.getEsperienzaColtivatore(username);
     }
     	
-    
     public String[] getDateByAttivitaId(String idAttivita, String tipoAttivita) {
         return dao.getDateByAttivitaId(idAttivita, tipoAttivita);
     }

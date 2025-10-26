@@ -16,7 +16,7 @@ import database.Connessione;
 public class daoVisualizzaP {
 	
 	//popola il text field di giorno inizio, giorno fine e il radio button dello stato dell'attività
-	public String popolaAttivita(String titoloProgetto, String tipoAttivita,				//MODIFICA
+	public String popolaAttivita(String titoloProgetto, String tipoAttivita,				
             JTextField fieldDataIA, JTextField fieldDataFA) {
 				Connection conn = null;
 				PreparedStatement stmt = null;
@@ -370,6 +370,7 @@ public class daoVisualizzaP {
 		
 		try {
 				conn = Connessione.getConnection(); 
+				@SuppressWarnings("unused")
 				int rows = 0;
 	
 				// segno il progetto come completato con la flag done
