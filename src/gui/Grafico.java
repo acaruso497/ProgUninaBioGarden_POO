@@ -195,6 +195,7 @@ public class Grafico extends JFrame {
 	private void popolaComboColtura(String idLotto) { //Popolo il combocoltura 
         if (idLotto != null) {
             List<String> colture = controllerGrafico.getColturaByLotto(idLotto); 
+            ComboColtura.removeAllItems();;
             for (String coltura : colture) {
                 ComboColtura.addItem(coltura); 
             }
