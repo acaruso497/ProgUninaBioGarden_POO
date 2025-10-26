@@ -43,74 +43,62 @@ public class daoGrafico {
 			    return lista;
 			}
 	
-    // COUNT(*) - 
-    public long getNumeroRaccolte(int idLotto, String varieta) {
-        Number n = queryAggregato("COUNT(*)", idLotto, varieta);
-        return n != null ? n.longValue() : 0L;
-    }
+	// === Letture dagli aggregati già salvati in Coltura ===
 
-    // AVG -
-    public double getMediaRaccolto(int idLotto, String varieta) {
-    	Number n = queryAggregato("AVG(c.raccoltoprodotto)", idLotto, varieta);
-        return n != null ? n.doubleValue() : 0.0;
-    }
+	public long getNumeroRaccolte(int idLotto, String varieta) {
+	    Number n = queryColturaVal("counter", varieta);
+	    return n != null ? n.longValue() : 0L;
+	}
 
-    // MIN -
-    public double getMinRaccolto(int idLotto, String varieta) {
-    	Number n = queryAggregato("MIN(c.raccoltoprodotto)", idLotto, varieta);
-        return n != null ? n.doubleValue() : 0.0;
-    }
+	public double getMediaRaccolto(int idLotto, String varieta) {
+	    Number n = queryColturaVal("avg", varieta);
+	    return n != null ? n.doubleValue() : 0.0;
+	}
 
-    // MAX -
-    public double getMaxRaccolto(int idLotto, String varieta) {
-    	Number n = queryAggregato("MAX(c.raccoltoprodotto)", idLotto, varieta);
-        return n != null ? n.doubleValue() : 0.0;
-    }
+	public double getMinRaccolto(int idLotto, String varieta) {
+	    Number n = queryColturaVal("min", varieta);
+	    return n != null ? n.doubleValue() : 0.0;
+	}
 
-    // ===== Helper di appoggio =====
-    /* i metodi precedenti mi passano l'espressione sulla quale il metodo seguente effettua la query, in questo modo evito 
-       di scrivere una query complessa per ogni richiesta */
-    private Number queryAggregato(String expr, int idLotto, String varieta) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = Connessione.getConnection();
+	public double getMaxRaccolto(int idLotto, String varieta) {
+	    Number n = queryColturaVal("max", varieta);
+	    return n != null ? n.doubleValue() : 0.0;
+	}
 
-            String sql =
-            "SELECT " + expr + " AS val " +
-            "FROM Coltura AS c " +
-          	"JOIN Progetto_Coltura AS pcol ON pcol.id_coltura=c.id_coltura " +
-          	"JOIN Progetto_Coltivazione AS pc ON pc.id_progetto=pcol.id_progetto " +
-          	"JOIN Lotto AS l ON l.id_lotto = pc.id_lotto " +
-          	"JOIN Attivita AS a ON a.id_lotto = l.id_lotto " +
-          	"JOIN Raccolta AS r ON r.id_attivita = a.id_attivita " +
-          	 "WHERE a.id_lotto = ? " +
-             "  AND lower(trim(c.\"varietà\")) = lower(trim(?)) " +
-             "  AND r.stato IN ('completata')"; 
-                   
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, idLotto);
-            stmt.setString(2, varieta);
+	// ===== Helper unico per leggere una colonna dalla tabella Coltura =====
+	private Number queryColturaVal(String column, String varieta) {
+	    Connection conn = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+	    try {
+	        conn = Connessione.getConnection();
 
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                
-                Object o = rs.getObject("val");
-                if (o == null) return 0; // normalizziamo a 0
-                if (o instanceof Number) return (Number) o;
-                
-                return Double.valueOf(o.toString());
-            }
-            return 0;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return 0;
-        } finally {
-            try { if (rs != null) rs.close(); } catch (Exception ignore) {}
-            try { if (stmt != null) stmt.close(); } catch (Exception ignore) {}
-            try { if (conn != null) conn.close(); } catch (Exception ignore) {}
-        }
-    }
+	        String sql =
+	            "SELECT " + column + " AS val " +
+	            "FROM Coltura " +
+	            "WHERE lower(trim(\"varietà\")) = lower(trim(?)) " +
+	            "LIMIT 1";
+
+	        stmt = conn.prepareStatement(sql);
+	        stmt.setString(1, varieta);
+
+	        rs = stmt.executeQuery();
+	        if (rs.next()) {
+	            Object o = rs.getObject("val");
+	            if (o == null) return 0;
+	            if (o instanceof Number) return (Number) o;
+	            return Double.valueOf(o.toString());
+	        }
+	        return 0;
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	        return 0;
+	    } finally {
+	        try { if (rs != null) rs.close(); } catch (Exception ignore) {}
+	        try { if (stmt != null) stmt.close(); } catch (Exception ignore) {}
+	        try { if (conn != null) conn.close(); } catch (Exception ignore) {}
+	    }
+	}
+
 	
 }

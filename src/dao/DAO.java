@@ -1072,52 +1072,48 @@ public String getTipoSemina(String idSemina) {
 
 
 public boolean sommaRaccolto(String raccolto, String coltura, String progetto) {
-	
-	Connection conn = null;
-	PreparedStatement stmt = null;
-	ResultSet risultato = null;
-	String sql1 = null;
-	String sql2 = null;
-	
-	try {
-		
-		conn = Connessione.getConnection();
-		sql1 = "SELECT SUM(raccoltoProdotto) AS somma, id_raccolta, titolo_progetto, varietà FROM sommaRaccolti WHERE titolo_progetto = ? AND varietà = ? GROUP BY id_raccolta, titolo_progetto, varietà";
-		stmt = conn.prepareStatement(sql1);
-		stmt.setString(1, progetto);
-		stmt.setString(2, coltura);
-		risultato = stmt.executeQuery();
-		
-		int sommaRaccolti = Integer.parseInt(raccolto);
+    Connection conn = null;
+    PreparedStatement ps = null;
+    try {
+        int nuovo = Integer.parseInt(raccolto);
 
-		if (risultato.next()) {
-            sommaRaccolti += risultato.getInt("somma"); // SOMMA il nuovo raccolto all'esistente
-            System.out.println("Nuova somma dei raccolti: " + sommaRaccolti); // Debug
-        }
-		stmt.close();
-        risultato.close();
-		
-        sql2 = "UPDATE Coltura SET raccoltoProdotto = ? WHERE varietà = ?";
-        stmt = conn.prepareStatement(sql2);
-        stmt.setInt(1, sommaRaccolti);
-        stmt.setString(2, coltura);
-        
-        int rows = stmt.executeUpdate();
-        
+        conn = Connessione.getConnection();
+        conn.setAutoCommit(false);
+
+        String sql =
+            "UPDATE Coltura " +
+            "SET " +
+            "  raccoltoprodotto = raccoltoprodotto + ?," +
+            "  max = GREATEST(max, ?)," +
+            "  min = CASE WHEN min = 0 OR ? < min THEN ? ELSE min END," +
+            "  counter = counter + 1," +
+            "  avg = (raccoltoprodotto + ?) / (counter + 1) " +  // usa i valori PRIMA dell'update a destra
+            "WHERE varietà = ?";
+
+        ps = conn.prepareStatement(sql);
+        ps.setInt(1, nuovo);
+        ps.setInt(2, nuovo);
+        ps.setInt(3, nuovo);
+        ps.setInt(4, nuovo);
+        ps.setInt(5, nuovo);
+        ps.setString(6, coltura);
+
+        int rows = ps.executeUpdate();
+        conn.commit();
         return rows > 0;
-		
-	}catch (SQLException ex) {
-		  ex.printStackTrace();
-		  return false;
-	} finally {
-		    try { if (risultato != null) risultato.close(); } catch (Exception ignored) {}
-		    try { if (stmt != null) stmt.close(); } catch (Exception ignored) {}
-		    try { if (conn != null) conn.close(); } catch (Exception ignored) {}
-	}
-	
-	
-	
+
+    } catch (Exception e) {
+        try { if (conn != null) conn.rollback(); } catch (Exception ignore) {}
+        e.printStackTrace();
+        return false;
+    } finally {
+        try { if (ps != null) ps.close(); } catch (Exception ignore) {}
+        try { if (conn != null) conn.setAutoCommit(true); } catch (Exception ignore) {}
+        try { if (conn != null) conn.close(); } catch (Exception ignore) {}
+    }
 }
+
+
 
 
 
