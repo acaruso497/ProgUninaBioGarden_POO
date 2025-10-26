@@ -366,28 +366,28 @@ public class DAO {
 	    return lista;
 	}
 
-	public static String getColtivatoreByUsername(String username) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = Connessione.getConnection();
-            String sql = "SELECT username FROM coltivatore WHERE username = ?";  // O da Proprietario se misto
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, username);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getString("username");
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        } finally {
-            try { if (rs != null) rs.close(); } catch (Exception e) {}
-            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
-            try { if (conn != null) conn.close(); } catch (Exception e) {}
-        }
-        return null;  // Se non trovato
-    }
+//	public static String getColtivatoreByUsername(String username) {
+//        Connection conn = null;
+//        PreparedStatement stmt = null;
+//        ResultSet rs = null;
+//        try {
+//            conn = Connessione.getConnection();
+//            String sql = "SELECT username FROM coltivatore WHERE username = ?";  // O da Proprietario se misto
+//            stmt = conn.prepareStatement(sql);
+//            stmt.setString(1, username);
+//            rs = stmt.executeQuery();
+//            if (rs.next()) {
+//                return rs.getString("username");
+//            }
+//        } catch (SQLException ex) {
+//            ex.printStackTrace();
+//        } finally {
+//            try { if (rs != null) rs.close(); } catch (Exception e) {}
+//            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+//            try { if (conn != null) conn.close(); } catch (Exception e) {}
+//        }
+//        return null;  // Se non trovato
+//    }
 	
 	
 		
